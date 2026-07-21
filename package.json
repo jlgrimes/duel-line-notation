@@ -1,0 +1,36 @@
+{
+  "name": "duel-line-notation",
+  "version": "0.1.0",
+  "description": "A compact, machine-checkable notation for Yu-Gi-Oh! combo lines.",
+  "type": "module",
+  "bin": {
+    "dln": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "npm run build && node dist/src/cli.js check decks",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "ci": "npm run check && npm test",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "dist/src",
+    "README.md",
+    "SPEC.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "yugioh",
+    "notation",
+    "combo",
+    "tcg"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

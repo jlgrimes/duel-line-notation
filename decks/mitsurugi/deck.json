@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "slug": "mitsurugi",
+  "name": "Mitsurugi",
+  "format": "DLN language fixture; verify legality against the format being played",
+  "cards": {
+    "HAB": {
+      "name": "Ame no Habakiri no Mitsurugi",
+      "kind": "monster",
+      "level": 8,
+      "notes": "Ritual Monster; the example begins with this copy not properly Ritual Summoned"
+    },
+    "MUR": {
+      "name": "Ame no Murakumo no Mitsurugi",
+      "kind": "monster",
+      "level": 8
+    },
+    "FUT": {
+      "name": "Futsu no Mitama no Mitsurugi",
+      "kind": "monster",
+      "level": 8
+    },
+    "ARA": {
+      "name": "Mitsurugi no Mikoto, Aramasa",
+      "kind": "monster",
+      "level": 4
+    },
+    "KUS": {
+      "name": "Mitsurugi no Mikoto, Kusanagi",
+      "kind": "monster",
+      "level": 4
+    },
+    "SAJ": {
+      "name": "Mitsurugi no Mikoto, Saji",
+      "kind": "monster",
+      "level": 4
+    },
+    "NSS": {
+      "name": "Night Sword Serpent",
+      "kind": "monster",
+      "level": 4
+    },
+    "PRY": {
+      "name": "Mitsurugi Prayers",
+      "kind": "spell"
+    },
+    "RIT": {
+      "name": "Mitsurugi Ritual",
+      "kind": "spell"
+    },
+    "MIR": {
+      "name": "Mitsurugi Mirror",
+      "kind": "spell"
+    },
+    "MAG": {
+      "name": "Mitsurugi Magatama",
+      "kind": "spell"
+    },
+    "PUR": {
+      "name": "Mitsurugi Great Purification",
+      "kind": "trap"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "slug": "example-deck",
+  "name": "Example Deck",
+  "cards": {
+    "ONE": {
+      "name": "Full Official Card Name",
+      "kind": "monster",
+      "level": 4
+    },
+    "TWO": {
+      "name": "Another Official Card Name",
+      "kind": "spell"
+    }
+  }
+}

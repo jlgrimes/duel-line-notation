@@ -1,0 +1,8 @@
+@deck example-deck
+@line example
+@start LP=8000; H=[ONE,TWO]
+
+1 NS ONE:H>F
+2 TWO => ADD ONE:D>H
+
+@end LP=8000; H=[ONE]; F=[ONE]
