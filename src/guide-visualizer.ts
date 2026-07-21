@@ -42,9 +42,40 @@ export function buildGuidePlayback(guide: ComboGuide, manifest: DeckManifest): P
       activeAliases: active,
       movements,
     });
+
+    const resolving = movements
+      .filter((movement) => movement.to === "F")
+      .map((movement) => cards.find((card) => card.id === movement.cardId)!)
+      .filter((card) => card.kind !== "monster" && card.kind !== "token" && shouldResolveToGrave(step, card.name));
+    if (resolving.length > 0) {
+      const graveMovements = resolving.map((card) => {
+        delete card.fieldSlot;
+        card.zone = "G";
+        card.faceUp = true;
+        return { cardId: card.id, alias: card.alias, from: "F" as const, to: "G" as const };
+      });
+      frames.push({
+        key: `guide-step-${index + 1}-resolution`,
+        stepNumber: index + 1,
+        label: resolving.length === 1 ? `Resolve ${resolving[0]!.name}` : "Resolve activated cards",
+        expression: `${resolving.map((card) => card.name).join(" + ")} resolves and is sent to the GY.`,
+        lp: 8000,
+        cards: cloneCards(cards),
+        activeAliases: resolving.map((card) => card.alias),
+        movements: graveMovements,
+      });
+    }
   });
 
   return { frames, declaredEnd: guide.endBoard };
+}
+
+function shouldResolveToGrave(step: string, cardName: string): boolean {
+  const { context } = cardContext(step, cardName);
+  if (/\bset\b/.test(context)) return false;
+  if (/\b(?:field spell|continuous|equip|remains? face-up|before passing)\b/.test(context)) return false;
+  if (/\b(?:airspace|area zero|multirole)\b/.test(cardName.toLowerCase())) return false;
+  return /\b(?:activate|use|resolve)\b/.test(context);
 }
 
 function createCard(alias: string, definition: CardDefinition, zone: VisualZone, index: number): VisualCard {

@@ -44,3 +44,18 @@ test("places Link Summons in an Extra Monster Zone and keeps five Main Monster s
   assert.equal(final.cards.find((card) => card.alias === "LINK")?.fieldSlot, "EMZ1");
   assert.equal(final.cards.find((card) => card.alias === "B")?.fieldSlot, "M1");
 });
+
+test("activated DLN Spells get separate activation and GY resolution frames", () => {
+  const document = parseLine(`@deck demo\n@line spell\n@start LP=8000; H=[SPELL]\n1 ACT SPELL => DRAW D>H\n@end LP=8000; G=[SPELL]`);
+  const manifest: DeckManifest = {
+    schemaVersion: 1,
+    slug: "demo",
+    name: "Demo",
+    cards: { SPELL: { name: "Demo Spell", kind: "spell" } },
+  };
+  const frames = buildPlayback(document, manifest).frames;
+  assert.equal(frames.length, 3);
+  assert.equal(frames[1]?.cards.find((card) => card.alias === "SPELL")?.zone, "F");
+  assert.equal(frames[2]?.cards.find((card) => card.alias === "SPELL")?.zone, "G");
+  assert.deepEqual(frames[2]?.movements.find((move) => move.alias === "SPELL"), { cardId: "spell-1", alias: "SPELL", from: "F", to: "G" });
+});

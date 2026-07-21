@@ -38,3 +38,24 @@ test("structured guides animate through the duel board", () => {
   assert.equal(sequence.frames[2]?.cards.find((card) => card.alias === "C2")?.fieldSlot, "EMZ1");
   assert.equal(sequence.frames[2]?.movements.length, 2);
 });
+
+test("used guide Spells resolve from the backrow to the GY", () => {
+  const spellManifest: DeckManifest = {
+    schemaVersion: 1,
+    slug: "branded",
+    name: "Branded",
+    cards: { C1: { name: "Branded Fusion", kind: "spell" } },
+  };
+  const spellGuide: ComboGuide = {
+    ...guide,
+    starterCards: ["Branded Fusion"],
+    cardNames: ["Branded Fusion"],
+    steps: ["Activate Branded Fusion to Fusion Summon a Fusion Monster."],
+  };
+  const frames = buildGuidePlayback(spellGuide, spellManifest).frames;
+  assert.equal(frames.length, 3);
+  assert.equal(frames[1]?.cards[0]?.zone, "F");
+  assert.deepEqual(frames[1]?.movements[0], { cardId: "guide-c1-0", alias: "C1", from: "H", to: "F" });
+  assert.equal(frames[2]?.cards[0]?.zone, "G");
+  assert.deepEqual(frames[2]?.movements[0], { cardId: "guide-c1-0", alias: "C1", from: "F", to: "G" });
+});

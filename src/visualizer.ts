@@ -60,23 +60,45 @@ export function buildPlayback(document: LineDocument, manifest: DeckManifest): P
 
   for (const step of document.steps) {
     if (step.kind === "action") {
+      const activation = activateTransientCard(state, step.expression, manifest, () => ++serial);
+      if (activation) {
+        state = activation.state;
+        frames.push({
+          key: `step-${step.number}-activation`,
+          stepNumber: step.number,
+          label: `Activate ${manifest.cards[activation.alias]?.name ?? activation.alias}`,
+          expression: step.expression,
+          lp: state.lp,
+          cards: cloneCards(state.cards),
+          activeAliases: [activation.alias],
+          movements: [activation.movement],
+        });
+      }
       const applied = applyExpression(state, step.expression, manifest, () => ++serial);
       state = applied.state;
+      const cleanup = activation ? moveCardToGrave(state, activation.alias) : undefined;
+      if (cleanup) state = cleanup.state;
       frames.push({
-        key: `step-${step.number}`,
+        key: activation ? `step-${step.number}-resolution` : `step-${step.number}`,
         stepNumber: step.number,
-        label: describeExpression(step.expression),
+        label: activation ? `Resolve ${manifest.cards[activation.alias]?.name ?? activation.alias}` : describeExpression(step.expression),
         expression: step.expression,
         lp: state.lp,
         cards: cloneCards(state.cards),
         activeAliases: referencedCards(step.expression, manifest),
-        movements: applied.movements,
+        movements: [...applied.movements, ...(cleanup ? [cleanup.movement] : [])],
       });
       continue;
     }
 
+    const activatedByLink = new Map<number, string>();
     for (const link of step.links) {
       const parts = splitChainExpression(link.expression);
+      const activation = activateTransientCard(state, parts.activation, manifest, () => ++serial);
+      if (activation) {
+        state = activation.state;
+        activatedByLink.set(link.number, activation.alias);
+      }
       const applied = applyExpression(state, parts.activation, manifest, () => ++serial);
       state = applied.state;
       frames.push({
@@ -90,7 +112,7 @@ export function buildPlayback(document: LineDocument, manifest: DeckManifest): P
         lp: state.lp,
         cards: cloneCards(state.cards),
         activeAliases: referencedCards(link.expression, manifest),
-        movements: applied.movements,
+        movements: [...(activation ? [activation.movement] : []), ...applied.movements],
       });
     }
 
@@ -99,6 +121,9 @@ export function buildPlayback(document: LineDocument, manifest: DeckManifest): P
       const parts = splitChainExpression(link.expression);
       const applied = applyExpression(state, parts.resolution, manifest, () => ++serial);
       state = applied.state;
+      const activatedAlias = activatedByLink.get(link.number);
+      const cleanup = activatedAlias ? moveCardToGrave(state, activatedAlias) : undefined;
+      if (cleanup) state = cleanup.state;
       frames.push({
         key: `step-${step.number}-cl-${link.number}-resolution`,
         stepNumber: step.number,
@@ -110,12 +135,51 @@ export function buildPlayback(document: LineDocument, manifest: DeckManifest): P
         lp: state.lp,
         cards: cloneCards(state.cards),
         activeAliases: referencedCards(link.expression, manifest),
-        movements: applied.movements,
+        movements: [...applied.movements, ...(cleanup ? [cleanup.movement] : [])],
       });
     }
   }
 
   return { frames, declaredEnd: document.end };
+}
+
+function activateTransientCard(
+  previous: { lp: number; cards: VisualCard[] },
+  expression: string,
+  manifest: DeckManifest,
+  nextSerial: () => number,
+): { state: { lp: number; cards: VisualCard[] }; alias: string; movement: CardMovement } | undefined {
+  if (/^\s*(?:SET|PLACE)\b/.test(expression)) return undefined;
+  const alias = expression.match(/^\s*ACT\s+([A-Z][A-Z0-9_]*)\b/)?.[1]
+    ?? expression.match(/^\s*([A-Z][A-Z0-9_]*)(?:#[A-Z0-9]+)?\b/)?.[1];
+  if (!alias) return undefined;
+  const definition = manifest.cards[alias];
+  if (!definition || definition.kind === "monster" || definition.kind === "token") return undefined;
+
+  const cards = cloneCards(previous.cards);
+  let card = cards.find((candidate) => candidate.alias === alias && candidate.zone !== "F");
+  if (!card) {
+    card = createCard(alias, "H", manifest, nextSerial());
+    cards.push(card);
+  }
+  const from = card.zone;
+  card.zone = "F";
+  card.faceUp = true;
+  card.fieldSlot = firstFreeSlot(cards, ["S1", "S2", "S3", "S4", "S5"]);
+  return { state: { ...previous, cards }, alias, movement: { cardId: card.id, alias, from, to: "F" } };
+}
+
+function moveCardToGrave(
+  previous: { lp: number; cards: VisualCard[] },
+  alias: string,
+): { state: { lp: number; cards: VisualCard[] }; movement: CardMovement } | undefined {
+  const cards = cloneCards(previous.cards);
+  const card = cards.find((candidate) => candidate.alias === alias && candidate.zone === "F");
+  if (!card) return undefined;
+  delete card.fieldSlot;
+  card.zone = "G";
+  card.faceUp = true;
+  return { state: { ...previous, cards }, movement: { cardId: card.id, alias, from: "F", to: "G" } };
 }
 
 function splitChainExpression(expression: string): { activation: string; resolution: string } {

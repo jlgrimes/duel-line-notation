@@ -79,24 +79,6 @@ export function DuelVisualizer({ document, sequence: suppliedSequence, manifest,
   return (
     <CardScanContext.Provider value={scans}>
     <section className="duel-visualizer" aria-label="Animated duel line visualizer">
-      <div className="duel-toolbar">
-        <div className="playback-copy" aria-live="polite">
-          <span>{frame.stepNumber === 0 ? "Ready" : frame.chainLink ? `Step ${frame.stepNumber} · CL${frame.chainLink} ${frame.chainPhase === "activation" ? "activates" : "resolves"}` : `Step ${frame.stepNumber}`}</span>
-          <strong>{frame.label}</strong>
-        </div>
-        <div className="playback-controls">
-          <button className="icon-control" onClick={() => transitionTo(frameIndex - 1)} disabled={frameIndex === 0} aria-label="Previous frame">←</button>
-          <button className="play-control" onClick={togglePlayback}>{playing ? "Pause" : frameIndex === frames.length - 1 ? "Replay" : "Play"}</button>
-          <button className="icon-control" onClick={() => transitionTo(frameIndex + 1)} disabled={frameIndex === frames.length - 1} aria-label="Next frame">→</button>
-          <label className="speed-control">
-            <span>Speed</span>
-            <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-              {SPEEDS.map((value) => <option key={value} value={value}>{value}×</option>)}
-            </select>
-          </label>
-        </div>
-      </div>
-
       <div className="duel-canvas">
         <div className="opponent-field" aria-hidden="true">
           <span>Opponent</span>
@@ -138,6 +120,23 @@ export function DuelVisualizer({ document, sequence: suppliedSequence, manifest,
         <div className="action-callout">
           <span>{frame.movements.length > 0 ? frame.movements.map((move) => `${move.alias} ${move.from}→${move.to}`).join(" · ") : "Effect window"}</span>
           <code>{frame.expression}</code>
+        </div>
+      </div>
+
+      <div className="duel-toolbar">
+        <div className="playback-copy" aria-live="polite">
+          <span>{frame.stepNumber === 0 ? "Ready" : frame.chainLink ? `Step ${frame.stepNumber} · CL${frame.chainLink} ${frame.chainPhase === "activation" ? "activates" : "resolves"}` : `Step ${frame.stepNumber}`}</span>
+          <strong>{frame.label}</strong>
+        </div>
+        <div className="playback-controls">
+          <button className="icon-control" onClick={() => transitionTo(frameIndex - 1)} disabled={frameIndex === 0} aria-label="Previous frame">←</button>
+          <button className="play-control" onClick={togglePlayback}>{playing ? "Pause" : frameIndex === frames.length - 1 ? "Replay" : "Play"}</button>
+          <button className="icon-control" onClick={() => transitionTo(frameIndex + 1)} disabled={frameIndex === frames.length - 1} aria-label="Next frame">→</button>
+          <label className="speed-control">
+            <span>Speed</span>
+            <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+              {SPEEDS.map((value) => <option key={value} value={value}>{value}×</option>)}</select>
+          </label>
         </div>
       </div>
 
