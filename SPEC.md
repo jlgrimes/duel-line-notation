@@ -58,6 +58,8 @@ SS ARA:H>F
 TR HAB:H>G
 ```
 
+Consumers may animate these movement tokens. For deterministic playback, authors should include a movement token whenever a card changes zones; a bare card or effect reference does not imply movement.
+
 ## Operations
 
 The v0.1 core vocabulary is:

@@ -27,7 +27,7 @@ Players already write things like `NS Aluber, add BraFu`. DLN adds the informati
 
 - A draft v0.1 language specification
 - A TypeScript parser and semantic validator
-- A responsive React Line Lab with live parsing and validation
+- A responsive React Line Lab with live parsing, validation, and animated playback
 - A CLI that checks `.dln` files against their deck manifests
 - A fully annotated Mitsurugi starter line
 - Tests and GitHub Actions CI
@@ -66,6 +66,16 @@ Aliases are local namespaces, not part of the language. `MUR` can mean Ame no Mu
 ## Interactive Line Lab
 
 The Vite-powered React app loads the current TCG Advanced fixtures directly from `decks/`. Select a deck, edit its notation, and inspect the parsed execution trace, Chain resolution order, diagnostics, and alias dictionary in real time.
+
+The **Duel View** tab turns the same parsed document into a playable visual sequence. It includes:
+
+- Play, pause, step, replay, timeline scrubbing, and playback speed controls
+- Animated card movement between the hand, field, Deck, Extra Deck, GY, and banishment
+- Reverse-order Chain Link resolution and LP changes
+- Responsive desktop and mobile playmats
+- Reduced-motion support
+
+Playback is notation-driven rather than hand-authored per deck. Write every observable movement as `ALIAS:FROM>TO`; the visualizer will pick it up automatically. Anonymous operations such as `DRAW D>H` and `BAN D>B` render a hidden placeholder card.
 
 ```sh
 npm run dev

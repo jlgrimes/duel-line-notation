@@ -3,8 +3,10 @@ import { parseLine, ParseError } from "../src/parser.js";
 import { validateLine } from "../src/semantic.js";
 import type { Diagnostic, LineDocument } from "../src/model.js";
 import { fixtures, metaSnapshot, type DeckFixture } from "./data";
+import { DuelVisualizer } from "./DuelVisualizer";
 
 type MobilePanel = "code" | "trace" | "cards";
+type WorkspaceView = "notation" | "duel";
 
 function analyze(source: string, fixture: DeckFixture): { document?: LineDocument; diagnostics: Diagnostic[] } {
   try {
@@ -24,6 +26,7 @@ export function App() {
     try { return JSON.parse(saved) as Record<string, string>; } catch { return {}; }
   });
   const [panel, setPanel] = useState<MobilePanel>("code");
+  const [view, setView] = useState<WorkspaceView>("notation");
   const [copied, setCopied] = useState(false);
   const fixture = fixtures.find((item) => item.slug === selectedSlug) ?? fixtures[0]!;
   const source = drafts[fixture.slug] ?? fixture.line;
@@ -116,14 +119,25 @@ export function App() {
             </div>
           </div>
 
-          <div className="mobile-tabs" role="tablist" aria-label="Sandbox panels">
-            {(["code", "trace", "cards"] as MobilePanel[]).map((item) => (
-              <button key={item} className={panel === item ? "active" : ""} onClick={() => setPanel(item)}>{item}</button>
-            ))}
+          <div className="view-tabs" role="tablist" aria-label="Line Lab views">
+            <button role="tab" aria-selected={view === "notation"} className={view === "notation" ? "active" : ""} onClick={() => setView("notation")}>
+              <span>01</span> Notation Lab
+            </button>
+            <button role="tab" aria-selected={view === "duel"} className={view === "duel" ? "active" : ""} onClick={() => setView("duel")}>
+              <span>02</span> Duel View <i>New</i>
+            </button>
           </div>
 
-          <div className="lab-grid">
-            <section className={`editor-panel panel-${panel}`} aria-label="DLN editor">
+          {view === "notation" ? (
+            <>
+              <div className="mobile-tabs" role="tablist" aria-label="Sandbox panels">
+                {(["code", "trace", "cards"] as MobilePanel[]).map((item) => (
+                  <button key={item} className={panel === item ? "active" : ""} onClick={() => setPanel(item)}>{item}</button>
+                ))}
+              </div>
+
+              <div className="lab-grid">
+                <section className={`editor-panel panel-${panel}`} aria-label="DLN editor">
               <div className="panel-toolbar">
                 <div className="file-tab"><span className="file-dot" />{result.document?.name ?? "untitled"}.dln</div>
                 <div className="toolbar-actions">
@@ -146,9 +160,9 @@ export function App() {
                 <span><i /> {clean ? "Valid DLN" : `${result.diagnostics.length} issue${result.diagnostics.length === 1 ? "" : "s"}`}</span>
                 <span>{source.split("\n").length} lines · v0.1</span>
               </div>
-            </section>
+                </section>
 
-            <aside className={`inspector panel-${panel}`} aria-label="Parsed line inspector">
+                <aside className={`inspector panel-${panel}`} aria-label="Parsed line inspector">
               <div className="inspector-section trace-section">
                 <div className="section-title"><span>Execution trace</span><b>{result.document?.steps.length ?? 0} steps</b></div>
                 {result.diagnostics.length > 0 && (
@@ -190,8 +204,12 @@ export function App() {
                   ))}
                 </div>
               </div>
-            </aside>
-          </div>
+                </aside>
+              </div>
+            </>
+          ) : (
+            <DuelVisualizer document={result.document} manifest={fixture.manifest} diagnostics={result.diagnostics.length} />
+          )}
         </section>
       </div>
     </main>
