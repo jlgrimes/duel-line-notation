@@ -123,7 +123,7 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .mobile-tabs { display: none; }
 
 /* Duel View */
-.duel-visualizer { min-height: 660px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #101216; box-shadow: 0 22px 70px rgba(0,0,0,.24); }
+.duel-visualizer { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #101216; box-shadow: 0 22px 70px rgba(0,0,0,.24); }
 .duel-toolbar { min-height: 64px; border-top: 1px solid var(--line); background: #15171b; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 10px 16px 10px 20px; }
 .playback-copy { min-width: 0; display: grid; gap: 4px; }
 .playback-copy span { color: var(--accent); text-transform: uppercase; letter-spacing: .14em; font: 8px "DM Mono", monospace; }
@@ -138,7 +138,7 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .speed-control span { color: var(--muted); font-size: 8px; text-transform: uppercase; letter-spacing: .1em; }
 .speed-control select { width: 58px; padding: 0 7px; font: 9px "DM Mono", monospace; }
 
-.duel-canvas { position: relative; min-height: 660px; padding: 64px 28px 112px; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 42%), linear-gradient(135deg, #0d1112, #111518 52%, #0c0f11); }
+.duel-canvas { position: relative; min-height: clamp(500px,70vw,660px); padding: 64px 28px 112px; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 42%), linear-gradient(135deg, #0d1112, #111518 52%, #0c0f11); }
 .duel-canvas::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .24; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 30px 30px; transform: perspective(500px) rotateX(8deg) scale(1.1); }
 .opponent-field { position: absolute; top: 0; left: 0; right: 0; height: 43px; padding: 8px 24px; border-bottom: 1px solid rgba(255,255,255,.04); display: flex; align-items: center; gap: 16px; opacity: .48; }
 .opponent-field > span { color: var(--muted); font-size: 7px; text-transform: uppercase; letter-spacing: .14em; }
@@ -303,20 +303,21 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .catalog-search input:focus { border-color: color-mix(in srgb, var(--accent) 60%, #34373e); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent); }
 .catalog-count { margin-bottom: 12px; color: var(--muted); font: 8px "DM Mono", monospace; text-transform: uppercase; letter-spacing: .1em; }
 .catalog-count strong { color: var(--soft); font-weight: 500; }
-.catalog-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
-.combo-product { position: relative; min-width: 0; overflow: hidden; border: 1px solid #2b2e34; border-radius: 10px; background: #131519; text-decoration: none; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.catalog-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.combo-product { position: relative; min-width: 0; min-height: 184px; display: grid; grid-template-columns: minmax(110px,1fr) minmax(0,4fr); overflow: hidden; border: 1px solid #2b2e34; border-radius: 10px; background: #131519; text-decoration: none; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
 .combo-product:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--product-accent, var(--accent)) 42%, #2b2e34); background: #17191d; }
-.product-cover { position: relative; height: 230px; display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid #292c31; background: radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--product-accent) 28%, transparent), transparent 28%), linear-gradient(145deg, color-mix(in srgb, var(--product-accent) 12%, #121419), #0d0f12); }
-.product-cover::before { content: ""; position: absolute; width: 115px; height: 165px; border: 1px solid color-mix(in srgb, var(--product-accent) 36%, #31343a); border-radius: 6px; transform: rotate(5deg); background: rgba(12,14,17,.62); box-shadow: 0 22px 38px rgba(0,0,0,.42); }
-.product-cover img { position: relative; z-index: 1; height: 180px; max-width: 76%; border-radius: 5px; object-fit: contain; box-shadow: 0 18px 35px rgba(0,0,0,.52); transform: rotate(-2deg); transition: transform .25s ease; }
+.product-cover { position: relative; min-height: 184px; display: grid; place-items: center; overflow: hidden; border-right: 1px solid #292c31; background: radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--product-accent) 28%, transparent), transparent 34%), linear-gradient(145deg, color-mix(in srgb, var(--product-accent) 12%, #121419), #0d0f12); }
+.product-cover::before { content: ""; position: absolute; width: 76px; height: 110px; border: 1px solid color-mix(in srgb, var(--product-accent) 36%, #31343a); border-radius: 5px; transform: rotate(5deg); background: rgba(12,14,17,.62); box-shadow: 0 16px 30px rgba(0,0,0,.42); }
+.product-cover img { position: relative; z-index: 1; width: min(76px,72%); max-height: 138px; border-radius: 4px; object-fit: contain; box-shadow: 0 14px 28px rgba(0,0,0,.52); transform: rotate(-2deg); transition: transform .25s ease; }
 .combo-product:hover .product-cover img { transform: rotate(0) scale(1.035); }
-.product-cover > span { position: relative; z-index: 1; display: grid; place-items: center; width: 100px; height: 145px; color: var(--product-accent); font: 700 25px "DM Mono", monospace; }
-.product-cover i { position: absolute; z-index: 2; top: 13px; left: 13px; padding: 5px 7px; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; color: #dad8d2; background: rgba(11,13,16,.72); backdrop-filter: blur(8px); font: 6px "DM Mono", monospace; font-style: normal; text-transform: uppercase; letter-spacing: .09em; }
-.product-copy { padding: 17px 42px 19px 17px; }
+.product-cover > span { position: relative; z-index: 1; display: grid; place-items: center; width: 70px; height: 102px; color: var(--product-accent); font: 700 20px "DM Mono", monospace; }
+.product-cover i { position: absolute; z-index: 2; left: 8px; bottom: 8px; max-width: calc(100% - 16px); overflow: hidden; padding: 4px 6px; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; color: #dad8d2; background: rgba(11,13,16,.72); backdrop-filter: blur(8px); font: 6px "DM Mono", monospace; font-style: normal; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+.product-copy { min-width: 0; display: grid; align-content: center; padding: 18px 44px 18px 20px; }
 .product-copy small { display: block; margin-bottom: 6px; color: var(--product-accent, var(--accent)); font: 7px "DM Mono", monospace; text-transform: uppercase; letter-spacing: .12em; }
-.product-copy h2 { min-height: 38px; margin: 0; font-size: 15px; line-height: 1.25; letter-spacing: -.025em; }
+.product-copy h2 { margin: 0; font-size: 15px; line-height: 1.25; letter-spacing: -.025em; }
+.product-copy p { display: -webkit-box; margin: 9px 0 0; overflow: hidden; color: var(--muted); font-size: 9px; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .product-copy > div { display: flex; gap: 12px; margin-top: 14px; color: #6f747d; font: 7px "DM Mono", monospace; text-transform: uppercase; }
-.combo-product > b { position: absolute; right: 17px; bottom: 20px; color: var(--muted); font: 14px "DM Mono", monospace; font-weight: 400; }
+.combo-product > b { position: absolute; right: 17px; top: 50%; color: var(--muted); font: 14px "DM Mono", monospace; font-weight: 400; transform: translateY(-50%); }
 .combo-product:hover > b { color: var(--product-accent, var(--accent)); }
 .catalog-empty { grid-column: 1/-1; padding: 60px 20px; border: 1px dashed #30343a; border-radius: 10px; color: var(--muted); text-align: center; font-size: 11px; }
 .source-shelf { display: flex; justify-content: space-between; align-items: center; gap: 25px; margin-top: 42px; padding-top: 18px; border-top: 1px solid var(--line); }
@@ -440,14 +441,13 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
   .inspector.panel-code { display: none; }
   .inspector.panel-trace .cards-section { display: none; }
   .inspector.panel-cards .trace-section { display: none; }
-  .duel-visualizer { min-height: 750px; }
   .duel-toolbar { min-height: 58px; align-items: center; padding: 9px 10px; }
   .playback-copy { padding-top: 3px; }
   .playback-copy strong { max-width: 125px; font-size: 11px; }
   .speed-control { display: none; }
   .icon-control { width: 32px; }
   .play-control { min-width: 66px; padding-inline: 10px; }
-  .duel-canvas { min-height: 610px; padding: 58px 8px 122px; }
+  .duel-canvas { min-height: 500px; padding: 58px 8px 112px; }
   .life-points { right: 9px; top: 51px; min-width: 80px; }
   .chain-resolver { top: 51px; left: 9px; }
   .playmat { grid-template-columns: 53px minmax(220px, 1fr) 53px; gap: 8px 5px; }
@@ -498,7 +498,7 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
   .combo-detail { padding: 9px 10px 28px; }
   .catalog-header { grid-template-columns: 1fr; gap: 22px; margin-bottom: 20px; }
   .catalog-header h1 { font-size: 44px; }
-  .product-cover { height: 205px; }
+  .catalog-grid { grid-template-columns: 1fr; }
   .source-shelf { align-items: flex-start; flex-direction: column; }
   .source-shelf > div { justify-content: flex-start; }
   .detail-back { margin-bottom: 5px; padding-block: 2px; font-size: 7px; }
@@ -532,8 +532,12 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 }
 
 @media (max-width: 620px) {
-  .catalog-grid { grid-template-columns: 1fr; }
-  .product-cover { height: 230px; }
+  .combo-product { min-height: 158px; grid-template-columns: 92px minmax(0,1fr); }
+  .product-cover { min-height: 158px; }
+  .product-cover img { width: min(66px,74%); }
+  .product-copy { padding: 15px 36px 15px 15px; }
+  .product-copy p { -webkit-line-clamp: 2; }
+  .product-copy > div { flex-wrap: wrap; gap: 5px 10px; margin-top: 10px; }
 }
 
 @media (max-width: 390px) {

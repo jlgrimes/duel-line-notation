@@ -48,6 +48,7 @@ export function ComboCatalog({ combos, sources, format, loading = false, error, 
               <div className="product-copy">
                 <small>{combo.deckName}</small>
                 <h2>{combo.title}</h2>
+                <p>{combo.summary}</p>
                 <div><span>{combo.handSize}-card start</span><span>{combo.stepCount} steps</span><span>{combo.contentType === "dln" ? "DLN" : "Guide"}</span></div>
               </div>
               <b aria-hidden="true">→</b>
