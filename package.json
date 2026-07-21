@@ -14,6 +14,7 @@
     "check": "npm run build:cli && node dist/src/cli.js check decks",
     "test": "npm run build:cli && node --test dist/test/*.test.js",
     "ci": "npm run check && npm test && npm run build:web",
+    "db:setup": "npm run build:cli && node scripts/db.mjs",
     "preview": "vite preview",
     "prepack": "npm run build:cli"
   },
@@ -34,13 +35,14 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@types/node": "^24.0.0",
     "@vitejs/plugin-react": "^4.5.0",
     "typescript": "^5.8.0",
     "vite": "^6.3.0"

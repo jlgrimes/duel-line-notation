@@ -46,15 +46,15 @@ export function useCardScans(manifest: DeckManifest): { scans: Record<string, Ca
     const controller = new AbortController();
     let active = true;
     setLoading(true);
-    const query = new URLSearchParams({ names: missing.join("|") });
-    fetch(`/api/cards?${query}`, { signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Card lookup failed");
-        return response.json() as Promise<CardResponse>;
-      })
-      .then((response) => {
+    Promise.all(chunk(missing, 40).map(async (batch) => {
+      const query = new URLSearchParams({ names: batch.join("|") });
+      const response = await fetch(`/api/cards?${query}`, { signal: controller.signal });
+      if (!response.ok) throw new Error("Card lookup failed");
+      return response.json() as Promise<CardResponse>;
+    }))
+      .then((responses) => {
         if (!active) return;
-        const resolved = response.cards ?? {};
+        const resolved = Object.assign({}, ...responses.map((response) => response.cards ?? {})) as Record<string, CardScan>;
         const merged = { ...cached.cards, ...resolved };
         setScans(Object.fromEntries(names.flatMap((name) => merged[name] ? [[name, merged[name]!]] : [])));
         writeCache(merged);
@@ -71,6 +71,10 @@ export function useCardScans(manifest: DeckManifest): { scans: Record<string, Ca
   }, [names]);
 
   return { scans, loading };
+}
+
+function chunk<T>(values: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(values.length / size) }, (_, index) => values.slice(index * size, (index + 1) * size));
 }
 
 function readCache(): CardCache {

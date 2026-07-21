@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "decks": {
+    "kewl-tune": {
+      "summary": "Information-heavy Synchro midrange that reads the opponent's hand and layers interaction across both turns.",
+      "sourceLabel": "Konami WCQ feature coverage",
+      "sourceUrl": "https://yugiohblog.konami.com/2026/championships/dragon-duel-championship-round-5-feature-match-simon-b-vs-lee-h/",
+      "lines": { "cue-starter": { "title": "Cue one-card setup" } }
+    },
+    "branded": {
+      "summary": "Fusion resource engine with a high ceiling, recursive follow-up, and many build-specific branches.",
+      "sourceLabel": "July 2026 Advanced overview",
+      "sourceUrl": "https://www.tcgplayer.com/content/article/The-Best-Advanced-Decks-in-Yu-Gi-Oh-Right-Now-Post-Ban/948e13fa-57fd-4839-a15f-04564a63704c/",
+      "lines": { "aluber-fusion": { "title": "Aluber into Mirrorjade" } }
+    },
+    "light-and-darkness-ritual": {
+      "summary": "Ritual midrange built around Mind Shuffle, graveyard recovery, and modern versions of Yugi's classics.",
+      "sourceLabel": "North America WCQ feature match",
+      "sourceUrl": "https://yugiohblog.konami.com/2026/championships/2026-north-america-wcq/nawcq-round-15-feature-match-michael-kyle-walters-vs-brayden-michael-davis/",
+      "lines": { "records-ritual": { "title": "Records plus Ritual setup" } }
+    },
+    "elfnote": {
+      "summary": "Position-sensitive Synchro strategy whose center Main Monster Zone is itself a resource.",
+      "sourceLabel": "North America WCQ feature match",
+      "sourceUrl": "https://yugiohblog.konami.com/2026/ycs/nawcq-round-8-feature-match-aidan-shaw-harden-vs-jackson-thomas-fulmer/",
+      "lines": { "tinia-setup": { "title": "Tinia center-zone setup" } }
+    },
+    "mitsurugi": {
+      "summary": "Tribute-driven Ritual engine where paying a cost often searches a card and restores the monster you spent.",
+      "sourceLabel": "July 2026 Advanced overview",
+      "sourceUrl": "https://www.tcgplayer.com/content/article/The-Best-Advanced-Decks-in-Yu-Gi-Oh-Right-Now-Post-Ban/948e13fa-57fd-4839-a15f-04564a63704c/",
+      "lines": { "prayers-habakiri": { "title": "Prayers plus Habakiri" } }
+    },
+    "sky-striker": {
+      "summary": "Spell-dense Link control that cycles one pilot through a toolbox of Extra Deck forms.",
+      "sourceLabel": "July 2026 TCG tier snapshot",
+      "sourceUrl": "https://ygoprodeck.com/tournaments/top-archetypes/",
+      "lines": { "raye-cycle": { "title": "Raye battle-phase cycle" } }
+    }
+  }
+}

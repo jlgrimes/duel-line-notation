@@ -68,6 +68,19 @@ Aliases are local namespaces, not part of the language. `MUR` can mean Ame no Mu
 
 The Vite-powered React app opens on a searchable catalog of the current TCG Advanced combo fixtures. Each catalog card leads to a nested combo detail screen. Detail screens default to the animated Visual view, with Notation and Trace available as local toggles.
 
+Combo content is not bundled into the React application. `GET /api/combos` returns lightweight shelf metadata, while `GET /api/combos?id=<deck>/<line>` returns one DLN document and manifest on demand. The API reads Neon Postgres when `DATABASE_URL` is present and uses the repository's `decks/` files as a server-side fallback, so deployments remain usable before a database is provisioned.
+
+### Database setup
+
+Vercel Postgres has been retired. For a new deployment, install the free Neon integration from the Vercel Marketplace and connect it to this project. Vercel will inject `DATABASE_URL`; then pull the variable and initialize the schema:
+
+```sh
+vercel env pull .env.local
+npm run db:setup
+```
+
+The idempotent setup command applies `db/schema.sql` and upserts every local `.dln` route. Adding more lines no longer grows the frontend bundle; rerun the command to publish them to the catalog. API responses are CDN cached, and database credentials are only read inside Vercel Functions.
+
 The **Visual** view turns the parsed document into a playable sequence. It includes:
 
 - Play, pause, step, replay, timeline scrubbing, and playback speed controls
@@ -88,7 +101,7 @@ Duel View resolves manifest card names through the YGOPRODeck v7 API. It does no
 2. `/api/card-image` validates each image ID, fetches the scan server-side, and re-serves it through the app's domain with a one-year CDN cache.
 3. The browser keeps the name-to-image mapping in local storage for 30 days.
 
-This makes real scans automatic for new manifest entries while keeping the UI functional when the provider is unavailable. Token and unresolved cards retain the generated fallback design. Run the app with `vercel dev` when testing the Functions locally; plain `npm run dev` runs the Vite UI with graceful image fallbacks.
+This makes real scans automatic for new manifest entries while keeping the UI functional when the provider is unavailable. Token and unresolved cards retain the generated fallback design. Run the full app with `vercel dev` when testing the catalog and Functions locally; plain `npm run dev` only runs the Vite UI shell.
 
 Card data and images are provided by [YGOPRODeck](https://ygoprodeck.com/api-guide/). Yu-Gi-Oh! card images and related graphical information belong to their respective rights holders.
 

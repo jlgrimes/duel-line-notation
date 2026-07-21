@@ -3,5 +3,10 @@
   "buildCommand": "npm run build:web",
   "outputDirectory": "web-dist",
   "framework": "vite",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "functions": {
+    "api/combos.ts": {
+      "includeFiles": "decks/**"
+    }
+  }
 }
