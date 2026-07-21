@@ -66,9 +66,9 @@ Aliases are local namespaces, not part of the language. `MUR` can mean Ame no Mu
 
 ## Interactive combo catalog
 
-The Vite-powered React app opens on a searchable catalog of the current TCG Advanced combo fixtures. Each catalog card leads to a nested combo detail screen. Detail screens default to the animated Visual view, with Notation and Trace available as local toggles.
+The Vite-powered React app opens on a searchable catalog. Each catalog card leads to a nested combo detail screen and defaults to a visual view. The six local DLN routes expose Visual, Notation, and Trace modes. Imported community routes expose a scan-backed Visual player and their structured Steps without pretending that prose is executable DLN.
 
-Combo content is not bundled into the React application. `GET /api/combos` returns lightweight shelf metadata, while `GET /api/combos?id=<deck>/<line>` returns one DLN document and manifest on demand. The API reads Neon Postgres when `DATABASE_URL` is present and uses the repository's `decks/` files as a server-side fallback, so deployments remain usable before a database is provisioned.
+Combo content is not bundled into the React application. `GET /api/combos` returns lightweight shelf metadata, while `GET /api/combos?id=<deck>/<line>` returns one route on demand. The API reads Neon Postgres when `DATABASE_URL` is present and uses the repository's `decks/` files as a server-side fallback, so deployments remain usable before a database is provisioned.
 
 ### Database setup
 
@@ -78,7 +78,7 @@ Vercel Postgres has been retired. For a new deployment, install the free Neon in
 npm run db:setup
 ```
 
-The idempotent setup command applies `db/schema.sql` and upserts every local `.dln` route. Vercel runs the same setup automatically during deployments when a database is connected, so installing Neon and redeploying is enough. Adding more lines no longer grows the frontend bundle; redeploy to publish them to the catalog. API responses are CDN cached, and database credentials are only read inside Vercel Functions.
+The idempotent setup command applies `db/schema.sql`, upserts every local `.dln` route, and imports the current structured Markdown snapshot from [Open Combo Codex](https://github.com/Siebe-Uy/Open-Combo-Codex) at a pinned Git commit. The present snapshot adds 26 MIT-licensed guides across six engines to the six local DLN routes. If the upstream import is temporarily unavailable, existing database guides are preserved. Vercel runs the same setup automatically during deployments when a database is connected. API responses are CDN cached, and database credentials are only read inside Vercel Functions.
 
 The **Visual** view turns the parsed document into a playable sequence. It includes:
 
@@ -118,7 +118,7 @@ The top-level combo catalog makes DLN a library rather than an isolated editor. 
 The current local routes are **DLN-authored reference fixtures**, not claimed transcriptions of the pages linked beside them. They remain marked “Needs replay check” until every action is compared with an attributable source. External entries also record their reuse status:
 
 - YgoCombo is indexed as a replay-derived source, but its combo steps are not copied because no public reuse license was found.
-- Open Combo Codex is flagged as import-ready because it publishes structured Markdown under an MIT license.
+- Open Combo Codex routes are imported with contributor, source revision, and MIT license attribution. They remain typed as community guides until translated and validated as DLN.
 - Community builders and deck databases remain discovery or supporting sources until an individual route has sufficient provenance.
 
 The publication path is: discover → cite → transcribe → validate → replay-check → publish. This keeps “available elsewhere,” “imported into DLN,” and “verified” as separate, visible states.

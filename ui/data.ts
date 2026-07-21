@@ -13,7 +13,7 @@ export interface ComboSource {
   description: string;
   license: string;
   importPolicy: string;
-  status: "source-backed" | "import-ready" | "discovery" | "supplemental";
+  status: "source-backed" | "import-ready" | "imported" | "discovery" | "supplemental";
   tags: string[];
 }
 

@@ -6,8 +6,9 @@ import type { ComboDetailResponse, ComboListResponse } from "../src/catalog-mode
 import { comboSources, metaSnapshot, type ComboDetail, type ComboSummary } from "./data";
 import { ComboCatalog, comboPath } from "./ComboCatalog";
 import { DuelVisualizer } from "./DuelVisualizer";
+import { GuideSteps, GuideVisualizer } from "./GuideVisualizer";
 
-type DetailView = "visual" | "notation" | "trace";
+type DetailView = "visual" | "notation" | "trace" | "guide";
 
 function analyze(source: string, combo: ComboDetail): { document?: LineDocument; diagnostics: Diagnostic[] } {
   try {
@@ -83,8 +84,8 @@ export function App() {
 
   useEffect(() => localStorage.setItem("dln-line-lab-drafts", JSON.stringify(drafts)), [drafts]);
 
-  const source = combo ? drafts[combo.id] ?? combo.line : "";
-  const result = useMemo(() => combo ? analyze(source, combo) : { diagnostics: [] as Diagnostic[] }, [source, combo]);
+  const source = combo?.line ? drafts[combo.id] ?? combo.line : "";
+  const result = useMemo(() => combo?.line ? analyze(source, combo) : { diagnostics: [] as Diagnostic[] }, [source, combo]);
   const clean = result.diagnostics.length === 0;
 
   function openCombo(summary: ComboSummary) {
@@ -137,17 +138,20 @@ export function App() {
           <button className="detail-back" onClick={browseCombos}>← All combos</button>
           <header className="detail-header">
             <div><p className="eyebrow">{combo.deckName} · {combo.summon}</p><h1>{combo.title}</h1><p>{combo.summary}</p></div>
-            <div className="detail-source"><span>Authored DLN route</span><a href={combo.sourceUrl} target="_blank" rel="noreferrer">Context source ↗</a></div>
+            <div className="detail-source"><span>{combo.contentType === "dln" ? "Authored DLN route" : `${combo.sourceLicense ?? "Community"} guide`}</span><a href={combo.sourceUrl} target="_blank" rel="noreferrer">Source ↗</a></div>
           </header>
 
           <nav className="detail-modes" aria-label="Combo views">
             <button className={detailView === "visual" ? "active" : ""} onClick={() => setDetailView("visual")}><span>01</span> Visual</button>
-            <button className={detailView === "notation" ? "active" : ""} onClick={() => setDetailView("notation")}><span>02</span> Notation</button>
-            <button className={detailView === "trace" ? "active" : ""} onClick={() => setDetailView("trace")}><span>03</span> Trace</button>
+            {combo.contentType === "dln" ? <>
+              <button className={detailView === "notation" ? "active" : ""} onClick={() => setDetailView("notation")}><span>02</span> Notation</button>
+              <button className={detailView === "trace" ? "active" : ""} onClick={() => setDetailView("trace")}><span>03</span> Trace</button>
+            </> : <button className={detailView === "guide" ? "active" : ""} onClick={() => setDetailView("guide")}><span>02</span> Steps</button>}
           </nav>
 
-          {detailView === "visual" && <DuelVisualizer document={result.document} manifest={combo.manifest} diagnostics={result.diagnostics.length} />}
-          {detailView === "notation" && (
+          {detailView === "visual" && (combo.contentType === "dln" ? <DuelVisualizer document={result.document} manifest={combo.manifest} diagnostics={result.diagnostics.length} /> : <GuideVisualizer combo={combo} />)}
+          {detailView === "guide" && combo.guide && <GuideSteps combo={combo} />}
+          {detailView === "notation" && combo.contentType === "dln" && (
             <div className="lab-grid notation-layout">
               <section className="editor-panel" aria-label="DLN editor">
                 <div className="panel-toolbar"><div className="file-tab"><span className="file-dot" />{result.document?.name ?? "untitled"}.dln</div><div className="toolbar-actions"><button onClick={resetSource}>Reset</button><button onClick={copySource}>{copied ? "Copied" : "Copy"}</button></div></div>
@@ -157,7 +161,7 @@ export function App() {
               <aside className="inspector notation-cards" aria-label="Card aliases"><div className="inspector-section cards-section"><div className="section-title"><span>Alias dictionary</span><b>{Object.keys(combo.manifest.cards).length} cards</b></div><div className="alias-list">{Object.entries(combo.manifest.cards).map(([alias, card]) => <div className="alias-row" key={alias}><code>{alias}</code><span><strong>{card.name}</strong><small>{card.kind}{card.level ? ` · Level ${card.level}` : ""}</small></span></div>)}</div></div></aside>
             </div>
           )}
-          {detailView === "trace" && (
+          {detailView === "trace" && combo.contentType === "dln" && (
             <section className="trace-detail" aria-label="Execution trace">
               <div className="section-title"><span>Execution trace</span><b>{result.document?.steps.length ?? 0} steps</b></div>
               {result.diagnostics.length > 0 && <div className="diagnostics">{result.diagnostics.map((diagnostic, index) => <div key={`${diagnostic.message}-${index}`}><strong>{diagnostic.line ? `L${diagnostic.line}` : "ERR"}</strong>{diagnostic.message}</div>)}</div>}

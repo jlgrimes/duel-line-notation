@@ -15,11 +15,29 @@ export interface ComboSummary {
   representativeCardName: string;
   handSize: number;
   stepCount: number;
+  contentType: "dln" | "guide";
+  difficulty?: string;
+  sourceLicense?: string;
 }
 
 export interface ComboDetail extends ComboSummary {
   manifest: DeckManifest;
-  line: string;
+  line?: string;
+  guide?: ComboGuide;
+}
+
+export interface ComboGuide {
+  contributor: string;
+  starterCards: string[];
+  cardNames: string[];
+  prerequisites: string[];
+  steps: string[];
+  notes: string[];
+  endBoard: string;
+  variants: string[];
+  tags: string[];
+  turnPreference?: string;
+  otkPotential?: boolean;
 }
 
 export interface ComboListResponse {

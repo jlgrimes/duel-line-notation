@@ -35,7 +35,7 @@ export function ComboCatalog({ combos, sources, format, loading = false, error, 
         <label className="catalog-search"><span>Search combos</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Deck, starter, summon type…" /></label>
       </header>
 
-      <div className="catalog-count"><strong>{loading ? "—" : visible.length}</strong> playable combo{visible.length === 1 ? "" : "s"}</div>
+      <div className="catalog-count"><strong>{loading ? "—" : visible.length}</strong> combo route{visible.length === 1 ? "" : "s"}</div>
       <div className="catalog-grid">
         {visible.map((combo) => {
           const scan = scans[combo.representativeCardName];
@@ -48,7 +48,7 @@ export function ComboCatalog({ combos, sources, format, loading = false, error, 
               <div className="product-copy">
                 <small>{combo.deckName}</small>
                 <h2>{combo.title}</h2>
-                <div><span>{combo.handSize}-card start</span><span>{combo.stepCount} steps</span></div>
+                <div><span>{combo.handSize}-card start</span><span>{combo.stepCount} steps</span><span>{combo.contentType === "dln" ? "DLN" : "Guide"}</span></div>
               </div>
               <b aria-hidden="true">→</b>
             </a>

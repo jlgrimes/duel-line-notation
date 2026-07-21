@@ -11,7 +11,8 @@ export async function listCombos(query = ""): Promise<{ combos: ComboSummary[]; 
   const search = `%${query.trim()}%`;
   const rows = await sql.query(`
     SELECT id, deck_slug, line_slug, deck_name, title, summary, summon, accent, format,
-      source_label, source_url, representative_card_name, hand_size, step_count
+      source_label, source_url, representative_card_name, hand_size, step_count,
+      content_type, difficulty, source_license
     FROM combos
     WHERE $1 = '%%' OR deck_name ILIKE $1 OR title ILIKE $1 OR summary ILIKE $1 OR summon ILIKE $1
     ORDER BY deck_name, title
@@ -27,11 +28,20 @@ export async function getCombo(id: string): Promise<{ combo?: ComboDetail; backe
   const sql = neon(connectionString);
   const rows = await sql.query(`
     SELECT id, deck_slug, line_slug, deck_name, title, summary, summon, accent, format,
-      source_label, source_url, representative_card_name, hand_size, step_count, manifest, line
+      source_label, source_url, representative_card_name, hand_size, step_count,
+      content_type, difficulty, source_license, manifest, line, guide
     FROM combos WHERE id = $1 LIMIT 1
   `, [id]) as DatabaseCombo[];
   const row = rows[0];
-  return row ? { combo: { ...fromDatabaseSummary(row), manifest: asManifest(row.manifest), line: row.line! }, backend: "database" } : { backend: "database" };
+  return row ? {
+    combo: {
+      ...fromDatabaseSummary(row),
+      manifest: asManifest(row.manifest),
+      ...(row.line ? { line: row.line } : {}),
+      ...(row.guide ? { guide: asGuide(row.guide) } : {}),
+    },
+    backend: "database",
+  } : { backend: "database" };
 }
 
 interface DatabaseCombo {
@@ -49,8 +59,12 @@ interface DatabaseCombo {
   representative_card_name: string;
   hand_size: number;
   step_count: number;
+  content_type: "dln" | "guide";
+  difficulty?: string | null;
+  source_license?: string | null;
   manifest?: unknown;
-  line?: string;
+  line?: string | null;
+  guide?: unknown;
 }
 
 function fromDatabaseSummary(row: DatabaseCombo): ComboSummary {
@@ -69,10 +83,13 @@ function fromDatabaseSummary(row: DatabaseCombo): ComboSummary {
     representativeCardName: row.representative_card_name,
     handSize: Number(row.hand_size),
     stepCount: Number(row.step_count),
+    contentType: row.content_type,
+    ...(row.difficulty ? { difficulty: row.difficulty } : {}),
+    ...(row.source_license ? { sourceLicense: row.source_license } : {}),
   };
 }
 
-function toSummary({ manifest: _manifest, line: _line, ...summary }: ComboDetail): ComboSummary {
+function toSummary({ manifest: _manifest, line: _line, guide: _guide, ...summary }: ComboDetail): ComboSummary {
   return summary;
 }
 
@@ -83,4 +100,8 @@ function filterFileCombos(combos: ComboDetail[], query: string): ComboDetail[] {
 
 function asManifest(value: unknown): DeckManifest {
   return (typeof value === "string" ? JSON.parse(value) : value) as DeckManifest;
+}
+
+function asGuide(value: unknown): NonNullable<ComboDetail["guide"]> {
+  return (typeof value === "string" ? JSON.parse(value) : value) as NonNullable<ComboDetail["guide"]>;
 }

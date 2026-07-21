@@ -21,11 +21,11 @@
       "url": "https://www.opencombocodex.com/",
       "aboutUrl": "https://github.com/Siebe-Uy/Open-Combo-Codex",
       "kind": "Open combo repository",
-      "scale": "27 combos · 6 engines · 33 starters",
+      "scale": "26 importable Markdown routes · 6 engines",
       "description": "Community-authored combo routes stored as structured Markdown, with engines, prerequisites, steps, and end boards.",
       "license": "MIT",
-      "importPolicy": "Eligible for a provenance-preserving DLN importer",
-      "status": "import-ready",
+      "importPolicy": "Imported as attributed community guides; not represented as executable DLN",
+      "status": "imported",
       "tags": ["open source", "structured data", "engines", "starters"]
     },
     {

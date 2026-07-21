@@ -22,6 +22,6 @@ test("combo source registry has unique, attributable entries", async () => {
     assert.doesNotThrow(() => new URL(source.url));
     assert.ok(source.importPolicy.length > 10);
   }
-  assert.ok(registry.sources.some((source) => source.status === "import-ready"));
+  assert.ok(registry.sources.some((source) => source.status === "imported"));
   assert.ok(registry.sources.some((source) => source.status === "source-backed"));
 });

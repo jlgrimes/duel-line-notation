@@ -57,6 +57,7 @@ async function loadDeckCombos(root: string, format: string, deck: MetaDeck, deta
       representativeCardName: representative?.name ?? Object.values(manifest.cards)[0]?.name ?? manifest.name,
       handSize: startAliases.length,
       stepCount: line.match(/^\d+\s/gm)?.length ?? 0,
+      contentType: "dln",
       manifest,
       line,
     } satisfies ComboDetail;
