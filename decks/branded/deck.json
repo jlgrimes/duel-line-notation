@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "slug": "branded",
+  "name": "Branded",
+  "format": "TCG Advanced — July 2026",
+  "cards": {
+    "ALU": { "name": "Aluber the Jester of Despia", "kind": "monster", "level": 4 },
+    "BFU": { "name": "Branded Fusion", "kind": "spell" },
+    "ALB": { "name": "Fallen of Albaz", "kind": "monster", "level": 4 },
+    "BYL": { "name": "The Bystial Lubellion", "kind": "monster", "level": 8 },
+    "ALBN": { "name": "Albion the Branded Dragon", "kind": "monster", "level": 8 },
+    "LUB": { "name": "Lubellion the Searing Dragon", "kind": "monster", "level": 8 },
+    "MIR": { "name": "Mirrorjade the Iceblade Dragon", "kind": "monster", "level": 8 },
+    "COST": { "name": "Discard Fodder", "kind": "token" }
+  }
+}

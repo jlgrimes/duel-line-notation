@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "slug": "light-and-darkness-ritual",
+  "name": "Light and Darkness Ritual",
+  "format": "TCG Advanced — July 2026",
+  "cards": {
+    "ROR": { "name": "Ragged Records of Rites", "kind": "spell" },
+    "LDR": { "name": "Light and Darkness Ritual", "kind": "spell" },
+    "GRIF": { "name": "Griffoh", "kind": "monster", "level": 1 },
+    "MIND": { "name": "Mind Shuffle", "kind": "trap" },
+    "SKULL": { "name": "Skull Archfiend of Chaos", "kind": "monster" },
+    "MAG": { "name": "Magician of Dark Chaos - Black Chaos", "kind": "monster", "level": 8 }
+  }
+}

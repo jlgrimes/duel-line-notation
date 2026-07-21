@@ -79,6 +79,14 @@ The v0.1 core vocabulary is:
 | `BAN` | banish |
 | `DISCARD` | discard |
 | `DMG` | take or inflict damage, according to context |
+| `ACT` | activate a card |
+| `ATK` | declare or resolve an attack |
+| `DRAW` | draw from the Deck |
+| `LOOK` | inspect hidden information |
+| `PLACE` | place a card without treating it as an activation |
+| `RETURN` | return a card to a specified zone |
+| `REV` | reveal a card |
+| `SHUF` | shuffle a card into the Deck |
 
 An activation is divided into costs and resolution:
 

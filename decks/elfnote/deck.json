@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "slug": "elfnote",
+  "name": "Elfnote",
+  "format": "TCG Advanced — July 2026",
+  "cards": {
+    "TIN": { "name": "Elfnote Tinia", "kind": "monster", "level": 6 },
+    "HOME": { "name": "Elfnotes: Welcome Home", "kind": "spell" },
+    "LUC": { "name": "Elfnote Lucina", "kind": "monster" },
+    "REG": { "name": "Elfnote Regina", "kind": "monster" },
+    "FORT": { "name": "Elfnote Fortuna", "kind": "monster" },
+    "PATR": { "name": "Elfnote Power Patron", "kind": "monster" },
+    "JUNE": { "name": "Elfnote June Pride", "kind": "monster" },
+    "COST": { "name": "Non-LIGHT discard", "kind": "token" }
+  }
+}

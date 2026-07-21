@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "slug": "sky-striker",
+  "name": "Sky Striker",
+  "format": "TCG Advanced — July 2026",
+  "cards": {
+    "RAYE": { "name": "Sky Striker Ace - Raye", "kind": "monster", "level": 4 },
+    "HAYA": { "name": "Sky Striker Ace - Hayate", "kind": "monster" },
+    "ENG": { "name": "Sky Striker Mobilize - Engage!", "kind": "spell" },
+    "KAGA": { "name": "Sky Striker Ace - Kagari", "kind": "monster" },
+    "SHIZ": { "name": "Sky Striker Ace - Shizuku", "kind": "monster" },
+    "WIDO": { "name": "Sky Striker Mecha - Widow Anchor", "kind": "spell" }
+  }
+}

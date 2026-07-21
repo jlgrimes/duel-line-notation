@@ -1,0 +1,20 @@
+// One-card Cue setup: hand knowledge, layered interaction, and opponent-turn Synchro access.
+@deck kewl-tune
+@line cue-starter
+@start LP=8000; H=[CUE]
+
+1 NS CUE:H>F => SS ROT:D>F
+2 SY TRACK:X>F [SEND CUE:F>G; SEND ROT:F>G]
+3 CHAIN {
+  CL1 CUE#G => LOOK D; BAN D>B
+  CL2 ROT#G => LOOK H; ADD SYN:D>H
+  CL3 TRACK#S => ADD JJ:D>H
+}
+4 JJ [TR TRACK:F>G] => SS MIX:D>F
+5 MIX#S => ADD RECO:D>H
+6 JJ#N => NS RECO:H>F
+7 RECO#S => ADD CLIP:D>H
+8 SY REMIX:X>F [SEND RECO:F>G; SEND MIX:F>G]
+9 SET SYN:H>F
+
+@end LP=8000; H=[CLIP]; F=[REMIX,SYN,JJ]; G=[CUE,ROT,TRACK,RECO,MIX]

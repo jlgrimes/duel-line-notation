@@ -1,0 +1,11 @@
+// Canonical Branded Fusion route; current builds branch heavily around the opponent's interaction.
+@deck branded
+@line aluber-fusion
+@start LP=8000; H=[ALU,COST]
+
+1 NS ALU:H>F => ADD BFU:D>H
+2 BFU => FS ALBN:X>F [SEND ALB:D>G; SEND BYL:D>G]
+3 ALBN#S => FS LUB:X>F [BAN ALB:G>B; BAN ALBN:F>B]
+4 LUB#S [DISCARD COST:H>G] => FS MIR:X>F [SHUF LUB:F>D; SHUF ALB:B>D]
+
+@end LP=8000; F=[ALU,MIR]; G=[BFU,BYL,COST]; B=[ALBN]

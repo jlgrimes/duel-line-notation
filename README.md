@@ -27,6 +27,7 @@ Players already write things like `NS Aluber, add BraFu`. DLN adds the informati
 
 - A draft v0.1 language specification
 - A TypeScript parser and semantic validator
+- A responsive React Line Lab with live parsing and validation
 - A CLI that checks `.dln` files against their deck manifests
 - A fully annotated Mitsurugi starter line
 - Tests and GitHub Actions CI
@@ -42,6 +43,7 @@ Requires Node.js 20 or newer.
 npm install
 npm run check
 npm test
+npm run dev
 ```
 
 Check a particular deck or line:
@@ -60,6 +62,17 @@ node dist/src/cli.js check decks/mitsurugi/lines/prayers-habakiri.dln
 4. Run `npm run check`.
 
 Aliases are local namespaces, not part of the language. `MUR` can mean Ame no Murakumo inside the Mitsurugi deck without consuming that alias globally.
+
+## Interactive Line Lab
+
+The Vite-powered React app loads the current TCG Advanced fixtures directly from `decks/`. Select a deck, edit its notation, and inspect the parsed execution trace, Chain resolution order, diagnostics, and alias dictionary in real time.
+
+```sh
+npm run dev
+npm run build:web
+```
+
+The current July 2026 snapshot includes Kewl Tune, Branded, Light and Darkness Ritual, Elfnote, Mitsurugi, and Sky Striker. Tournament shares and source links live in `decks/meta.json` so the snapshot can be updated without rewriting the interface.
 
 ## Design principles
 

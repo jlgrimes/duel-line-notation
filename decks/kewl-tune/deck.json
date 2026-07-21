@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "slug": "kewl-tune",
+  "name": "Kewl Tune",
+  "format": "TCG Advanced — July 2026",
+  "cards": {
+    "CUE": { "name": "Kewl Tune Cue", "kind": "monster" },
+    "ROT": { "name": "Kewl Tune Rotary", "kind": "monster", "level": 1 },
+    "TRACK": { "name": "Kewl Tune Track Maker", "kind": "monster" },
+    "MIX": { "name": "Kewl Tune Mix", "kind": "monster" },
+    "RECO": { "name": "Kewl Tune Reco", "kind": "monster" },
+    "REMIX": { "name": "Kewl Tune Remix", "kind": "monster" },
+    "CLIP": { "name": "Kewl Tune Clip", "kind": "monster" },
+    "JJ": { "name": "JJ \"Kewl Tune\"", "kind": "spell" },
+    "SYN": { "name": "Kewl Tune Synchro", "kind": "spell" }
+  }
+}

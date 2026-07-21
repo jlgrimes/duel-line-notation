@@ -34,3 +34,5 @@ Avoid adding a symbol merely to shorten one card name. Syntax should represent r
 npm install
 npm run ci
 ```
+
+`npm run ci` validates every deck fixture, runs the parser tests, type-checks the React Line Lab, and produces its Vite production build. Add current metagame metadata to `decks/meta.json` only when the deck should appear in the sandbox navigation.

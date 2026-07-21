@@ -1,0 +1,14 @@
+// WCQ-style setup from Ragged Records plus Light and Darkness Ritual.
+@deck light-and-darkness-ritual
+@line records-ritual
+@start LP=8000; H=[ROR,LDR]
+
+1 ROR [REV LDR:H] => ADD GRIF:D>H
+2 GRIF [DISCARD GRIF:H>G] => SET MIND:D>F
+3 MIND => ADD SKULL:D>H; DISCARD SKULL:H>G
+4 SKULL#G [SEND LDR:D>G] => ADD MAG:D>H
+5 LDR#G => REC LDR:G>H; REC SKULL:G>H
+6 LDR [BAN GRIF:G>B] => RS MAG:H>F
+7 MAG#S => REC LDR:G>H
+
+@end LP=8000; H=[LDR,LDR,SKULL]; F=[MAG,MIND]; G=[ROR]; B=[GRIF]

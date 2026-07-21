@@ -1,0 +1,15 @@
+{
+  "format": "TCG Advanced",
+  "asOf": "2026-07-20",
+  "banlist": "2026-05-18",
+  "scope": "14 tier-3 events and 7,569 players",
+  "source": "https://yugiohmeta.app.duellinksmeta.com/tier-list",
+  "decks": [
+    { "slug": "kewl-tune", "share": 31.93, "tops": 114, "accent": "#ff5c7a", "summon": "Synchro" },
+    { "slug": "branded", "share": 11.76, "tops": 42, "accent": "#b06cff", "summon": "Fusion" },
+    { "slug": "light-and-darkness-ritual", "share": 8.68, "tops": 31, "accent": "#f1c45b", "summon": "Ritual" },
+    { "slug": "elfnote", "share": 7.28, "tops": 26, "accent": "#59d8c2", "summon": "Synchro" },
+    { "slug": "mitsurugi", "share": 5.04, "tops": 18, "accent": "#ef8354", "summon": "Ritual" },
+    { "slug": "sky-striker", "share": 4.20, "tops": 15, "accent": "#68a7ff", "summon": "Link" }
+  ]
+}

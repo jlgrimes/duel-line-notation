@@ -1,0 +1,9 @@
+// Tinia is a self-contained setup that demonstrates Elfnote's center-zone and placement grammar.
+@deck elfnote
+@line tinia-setup
+@start LP=8000; H=[TIN]
+
+1 SS TIN:H>F
+2 TIN#I => PLACE HOME:D>F
+
+@end LP=8000; F=[TIN,HOME]

@@ -1,0 +1,14 @@
+// Simplified going-second Raye cycle after a direct Hayate attack.
+@deck sky-striker
+@line raye-cycle
+@start LP=8000; H=[RAYE]
+
+1 NS RAYE:H>F
+2 LS HAYA:X>F [SEND RAYE:F>G]
+3 ATK HAYA => SEND ENG:D>G
+4 LS KAGA:X>F [SEND HAYA:F>G]
+5 KAGA#S => REC ENG:G>H
+6 ACT ENG => ADD WIDO:D>H; DRAW D>H
+7 LS SHIZ:X>F [SEND KAGA:F>G]
+
+@end LP=8000; H=[WIDO]; F=[SHIZ]; G=[RAYE,HAYA,KAGA,ENG]
