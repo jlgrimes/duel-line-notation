@@ -17,9 +17,10 @@ interface CatalogDeck {
 }
 
 export async function loadFileCombos(root = process.cwd()): Promise<ComboDetail[]> {
-  const [meta, catalog] = await Promise.all([
+  const [meta, catalog, verifiedGuides] = await Promise.all([
     readJson<{ format: string; decks: MetaDeck[] }>(join(root, "decks/meta.json")),
     readJson<{ decks: Record<string, CatalogDeck> }>(join(root, "decks/catalog.json")),
+    readJson<ComboDetail[]>(join(root, "decks/verified-guides.json")),
   ]);
 
   const combos = await Promise.all(meta.decks.flatMap((deck) => {
@@ -27,7 +28,8 @@ export async function loadFileCombos(root = process.cwd()): Promise<ComboDetail[
     if (!details) return [];
     return [loadDeckCombos(root, meta.format, deck, details)];
   }));
-  return combos.flat().sort((left, right) => left.deckName.localeCompare(right.deckName) || left.title.localeCompare(right.title));
+  return [...combos.flat(), ...verifiedGuides]
+    .sort((left, right) => left.deckName.localeCompare(right.deckName) || left.title.localeCompare(right.title));
 }
 
 async function loadDeckCombos(root: string, format: string, deck: MetaDeck, details: CatalogDeck): Promise<ComboDetail[]> {

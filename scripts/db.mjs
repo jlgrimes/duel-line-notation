@@ -52,4 +52,6 @@ for (const combo of [...localCombos, ...importedCombos]) {
   ]);
 }
 
-console.log(`Database ready: ${localCombos.length} DLN routes and ${importedCombos.length} guide routes upserted.`);
+const localDlnCount = localCombos.filter((combo) => combo.contentType === "dln").length;
+const verifiedGuideCount = localCombos.filter((combo) => combo.contentType === "guide").length;
+console.log(`Database ready: ${localDlnCount} DLN routes, ${verifiedGuideCount} verified guides, and ${importedCombos.length} community guides upserted.`);
