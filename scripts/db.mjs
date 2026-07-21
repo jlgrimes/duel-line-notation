@@ -3,7 +3,13 @@ import { neon } from "@neondatabase/serverless";
 import { loadFileCombos } from "../dist/server/catalog-files.js";
 
 const connectionString = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
-if (!connectionString) throw new Error("Set DATABASE_URL (or POSTGRES_URL) before running the database setup.");
+if (!connectionString) {
+  if (process.argv.includes("--optional")) {
+    console.log("No database configured; catalog will use the server-side file fallback.");
+    process.exit(0);
+  }
+  throw new Error("Set DATABASE_URL (or POSTGRES_URL) before running the database setup.");
+}
 
 const sql = neon(connectionString);
 const schema = await readFile(new URL("../db/schema.sql", import.meta.url), "utf8");

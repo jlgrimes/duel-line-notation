@@ -15,6 +15,7 @@
     "test": "npm run build:cli && node --test dist/test/*.test.js",
     "ci": "npm run check && npm test && npm run build:web",
     "db:setup": "npm run build:cli && node scripts/db.mjs",
+    "db:setup:optional": "npm run build:cli && node scripts/db.mjs --optional",
     "preview": "vite preview",
     "prepack": "npm run build:cli"
   },

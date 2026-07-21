@@ -72,14 +72,13 @@ Combo content is not bundled into the React application. `GET /api/combos` retur
 
 ### Database setup
 
-Vercel Postgres has been retired. For a new deployment, install the free Neon integration from the Vercel Marketplace and connect it to this project. Vercel will inject `DATABASE_URL`; then pull the variable and initialize the schema:
+Vercel Postgres has been retired. For a new deployment, install the free Neon integration from the Vercel Marketplace and connect it to this project. Vercel will inject `DATABASE_URL` and initialize the schema on the next deployment. For a manual local setup after pulling that environment variable, run:
 
 ```sh
-vercel env pull .env.local
 npm run db:setup
 ```
 
-The idempotent setup command applies `db/schema.sql` and upserts every local `.dln` route. Adding more lines no longer grows the frontend bundle; rerun the command to publish them to the catalog. API responses are CDN cached, and database credentials are only read inside Vercel Functions.
+The idempotent setup command applies `db/schema.sql` and upserts every local `.dln` route. Vercel runs the same setup automatically during deployments when a database is connected, so installing Neon and redeploying is enough. Adding more lines no longer grows the frontend bundle; redeploy to publish them to the catalog. API responses are CDN cached, and database credentials are only read inside Vercel Functions.
 
 The **Visual** view turns the parsed document into a playable sequence. It includes:
 

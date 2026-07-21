@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:web",
+  "buildCommand": "npm run db:setup:optional && npm run build:web",
   "outputDirectory": "web-dist",
   "framework": "vite",
   "cleanUrls": true,
