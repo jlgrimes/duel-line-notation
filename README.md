@@ -77,6 +77,18 @@ The **Duel View** tab turns the same parsed document into a playable visual sequ
 
 Playback is notation-driven rather than hand-authored per deck. Write every observable movement as `ALIAS:FROM>TO`; the visualizer will pick it up automatically. Anonymous operations such as `DRAW D>H` and `BAN D>B` render a hidden placeholder card.
 
+### Real card scans
+
+Duel View resolves manifest card names through the YGOPRODeck v7 API. It does not hotlink their image server:
+
+1. `/api/cards` batches exact-name metadata lookups and caches responses on Vercel's CDN.
+2. `/api/card-image` validates each image ID, fetches the scan server-side, and re-serves it through the app's domain with a one-year CDN cache.
+3. The browser keeps the name-to-image mapping in local storage for 30 days.
+
+This makes real scans automatic for new manifest entries while keeping the UI functional when the provider is unavailable. Token and unresolved cards retain the generated fallback design. Run the app with `vercel dev` when testing the Functions locally; plain `npm run dev` runs the Vite UI with graceful image fallbacks.
+
+Card data and images are provided by [YGOPRODeck](https://ygoprodeck.com/api-guide/). Yu-Gi-Oh! card images and related graphical information belong to their respective rights holders.
+
 ```sh
 npm run dev
 npm run build:web

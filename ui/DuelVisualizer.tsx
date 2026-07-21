@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import type { DeckManifest, LineDocument } from "../src/model.js";
 import { buildPlayback, type PlaybackFrame, type VisualCard, type VisualZone } from "../src/visualizer.js";
+import { useCardScans, type CardScan } from "./card-service";
 
 interface DuelVisualizerProps {
   document?: LineDocument;
@@ -14,12 +15,14 @@ type ViewTransitionDocument = Document & {
 };
 
 const SPEEDS = [0.6, 1, 1.5, 2];
+const CardScanContext = createContext<Record<string, CardScan>>({});
 
 export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualizerProps) {
   const sequence = useMemo(() => document ? buildPlayback(document, manifest) : undefined, [document, manifest]);
   const [frameIndex, setFrameIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const { scans, loading: scansLoading } = useCardScans(manifest);
 
   useEffect(() => {
     setFrameIndex(0);
@@ -72,6 +75,7 @@ export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualiz
   const progress = frames.length <= 1 ? 0 : frameIndex / (frames.length - 1) * 100;
 
   return (
+    <CardScanContext.Provider value={scans}>
     <section className="duel-visualizer" aria-label="Animated duel line visualizer">
       <div className="duel-toolbar">
         <div className="playback-copy" aria-live="polite">
@@ -148,8 +152,12 @@ export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualiz
           <strong>{frameIndex + 1} / {frames.length}</strong>
           <span>End board</span>
         </div>
+        <div className={`scan-credit ${scansLoading ? "loading" : ""}`}>
+          <i /> {scansLoading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
+        </div>
       </div>
     </section>
+    </CardScanContext.Provider>
   );
 }
 
@@ -184,17 +192,29 @@ function Zone({ zone, label, frame, compact = false, stack = false }: { zone: Vi
 }
 
 function DuelCard({ card, frame, faceDown = false }: { card: VisualCard; frame: PlaybackFrame; faceDown?: boolean }) {
+  const scans = useContext(CardScanContext);
+  const scan = scans[card.name];
+  const [scanFailed, setScanFailed] = useState(false);
   const active = frame.activeAliases.includes(card.alias);
   const moving = frame.movements.some((movement) => movement.cardId === card.id);
   const hidden = faceDown || !card.faceUp;
+  const showScan = !hidden && scan && !scanFailed;
+
+  useEffect(() => setScanFailed(false), [scan?.imageUrl]);
+
   return (
     <article
-      className={`duel-card card-${card.kind} ${active ? "active" : ""} ${moving ? "moving" : ""} ${hidden ? "face-down" : ""}`}
+      className={`duel-card card-${card.kind} ${active ? "active" : ""} ${moving ? "moving" : ""} ${hidden ? "face-down" : ""} ${showScan ? "real-scan" : ""}`}
       style={{ viewTransitionName: `card-${card.id}` }}
       title={card.name}
     >
       {hidden ? (
         <div className="card-back"><span>D/LN</span></div>
+      ) : showScan ? (
+        <>
+          <img src={scan.imageUrl} alt={card.name} loading={active ? "eager" : "lazy"} draggable={false} onError={() => setScanFailed(true)} />
+          <span className="scan-alias">{card.alias}</span>
+        </>
       ) : (
         <>
           <div className="card-name"><span>{card.name}</span>{card.level && <b>★{card.level}</b>}</div>
