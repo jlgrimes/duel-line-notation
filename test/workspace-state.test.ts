@@ -20,3 +20,14 @@ test("route changes return to visual mode and clear stale detail state", () => {
   assert.equal(routed.detail.loading, true);
   assert.equal(routed.detail.combo, undefined);
 });
+
+test("duplicate hash routes preserve an already loaded combo", () => {
+  const combo = { id: "branded/aluber-fusion" } as never;
+  const loaded = workspaceReducer(
+    { ...initialWorkspaceState("branded/aluber-fusion"), detail: { combo, loading: false }, detailView: "notation" },
+    { type: "routeChanged", id: "branded/aluber-fusion" },
+  );
+  assert.equal(loaded.detail.combo, combo);
+  assert.equal(loaded.detail.loading, false);
+  assert.equal(loaded.detailView, "visual");
+});

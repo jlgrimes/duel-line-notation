@@ -1,13 +1,15 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import type { DeckManifest, LineDocument } from "../src/model.js";
-import { buildPlayback, type PlaybackFrame, type VisualCard, type VisualFieldSlot, type VisualZone } from "../src/visualizer.js";
+import { buildPlayback, type PlaybackFrame, type PlaybackSequence, type VisualCard, type VisualFieldSlot, type VisualZone } from "../src/visualizer.js";
 import { useCardScans, type CardScan } from "./card-service";
 
 interface DuelVisualizerProps {
   document?: LineDocument;
+  sequence?: PlaybackSequence;
   manifest: DeckManifest;
   diagnostics: number;
+  inferred?: boolean;
 }
 
 type ViewTransitionDocument = Document & {
@@ -17,8 +19,8 @@ type ViewTransitionDocument = Document & {
 const SPEEDS = [0.6, 1, 1.5, 2];
 const CardScanContext = createContext<Record<string, CardScan>>({});
 
-export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualizerProps) {
-  const sequence = useMemo(() => document ? buildPlayback(document, manifest) : undefined, [document, manifest]);
+export function DuelVisualizer({ document, sequence: suppliedSequence, manifest, diagnostics, inferred = false }: DuelVisualizerProps) {
+  const sequence = useMemo(() => suppliedSequence ?? (document ? buildPlayback(document, manifest) : undefined), [document, manifest, suppliedSequence]);
   const [frameIndex, setFrameIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
@@ -155,7 +157,7 @@ export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualiz
           <span>End board</span>
         </div>
         <div className={`scan-credit ${scansLoading ? "loading" : ""}`}>
-          <i /> {scansLoading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
+          <i /> {inferred ? "Positions inferred from the structured guide" : scansLoading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
         </div>
       </div>
     </section>

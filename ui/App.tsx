@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { parseLine, ParseError } from "../src/parser.js";
 import { validateLine } from "../src/semantic.js";
+import { buildGuidePlayback } from "../src/guide-visualizer.js";
 import type { Diagnostic, LineDocument } from "../src/model.js";
 import type { ComboDetailResponse, ComboListResponse } from "../src/catalog-model.js";
 import { comboSources, metaSnapshot, type ComboDetail, type ComboSummary } from "./data";
 import { ComboCatalog, comboPath } from "./ComboCatalog";
 import { DuelVisualizer } from "./DuelVisualizer";
-import { GuideSteps, GuideVisualizer } from "./GuideVisualizer";
+import { GuideSteps } from "./GuideVisualizer";
 import { useWorkspace } from "./workspace-store";
 
 function analyze(source: string, combo: ComboDetail): { document?: LineDocument; diagnostics: Diagnostic[] } {
@@ -71,6 +72,7 @@ export function App() {
   const source = combo?.line ? drafts[combo.id] ?? combo.line : "";
   const editorResult = useMemo(() => combo?.line ? analyze(source, combo) : { diagnostics: [] as Diagnostic[] }, [source, combo]);
   const publishedResult = useMemo(() => combo?.line ? analyze(combo.line, combo) : { diagnostics: [] as Diagnostic[] }, [combo]);
+  const guideSequence = useMemo(() => combo?.guide ? buildGuidePlayback(combo.guide, combo.manifest) : undefined, [combo]);
   const clean = editorResult.diagnostics.length === 0;
 
   function openCombo(summary: ComboSummary) {
@@ -132,7 +134,7 @@ export function App() {
             </> : <button className={detailView === "guide" ? "active" : ""} onClick={() => dispatch({ type: "viewChanged", view: "guide" })}><span>02</span> Steps</button>}
           </nav>
 
-          {detailView === "visual" && (combo.contentType === "dln" ? <DuelVisualizer document={publishedResult.document} manifest={combo.manifest} diagnostics={publishedResult.diagnostics.length} /> : <GuideVisualizer combo={combo} />)}
+          {detailView === "visual" && (combo.contentType === "dln" ? <DuelVisualizer document={publishedResult.document} manifest={combo.manifest} diagnostics={publishedResult.diagnostics.length} /> : <DuelVisualizer sequence={guideSequence} manifest={combo.manifest} diagnostics={0} inferred />)}
           {detailView === "guide" && combo.guide && <GuideSteps combo={combo} />}
           {detailView === "notation" && combo.contentType === "dln" && (
             <div className="lab-grid notation-layout">

@@ -66,7 +66,7 @@ Aliases are local namespaces, not part of the language. `MUR` can mean Ame no Mu
 
 ## Interactive combo catalog
 
-The Vite-powered React app opens on a searchable catalog. Each catalog card leads to a nested combo detail screen and defaults to a visual view. The six local DLN routes expose Visual, Notation, and Trace modes. Imported community routes expose a scan-backed Visual player and their structured Steps without pretending that prose is executable DLN.
+The Vite-powered React app opens on a searchable catalog. Each catalog card leads to a nested combo detail screen and defaults to the animated duel-board view. The six local DLN routes expose Visual, Notation, and Trace modes. Imported community routes use the same field topology and infer card positions from their structured steps, while exposing the original Steps separately without pretending that prose is executable DLN.
 
 Combo content is not bundled into the React application. `GET /api/combos` returns lightweight shelf metadata, while `GET /api/combos?id=<deck>/<line>` returns one route on demand. The API reads Neon Postgres when `DATABASE_URL` is present and uses the repository's `decks/` files as a server-side fallback, so deployments remain usable before a database is provisioned.
 

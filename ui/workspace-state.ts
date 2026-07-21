@@ -44,6 +44,7 @@ export function initialWorkspaceState(selectedId?: string): WorkspaceState {
 export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction): WorkspaceState {
   switch (action.type) {
     case "routeChanged": {
+      if (action.id === state.selectedId) return { ...state, detailView: "visual" };
       const { selectedId: _selectedId, ...rest } = state;
       return action.id
         ? { ...rest, selectedId: action.id, detailView: "visual", detail: { loading: true } }
