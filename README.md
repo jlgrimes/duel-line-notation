@@ -98,7 +98,9 @@ Duel View resolves manifest card names through the YGOPRODeck v7 API. It does no
 
 1. `/api/cards` batches exact-name metadata lookups and caches responses on Vercel's CDN.
 2. `/api/card-image` validates each image ID, fetches the scan server-side, and re-serves it through the app's domain with a one-year CDN cache.
-3. The browser keeps the name-to-image mapping in local storage for 30 days.
+3. The React client keeps resolved scans in memory for the current session; durable caching remains at the CDN layer.
+
+The client does not use `localStorage` or `sessionStorage`. Catalog navigation, view selection, loading state, and notation drafts live in a reducer-backed React store. Draft edits are session-only, while Visual mode always plays the canonical database route.
 
 This makes real scans automatic for new manifest entries while keeping the UI functional when the provider is unavailable. Token and unresolved cards retain the generated fallback design. Run the full app with `vercel dev` when testing the catalog and Functions locally; plain `npm run dev` only runs the Vite UI shell.
 

@@ -16,13 +16,7 @@ interface CardResponse {
   cards?: Record<string, CardScan>;
 }
 
-interface CardCache {
-  cachedAt: number;
-  cards: Record<string, CardScan>;
-}
-
-const CACHE_KEY = "dln-card-scans-v1";
-const CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
+const memoryCache: Record<string, CardScan> = {};
 
 export function useCardScans(manifest: DeckManifest): { scans: Record<string, CardScan>; loading: boolean } {
   const names = useMemo(() => Object.values(manifest.cards)
@@ -33,11 +27,10 @@ export function useCardScans(manifest: DeckManifest): { scans: Record<string, Ca
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cached = readCache();
-    const cachedForDeck = Object.fromEntries(names.flatMap((name) => cached.cards[name] ? [[name, cached.cards[name]!]] : []));
+    const cachedForDeck = Object.fromEntries(names.flatMap((name) => memoryCache[name] ? [[name, memoryCache[name]!]] : []));
     setScans(cachedForDeck);
 
-    const missing = names.filter((name) => !cached.cards[name]);
+    const missing = names.filter((name) => !memoryCache[name]);
     if (missing.length === 0) {
       setLoading(false);
       return;
@@ -55,9 +48,8 @@ export function useCardScans(manifest: DeckManifest): { scans: Record<string, Ca
       .then((responses) => {
         if (!active) return;
         const resolved = Object.assign({}, ...responses.map((response) => response.cards ?? {})) as Record<string, CardScan>;
-        const merged = { ...cached.cards, ...resolved };
-        setScans(Object.fromEntries(names.flatMap((name) => merged[name] ? [[name, merged[name]!]] : [])));
-        writeCache(merged);
+        Object.assign(memoryCache, resolved);
+        setScans(Object.fromEntries(names.flatMap((name) => memoryCache[name] ? [[name, memoryCache[name]!]] : [])));
       })
       .catch((error: unknown) => {
         if (active && !(error instanceof DOMException && error.name === "AbortError")) setScans(cachedForDeck);
@@ -75,22 +67,4 @@ export function useCardScans(manifest: DeckManifest): { scans: Record<string, Ca
 
 function chunk<T>(values: T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(values.length / size) }, (_, index) => values.slice(index * size, (index + 1) * size));
-}
-
-function readCache(): CardCache {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(CACHE_KEY) ?? "null") as CardCache | null;
-    if (parsed && Date.now() - parsed.cachedAt < CACHE_TTL && parsed.cards) return parsed;
-  } catch {
-    // A corrupt or unavailable local cache should never block playback.
-  }
-  return { cachedAt: 0, cards: {} };
-}
-
-function writeCache(cards: Record<string, CardScan>): void {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ cachedAt: Date.now(), cards } satisfies CardCache));
-  } catch {
-    // Browsers may disable or exhaust local storage; the CDN cache remains effective.
-  }
 }
