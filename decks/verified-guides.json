@@ -123,7 +123,7 @@
     "sourceUrl": "https://www.ygocombo.com/combo/35/",
     "representativeCardName": "Kewl Tune Reco",
     "handSize": 1,
-    "stepCount": 15,
+    "stepCount": 11,
     "contentType": "guide",
     "difficulty": "Intermediate",
     "manifest": {
@@ -158,13 +158,9 @@
         "Send Kewl Tune Cue to the GY and Synchro Summon Zalen the Shackled Dragon.",
         "Activate Kewl Tune Cue in the GY.",
         "Send Kewl Tune Reco to the GY and Synchro Summon Kewl Tune Remix.",
-        "Kewl Tune Remix completes the recorded board.",
-        "Keep the searched engine pieces available for the opponent's turn.",
-        "Preserve Kewl Tune Track Maker as required by the route's earlier resolution.",
-        "Resolve the final Kewl Tune trigger order from the replay.",
-        "Pass on Kewl Tune Remix and Zalen the Shackled Dragon."
+        "Kewl Tune Remix completes the recorded board."
       ],
-      "notes": ["The final four entries make the replay's resulting state explicit without inventing additional activations."],
+      "notes": ["The source replay contains 23 atomic actions; this snapshot groups costs and their resolving effects."],
       "endBoard": "Kewl Tune Remix and Zalen the Shackled Dragon with the Kewl Tune engine loaded for follow-up.",
       "variants": [],
       "tags": ["one-card", "reco", "psy-frame-list"],
@@ -324,7 +320,7 @@
     "sourceUrl": "https://www.ygocombo.com/combo/20/",
     "representativeCardName": "DoomZ Change",
     "handSize": 2,
-    "stepCount": 14,
+    "stepCount": 16,
     "contentType": "guide",
     "difficulty": "Advanced",
     "manifest": {
@@ -346,13 +342,17 @@
         "C12": { "name": "Prohibited Power Patron Portal - Terminus", "kind": "spell" },
         "C13": { "name": "Springans Merrymaker", "kind": "monster", "level": 0 },
         "C14": { "name": "Gigantic \"Champion\" Sargas", "kind": "monster", "level": 0 },
-        "C15": { "name": "Therion \"King\" Regulus", "kind": "monster" }
+        "C15": { "name": "Therion \"King\" Regulus", "kind": "monster" },
+        "C16": { "name": "DoomZ Command \"D.O.O.M.D.U.R.G.\"", "kind": "spell" },
+        "C17": { "name": "Vidolium the Unstable Power Patron of Unity", "kind": "monster", "level": 0 },
+        "C18": { "name": "Plundered Power Patron Plane - Vidolia", "kind": "spell" },
+        "C19": { "name": "Varudras, the Final Bringer of the End Times", "kind": "monster", "level": 0 }
       }
     },
     "guide": {
       "contributor": "MarkusYgo",
       "starterCards": ["DoomZ Change", "Mulcharmy Fuwalos"],
-      "cardNames": ["DoomZ Change", "Mulcharmy Fuwalos", "Power Patron DoomZ", "DoomZ VII Seven - Elara", "DoomZ Command \"A.D.R.A.S.T.E.I.A.\"", "DoomZ Break - Diactorus", "DoomZ XIII Over - Graflareio", "DoomZ Raiders", "DoomZ V Five - Amalthe", "Jupredo the Shademachine Power Patron", "DoomZ XII Zero - Drastea", "Prohibited Power Patron Portal - Terminus", "Springans Merrymaker", "Gigantic \"Champion\" Sargas", "Therion \"King\" Regulus"],
+      "cardNames": ["DoomZ Change", "Mulcharmy Fuwalos", "Power Patron DoomZ", "DoomZ VII Seven - Elara", "DoomZ Command \"A.D.R.A.S.T.E.I.A.\"", "DoomZ Break - Diactorus", "DoomZ XIII Over - Graflareio", "DoomZ Raiders", "DoomZ V Five - Amalthe", "Jupredo the Shademachine Power Patron", "DoomZ XII Zero - Drastea", "Prohibited Power Patron Portal - Terminus", "Springans Merrymaker", "Gigantic \"Champion\" Sargas", "Therion \"King\" Regulus", "DoomZ Command \"D.O.O.M.D.U.R.G.\"", "Vidolium the Unstable Power Patron of Unity", "Plundered Power Patron Plane - Vidolia", "Varudras, the Final Bringer of the End Times"],
       "prerequisites": ["Mulcharmy Fuwalos is available to become material after serving as interaction."],
       "steps": [
         "Activate DoomZ Change and destroy Power Patron DoomZ from the Deck.",
@@ -367,11 +367,13 @@
         "Xyz Summon Springans Merrymaker, then Xyz Summon Gigantic \"Champion\" Sargas.",
         "Activate Gigantic \"Champion\" Sargas and add Therion \"King\" Regulus.",
         "Special Summon Therion \"King\" Regulus and equip DoomZ Break - Diactorus.",
-        "Continue with DoomZ XII Zero - Drastea using the established DoomZ resources.",
-        "Use Mulcharmy Fuwalos as the recorded spare body/material while preserving the Power Patron end board."
+        "Special Summon DoomZ XII Zero - Drastea and place DoomZ Command \"D.O.O.M.D.U.R.G.\".",
+        "Activate Prohibited Power Patron Portal - Terminus, send Jupredo the Shademachine Power Patron, and add Vidolium the Unstable Power Patron of Unity.",
+        "Use Vidolium the Unstable Power Patron of Unity to Special Summon Jupredo and add Plundered Power Patron Plane - Vidolia.",
+        "Activate Plundered Power Patron Plane - Vidolia, banish Mulcharmy Fuwalos, Special Summon Jupredo, and Xyz Summon Varudras, the Final Bringer of the End Times."
       ],
       "notes": ["This is a checkpoint transcription of the recorded line; the source retains every equip, detach, and chain-link action."],
-      "endBoard": "The Sargas/Regulus package backed by DoomZ Xyz interaction and recovered Terminus follow-up.",
+      "endBoard": "Varudras, Drastea, Sargas, and Regulus backed by DoomZ Command interaction.",
       "variants": [],
       "tags": ["two-card", "doomz-change", "fuwalos", "power-patron"],
       "turnPreference": "Going first"

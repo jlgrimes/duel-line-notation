@@ -29,6 +29,18 @@
       "tags": ["open source", "structured data", "engines", "starters"]
     },
     {
+      "id": "konami-event-coverage",
+      "name": "Official Yu-Gi-Oh! TCG Event Coverage",
+      "url": "https://yugiohblog.konami.com/",
+      "kind": "Official tournament feature coverage",
+      "scale": "Selected feature matches",
+      "description": "Official play-by-play coverage used to verify tournament-observed opening sequences and resulting boards.",
+      "license": "All rights reserved",
+      "importPolicy": "Manually summarize individual plays with a direct attribution link",
+      "status": "source-backed",
+      "tags": ["official", "tournaments", "feature matches", "TCG"]
+    },
+    {
       "id": "ygoplus",
       "name": "YGOPLUS",
       "url": "https://ygoplus.com/home",
