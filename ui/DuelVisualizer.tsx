@@ -106,7 +106,7 @@ export function DuelVisualizer({ document, sequence: suppliedSequence, manifest,
           <Zone zone="X" label="Extra Deck" frame={frame} stack compact />
           <FieldRow cards={frame.cards.filter((card) => card.zone === "F" && card.kind !== "monster")} label="Spell & Trap Zones" frame={frame} className="backrow-zone" slotPrefix="S" pendulumEdges />
           <Zone zone="D" label="Deck" frame={frame} stack compact />
-          <div className="banished-zone"><Zone zone="B" label="Banished · off mat" frame={frame} compact /></div>
+          <div className="banished-zone"><Zone zone="B" label="Banished" frame={frame} compact /></div>
         </div>
 
         <div className="hand-zone">
