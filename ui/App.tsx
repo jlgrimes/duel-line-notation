@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { parseLine, ParseError } from "../src/parser.js";
 import { validateLine } from "../src/semantic.js";
 import type { Diagnostic, LineDocument } from "../src/model.js";
-import { fixtures, metaSnapshot, type DeckFixture } from "./data";
+import { comboSources, fixtures, metaSnapshot, sourceAudit, type DeckFixture } from "./data";
 import { DuelVisualizer } from "./DuelVisualizer";
+import { ComboLibrary } from "./ComboLibrary";
 
 type MobilePanel = "code" | "trace" | "cards";
-type WorkspaceView = "notation" | "duel";
+type WorkspaceView = "notation" | "duel" | "library";
 
 function analyze(source: string, fixture: DeckFixture): { document?: LineDocument; diagnostics: Diagnostic[] } {
   try {
@@ -40,6 +41,11 @@ export function App() {
   function selectDeck(slug: string) {
     setSelectedSlug(slug);
     setPanel("code");
+  }
+
+  function openLine(slug: string) {
+    selectDeck(slug);
+    setView("notation");
   }
 
   function updateSource(value: string) {
@@ -113,9 +119,10 @@ export function App() {
               <p>{fixture.summary}</p>
             </div>
             <div className="line-meta">
-              <span>Reference line</span>
+              <span>Authored reference fixture</span>
               <strong>{fixture.lineTitle}</strong>
               <a href={fixture.sourceUrl} target="_blank" rel="noreferrer">{fixture.sourceLabel} ↗</a>
+              <small>Needs route-by-route replay verification</small>
             </div>
           </div>
 
@@ -125,6 +132,9 @@ export function App() {
             </button>
             <button role="tab" aria-selected={view === "duel"} className={view === "duel" ? "active" : ""} onClick={() => setView("duel")}>
               <span>02</span> Duel View <i>New</i>
+            </button>
+            <button role="tab" aria-selected={view === "library"} className={view === "library" ? "active" : ""} onClick={() => setView("library")}>
+              <span>03</span> Combo Library
             </button>
           </div>
 
@@ -207,8 +217,10 @@ export function App() {
                 </aside>
               </div>
             </>
-          ) : (
+          ) : view === "duel" ? (
             <DuelVisualizer document={result.document} manifest={fixture.manifest} diagnostics={result.diagnostics.length} />
+          ) : (
+            <ComboLibrary fixtures={fixtures} sources={comboSources} auditedAsOf={sourceAudit.auditedAsOf} onOpenLine={openLine} />
           )}
         </section>
       </div>

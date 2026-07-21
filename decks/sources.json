@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "auditedAsOf": "2026-07-21",
+  "sources": [
+    {
+      "id": "ygocombo",
+      "name": "YgoCombo",
+      "url": "https://www.ygocombo.com/",
+      "aboutUrl": "https://www.ygocombo.com/about/",
+      "kind": "Replay-derived combo catalog",
+      "scale": "86 combo guides · 13,477 deck pages · 693 archetype pages",
+      "description": "Turn-by-turn combo guides reconstructed from real duel replays, including opening hands, activations, and end boards.",
+      "license": "No public reuse license found",
+      "importPolicy": "Link and manually transcribe with attribution or permission",
+      "status": "source-backed",
+      "tags": ["replays", "tournament decks", "archetypes", "end boards"]
+    },
+    {
+      "id": "open-combo-codex",
+      "name": "Open Combo Codex",
+      "url": "https://www.opencombocodex.com/",
+      "aboutUrl": "https://github.com/Siebe-Uy/Open-Combo-Codex",
+      "kind": "Open combo repository",
+      "scale": "27 combos · 6 engines · 33 starters",
+      "description": "Community-authored combo routes stored as structured Markdown, with engines, prerequisites, steps, and end boards.",
+      "license": "MIT",
+      "importPolicy": "Eligible for a provenance-preserving DLN importer",
+      "status": "import-ready",
+      "tags": ["open source", "structured data", "engines", "starters"]
+    },
+    {
+      "id": "ygoplus",
+      "name": "YGOPLUS",
+      "url": "https://ygoplus.com/home",
+      "kind": "Community combo workspace",
+      "scale": "Searchable end boards and opening hands",
+      "description": "A community deck and combo workspace for exploring lines by opening hand, interaction, and resulting board.",
+      "license": "No bulk reuse terms identified",
+      "importPolicy": "Discovery links; verify an individual route before transcription",
+      "status": "discovery",
+      "tags": ["community", "opening hands", "end boards", "search"]
+    },
+    {
+      "id": "ygo-combo-builder",
+      "name": "YGO Combo Builder",
+      "url": "https://ygocombobuilder.netlify.app/",
+      "kind": "Community combo builder",
+      "scale": "Site claims 5,000+ published combos",
+      "description": "A visual route-building and publishing tool. Its public gallery is dynamic, so the claimed total was not independently enumerated in this audit.",
+      "license": "No bulk reuse terms identified",
+      "importPolicy": "Discovery only until route provenance and access are verified",
+      "status": "discovery",
+      "tags": ["community", "visual builder", "published combos"]
+    },
+    {
+      "id": "ygoprodeck",
+      "name": "YGOPRODeck",
+      "url": "https://ygoprodeck.com/deck-search/",
+      "aboutUrl": "https://ygoprodeck.com/api-guide/",
+      "kind": "Deck and card database",
+      "scale": "Large public deck database and card API",
+      "description": "Useful for deck lists, card identity, and primer context. It is a supporting source rather than a turn-by-turn combo database.",
+      "license": "API terms apply; card imagery belongs to its rights holders",
+      "importPolicy": "Use for card resolution and deck context, not inferred combo steps",
+      "status": "supplemental",
+      "tags": ["deck lists", "card API", "card images", "primers"]
+    }
+  ]
+}

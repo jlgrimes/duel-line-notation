@@ -1,6 +1,7 @@
 import type { CardDefinition, DeckManifest, LineDocument } from "./model.js";
 
 export type VisualZone = "H" | "D" | "F" | "G" | "B" | "X";
+export type VisualFieldSlot = `M${1 | 2 | 3 | 4 | 5}` | `S${1 | 2 | 3 | 4 | 5}` | "EMZ1" | "EMZ2" | "FIELD";
 
 export interface VisualCard {
   id: string;
@@ -10,6 +11,7 @@ export interface VisualCard {
   level?: number;
   zone: VisualZone;
   faceUp: boolean;
+  fieldSlot?: VisualFieldSlot;
 }
 
 export interface CardMovement {
@@ -144,6 +146,8 @@ function parseState(
     }
   }
 
+  assignUnplacedFieldCards(cards);
+
   return { lp, cards };
 }
 
@@ -155,6 +159,7 @@ function applyExpression(
 ): { state: { lp: number; cards: VisualCard[] }; movements: CardMovement[] } {
   const cards = cloneCards(previous.cards);
   const movements: CardMovement[] = [];
+  const fieldArrivals: VisualCard[] = [];
   let match: RegExpExecArray | null;
 
   MOVEMENT.lastIndex = 0;
@@ -167,8 +172,10 @@ function applyExpression(
       card = createCard(alias, from, manifest, nextSerial());
       cards.push(card);
     }
+    if (from === "F" && to !== "F") delete card.fieldSlot;
     card.zone = to;
     card.faceUp = to !== "D" && to !== "X";
+    if (to === "F") fieldArrivals.push(card);
     movements.push({ cardId: card.id, alias, from, to });
   }
 
@@ -182,9 +189,29 @@ function applyExpression(
     movements.push({ cardId: card.id, alias, from, to });
   }
 
+
+  for (const card of fieldArrivals) {
+    if (card.fieldSlot) continue;
+    const isLinkSummon = new RegExp(`\\bLS\\s+${card.alias}(?:#[A-Z0-9]+)?:X>F\\b`).test(expression);
+    card.fieldSlot = isLinkSummon ? firstFreeSlot(cards, ["EMZ1", "EMZ2", "M1", "M2", "M3", "M4", "M5"]) :
+      card.kind === "monster" ? firstFreeSlot(cards, ["M1", "M2", "M3", "M4", "M5"]) :
+      firstFreeSlot(cards, ["S1", "S2", "S3", "S4", "S5"]);
+  }
+
   const damage = [...expression.matchAll(/\bDMG\s+(\d+)\b/g)]
     .reduce((total, result) => total + Number(result[1]), 0);
   return { state: { lp: Math.max(0, previous.lp - damage), cards }, movements };
+}
+
+function assignUnplacedFieldCards(cards: VisualCard[]) {
+  for (const card of cards.filter((candidate) => candidate.zone === "F" && !candidate.fieldSlot)) {
+    card.fieldSlot = card.kind === "monster" ? firstFreeSlot(cards, ["M1", "M2", "M3", "M4", "M5"]) :
+      firstFreeSlot(cards, ["S1", "S2", "S3", "S4", "S5"]);
+  }
+}
+
+function firstFreeSlot(cards: VisualCard[], choices: VisualFieldSlot[]): VisualFieldSlot {
+  return choices.find((choice) => !cards.some((card) => card.zone === "F" && card.fieldSlot === choice)) ?? choices.at(-1)!;
 }
 
 function createCard(

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import type { DeckManifest, LineDocument } from "../src/model.js";
-import { buildPlayback, type PlaybackFrame, type VisualCard, type VisualZone } from "../src/visualizer.js";
+import { buildPlayback, type PlaybackFrame, type VisualCard, type VisualFieldSlot, type VisualZone } from "../src/visualizer.js";
 import { useCardScans, type CardScan } from "./card-service";
 
 interface DuelVisualizerProps {
@@ -115,12 +115,14 @@ export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualiz
         )}
 
         <div className="playmat">
-          <Zone zone="B" label="Banished" frame={frame} compact />
-          <FieldRow cards={frame.cards.filter((card) => card.zone === "F" && card.kind !== "monster")} label="Spell & Trap Zone" frame={frame} className="backrow-zone" />
-          <Zone zone="D" label="Deck" frame={frame} stack compact />
-          <Zone zone="X" label="Extra Deck" frame={frame} stack compact />
-          <FieldRow cards={frame.cards.filter((card) => card.zone === "F" && card.kind === "monster")} label="Monster Zone" frame={frame} className="monster-zone" />
+          <ExtraMonsterRow frame={frame} />
+          <StaticZone label="Field Zone" className="field-zone" />
+          <FieldRow cards={frame.cards.filter((card) => card.zone === "F" && card.kind === "monster" && card.fieldSlot?.startsWith("M"))} label="Main Monster Zones" frame={frame} className="monster-zone" slotPrefix="M" />
           <Zone zone="G" label="GY" frame={frame} compact />
+          <Zone zone="X" label="Extra Deck" frame={frame} stack compact />
+          <FieldRow cards={frame.cards.filter((card) => card.zone === "F" && card.kind !== "monster")} label="Spell & Trap Zones" frame={frame} className="backrow-zone" slotPrefix="S" pendulumEdges />
+          <Zone zone="D" label="Deck" frame={frame} stack compact />
+          <div className="banished-zone"><Zone zone="B" label="Banished · off mat" frame={frame} compact /></div>
         </div>
 
         <div className="hand-zone">
@@ -161,17 +163,45 @@ export function DuelVisualizer({ document, manifest, diagnostics }: DuelVisualiz
   );
 }
 
-function FieldRow({ cards, label, frame, className }: { cards: VisualCard[]; label: string; frame: PlaybackFrame; className: string }) {
+function FieldRow({ cards, label, frame, className, slotPrefix, pendulumEdges = false }: { cards: VisualCard[]; label: string; frame: PlaybackFrame; className: string; slotPrefix: "M" | "S"; pendulumEdges?: boolean }) {
   return (
     <div className={`field-row ${className}`}>
       <span className="zone-caption">{label}</span>
       <div className="field-slots">
-        {Array.from({ length: 5 }, (_, index) => (
+        {Array.from({ length: 5 }, (_, index) => {
+          const fieldSlot = `${slotPrefix}${index + 1}` as VisualFieldSlot;
+          const card = cards.find((candidate) => candidate.fieldSlot === fieldSlot) ?? cards.find((candidate) => !candidate.fieldSlot);
+          return (
           <div className="field-slot" key={index}>
-            {cards[index] && <DuelCard card={cards[index]} frame={frame} />}
+            <span className="field-slot-label">{fieldSlot}{pendulumEdges && (index === 0 || index === 4) ? <small>P</small> : null}</span>
+            {card && <DuelCard card={card} frame={frame} />}
           </div>
-        ))}
+          );
+        })}
       </div>
+    </div>
+  );
+}
+
+function ExtraMonsterRow({ frame }: { frame: PlaybackFrame }) {
+  return (
+    <div className="extra-monster-row">
+      <span className="zone-caption">Shared Extra Monster Zones</span>
+      <div className="extra-monster-slots">
+        {(["EMZ1", "EMZ2"] as VisualFieldSlot[]).map((slot, index) => {
+          const card = frame.cards.find((candidate) => candidate.zone === "F" && candidate.fieldSlot === slot);
+          return <div className={`field-slot emz-slot emz-${index + 1}`} key={slot}><span className="field-slot-label">EMZ {index + 1}</span>{card && <DuelCard card={card} frame={frame} />}</div>;
+        })}
+      </div>
+    </div>
+  );
+}
+
+function StaticZone({ label, className }: { label: string; className: string }) {
+  return (
+    <div className={`static-zone ${className}`}>
+      <span className="zone-caption">{label}</span>
+      <div className="static-zone-surface"><span>FIELD</span></div>
     </div>
   );
 }

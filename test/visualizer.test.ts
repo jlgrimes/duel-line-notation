@@ -27,3 +27,20 @@ test("creates visible placeholder cards for anonymous draws", () => {
   const sequence = buildPlayback(document, manifest);
   assert.equal(sequence.frames[1]?.cards.find((card) => card.alias === "DRAW")?.zone, "H");
 });
+
+test("places Link Summons in an Extra Monster Zone and keeps five Main Monster slots distinct", () => {
+  const document = parseLine(`@deck demo\n@line slots\n@start LP=8000; H=[A,B]\n1 NS A:H>F\n2 LS LINK:X>F [SEND A:F>G]\n3 SS B:H>F\n@end LP=8000; F=[LINK,B]`);
+  const manifest: DeckManifest = {
+    schemaVersion: 1,
+    slug: "demo",
+    name: "Demo",
+    cards: {
+      A: { name: "A", kind: "monster" },
+      B: { name: "B", kind: "monster" },
+      LINK: { name: "Link", kind: "monster" },
+    },
+  };
+  const final = buildPlayback(document, manifest).frames.at(-1)!;
+  assert.equal(final.cards.find((card) => card.alias === "LINK")?.fieldSlot, "EMZ1");
+  assert.equal(final.cards.find((card) => card.alias === "B")?.fieldSlot, "M1");
+});

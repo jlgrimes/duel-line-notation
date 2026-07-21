@@ -1,5 +1,6 @@
 import type { DeckManifest } from "../src/model.js";
 import meta from "../decks/meta.json";
+import sourceRegistry from "../decks/sources.json";
 import kewlManifest from "../decks/kewl-tune/deck.json";
 import brandedManifest from "../decks/branded/deck.json";
 import ritualManifest from "../decks/light-and-darkness-ritual/deck.json";
@@ -26,6 +27,20 @@ export interface DeckFixture {
   sourceUrl: string;
   manifest: DeckManifest;
   line: string;
+}
+
+export interface ComboSource {
+  id: string;
+  name: string;
+  url: string;
+  aboutUrl?: string;
+  kind: string;
+  scale: string;
+  description: string;
+  license: string;
+  importPolicy: string;
+  status: "source-backed" | "import-ready" | "discovery" | "supplemental";
+  tags: string[];
 }
 
 const details: Record<string, Omit<DeckFixture, "slug" | "name" | "share" | "tops" | "accent" | "summon">> = {
@@ -86,3 +101,5 @@ export const fixtures: DeckFixture[] = meta.decks.map((entry) => ({
 }));
 
 export const metaSnapshot = meta;
+export const comboSources = sourceRegistry.sources as ComboSource[];
+export const sourceAudit = { auditedAsOf: sourceRegistry.auditedAsOf };

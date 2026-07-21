@@ -28,6 +28,7 @@ Players already write things like `NS Aluber, add BraFu`. DLN adds the informati
 - A draft v0.1 language specification
 - A TypeScript parser and semantic validator
 - A responsive React Line Lab with live parsing, validation, and animated playback
+- A searchable registry of combo websites, open datasets, and local DLN routes
 - A CLI that checks `.dln` files against their deck manifests
 - A fully annotated Mitsurugi starter line
 - Tests and GitHub Actions CI
@@ -72,6 +73,8 @@ The **Duel View** tab turns the same parsed document into a playable visual sequ
 - Play, pause, step, replay, timeline scrubbing, and playback speed controls
 - Animated card movement between the hand, field, Deck, Extra Deck, GY, and banishment
 - Reverse-order Chain Link resolution and LP changes
+- An official-topology player field: five Main Monster Zones above five Spell & Trap Zones, two shared Extra Monster Zones, and a separate Field Zone
+- Numbered M1–M5 and S1–S5 placement, including Extra Monster Zone placement for Link Summons from the Extra Deck
 - Responsive desktop and mobile playmats
 - Reduced-motion support
 
@@ -95,6 +98,18 @@ npm run build:web
 ```
 
 The current July 2026 snapshot includes Kewl Tune, Branded, Light and Darkness Ritual, Elfnote, Mitsurugi, and Sky Striker. Tournament shares and source links live in `decks/meta.json` so the snapshot can be updated without rewriting the interface.
+
+## Combo Library and provenance
+
+The **Combo Library** tab makes DLN a catalog rather than an isolated editor. It searches the playable routes in this repository alongside larger external combo websites and datasets. The registry lives in `decks/sources.json`, so another source can be added without changing the React component.
+
+The current local routes are **DLN-authored reference fixtures**, not claimed transcriptions of the pages linked beside them. They remain marked “Needs replay check” until every action is compared with an attributable source. External entries also record their reuse status:
+
+- YgoCombo is indexed as a replay-derived source, but its combo steps are not copied because no public reuse license was found.
+- Open Combo Codex is flagged as import-ready because it publishes structured Markdown under an MIT license.
+- Community builders and deck databases remain discovery or supporting sources until an individual route has sufficient provenance.
+
+The publication path is: discover → cite → transcribe → validate → replay-check → publish. This keeps “available elsewhere,” “imported into DLN,” and “verified” as separate, visible states.
 
 ## Design principles
 
