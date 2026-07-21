@@ -64,11 +64,11 @@ node dist/src/cli.js check decks/mitsurugi/lines/prayers-habakiri.dln
 
 Aliases are local namespaces, not part of the language. `MUR` can mean Ame no Murakumo inside the Mitsurugi deck without consuming that alias globally.
 
-## Interactive Line Lab
+## Interactive combo catalog
 
-The Vite-powered React app loads the current TCG Advanced fixtures directly from `decks/`. Select a deck, edit its notation, and inspect the parsed execution trace, Chain resolution order, diagnostics, and alias dictionary in real time.
+The Vite-powered React app opens on a searchable catalog of the current TCG Advanced combo fixtures. Each catalog card leads to a nested combo detail screen. Detail screens default to the animated Visual view, with Notation and Trace available as local toggles.
 
-The **Duel View** tab turns the same parsed document into a playable visual sequence. It includes:
+The **Visual** view turns the parsed document into a playable sequence. It includes:
 
 - Play, pause, step, replay, timeline scrubbing, and playback speed controls
 - Animated card movement between the hand, field, Deck, Extra Deck, GY, and banishment
@@ -101,7 +101,7 @@ The current July 2026 snapshot includes Kewl Tune, Branded, Light and Darkness R
 
 ## Combo Library and provenance
 
-The **Combo Library** tab makes DLN a catalog rather than an isolated editor. It searches the playable routes in this repository alongside larger external combo websites and datasets. The registry lives in `decks/sources.json`, so another source can be added without changing the React component.
+The top-level combo catalog makes DLN a library rather than an isolated editor. Larger external combo websites remain compact discovery links below the playable catalog. The source registry lives in `decks/sources.json`, so another source can be added without changing the React component.
 
 The current local routes are **DLN-authored reference fixtures**, not claimed transcriptions of the pages linked beside them. They remain marked “Needs replay check” until every action is compared with an attributable source. External entries also record their reuse status:
 
