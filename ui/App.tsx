@@ -134,7 +134,7 @@ export function App() {
             </> : <button className={detailView === "guide" ? "active" : ""} onClick={() => dispatch({ type: "viewChanged", view: "guide" })}><span>02</span> Steps</button>}
           </nav>
 
-          {detailView === "visual" && (combo.contentType === "dln" ? <DuelVisualizer document={publishedResult.document} manifest={combo.manifest} diagnostics={publishedResult.diagnostics.length} /> : <DuelVisualizer sequence={guideSequence} manifest={combo.manifest} diagnostics={0} inferred />)}
+          {detailView === "visual" && (combo.contentType === "dln" ? <DuelVisualizer document={publishedResult.document} manifest={combo.manifest} /> : <DuelVisualizer sequence={guideSequence} manifest={combo.manifest} inferred />)}
           {detailView === "guide" && combo.guide && <GuideSteps combo={combo} />}
           {detailView === "notation" && combo.contentType === "dln" && (
             <div className="lab-grid notation-layout">

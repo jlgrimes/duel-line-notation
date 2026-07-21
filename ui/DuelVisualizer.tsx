@@ -8,7 +8,6 @@ interface DuelVisualizerProps {
   document?: LineDocument;
   sequence?: PlaybackSequence;
   manifest: DeckManifest;
-  diagnostics: number;
   inferred?: boolean;
 }
 
@@ -19,7 +18,7 @@ type ViewTransitionDocument = Document & {
 const SPEEDS = [0.6, 1, 1.5, 2];
 const CardScanContext = createContext<Record<string, CardScan>>({});
 
-export function DuelVisualizer({ document, sequence: suppliedSequence, manifest, diagnostics, inferred = false }: DuelVisualizerProps) {
+export function DuelVisualizer({ document, sequence: suppliedSequence, manifest, inferred = false }: DuelVisualizerProps) {
   const sequence = useMemo(() => suppliedSequence ?? (document ? buildPlayback(document, manifest) : undefined), [document, manifest, suppliedSequence]);
   const [frameIndex, setFrameIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -64,12 +63,12 @@ export function DuelVisualizer({ document, sequence: suppliedSequence, manifest,
     setPlaying((current) => !current);
   }
 
-  if (!sequence || !frame || diagnostics > 0) {
+  if (!sequence || !frame) {
     return (
       <section className="duel-visualizer visualizer-empty">
         <div className="empty-card">!</div>
-        <h2>Visualizer paused</h2>
-        <p>Fix the notation diagnostics first. A valid DLN document is required to calculate card movement.</p>
+        <h2>Visualizer unavailable</h2>
+        <p>This combo did not produce a playable sequence.</p>
       </section>
     );
   }
