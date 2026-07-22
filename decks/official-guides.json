@@ -1,0 +1,162 @@
+[
+  {
+    "id": "dracotail/official-ketu-lukias-triple-backrow",
+    "deckSlug": "dracotail",
+    "lineSlug": "official-ketu-lukias-triple-backrow",
+    "deckName": "Dracotail",
+    "title": "Ketu + Lukias Triple Backrow",
+    "summary": "A tournament-observed opening that turns Ketu, Lukias, and Pan into Arthalion with Flame, Horn, and Sting Set.",
+    "summon": "Fusion",
+    "accent": "#d88f5d",
+    "format": "TCG Advanced · tournament feature",
+    "sourceLabel": "Official Konami event coverage",
+    "sourceUrl": "https://yugiohblog.konami.com/2025/ycs/2025-10-ycs-anaheim/round-13-feature-match-luka-kovac-vs-alex-david-mosquera-morales/",
+    "representativeCardName": "Ketu Dracotail",
+    "handSize": 3,
+    "stepCount": 8,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "tags": [],
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "dracotail",
+      "name": "Dracotail",
+      "cards": {
+        "C1": { "name": "Ketu Dracotail", "kind": "spell" },
+        "C2": { "name": "Dracotail Lukias", "kind": "monster" },
+        "C3": { "name": "Dracotail Pan", "kind": "monster" },
+        "C4": { "name": "Dracotail Faimena", "kind": "monster" },
+        "C5": { "name": "Dracotail Urgula", "kind": "monster" },
+        "C6": { "name": "Dracotail Arthalion", "kind": "monster", "level": 0 },
+        "C7": { "name": "Dracotail Flame", "kind": "trap" },
+        "C8": { "name": "Dracotail Horn", "kind": "trap" },
+        "C9": { "name": "Dracotail Sting", "kind": "trap" }
+      }
+    },
+    "guide": {
+      "contributor": "Konami event coverage staff",
+      "starterCards": ["Ketu Dracotail", "Dracotail Lukias", "Dracotail Pan"],
+      "cardNames": ["Ketu Dracotail", "Dracotail Lukias", "Dracotail Pan", "Dracotail Faimena", "Dracotail Urgula", "Dracotail Arthalion", "Dracotail Flame", "Dracotail Horn", "Dracotail Sting"],
+      "prerequisites": ["The feature-match hand also contained two copies of Nibiru; they were not used in this opening sequence."],
+      "steps": [
+        "Activate Ketu Dracotail and add Dracotail Faimena.",
+        "Normal Summon Dracotail Lukias and add Dracotail Urgula.",
+        "Activate Dracotail Faimena by discarding it.",
+        "Fusion Summon Dracotail Arthalion using Dracotail Pan, Dracotail Urgula, and Dracotail Lukias.",
+        "Activate Dracotail Arthalion to recover Dracotail Faimena and Dracotail Pan.",
+        "Resolve Dracotail Pan, Dracotail Urgula, and Dracotail Lukias.",
+        "Set Dracotail Flame, Dracotail Horn, and Dracotail Sting from the Deck.",
+        "Use Dracotail Urgula in the GY to recover Dracotail Lukias."
+      ],
+      "notes": ["Transcribed from Duel 2 of official feature-match coverage."],
+      "endBoard": "Dracotail Arthalion with Dracotail Flame, Dracotail Horn, and Dracotail Sting Set; Faimena, Pan, and Lukias recovered for follow-up.",
+      "variants": [],
+      "tags": ["turn one", "setup", "disruption", "triple backrow"],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "dracotail/official-lukias-faimena-arthalion-reset",
+    "deckSlug": "dracotail",
+    "lineSlug": "official-lukias-faimena-arthalion-reset",
+    "deckName": "Dracotail",
+    "title": "Lukias + Faimena Arthalion Reset",
+    "summary": "A compact tournament line where Lukias finds Urgula and Faimena converts both into Arthalion plus Ketu and Rahu.",
+    "summon": "Fusion",
+    "accent": "#d88f5d",
+    "format": "TCG Advanced · tournament feature",
+    "sourceLabel": "Official Konami event coverage",
+    "sourceUrl": "https://yugiohblog.konami.com/2025/ycs/round-8-feature-match-ian-powell-vs-benjamin-mcdow/",
+    "representativeCardName": "Dracotail Lukias",
+    "handSize": 2,
+    "stepCount": 6,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "tags": [],
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "dracotail",
+      "name": "Dracotail",
+      "cards": {
+        "C1": { "name": "Dracotail Lukias", "kind": "monster" },
+        "C2": { "name": "Dracotail Faimena", "kind": "monster" },
+        "C3": { "name": "Dracotail Urgula", "kind": "monster" },
+        "C4": { "name": "Dracotail Arthalion", "kind": "monster", "level": 0 },
+        "C5": { "name": "Ketu Dracotail", "kind": "spell" },
+        "C6": { "name": "Rahu Dracotail", "kind": "trap" }
+      }
+    },
+    "guide": {
+      "contributor": "Konami event coverage staff",
+      "starterCards": ["Dracotail Lukias", "Dracotail Faimena"],
+      "cardNames": ["Dracotail Lukias", "Dracotail Faimena", "Dracotail Urgula", "Dracotail Arthalion", "Ketu Dracotail", "Rahu Dracotail"],
+      "prerequisites": ["The covered hand contained additional hand traps; the route itself uses Lukias and Faimena."],
+      "steps": [
+        "Normal Summon Dracotail Lukias and add Dracotail Urgula.",
+        "Activate Dracotail Faimena by discarding it.",
+        "Fusion Summon Dracotail Arthalion using Dracotail Lukias and Dracotail Urgula.",
+        "Activate Dracotail Lukias and Dracotail Urgula as Fusion material triggers.",
+        "Set Ketu Dracotail and Rahu Dracotail from the Deck.",
+        "Activate Dracotail Arthalion to recover a spent hand trap or Fusion material."
+      ],
+      "notes": ["Transcribed from Duel 1 of official feature-match coverage."],
+      "endBoard": "Dracotail Arthalion with Ketu Dracotail and Rahu Dracotail Set, plus a recovered resource.",
+      "variants": [],
+      "tags": ["turn one", "setup", "disruption", "compact"],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "dracotail/official-ketu-mululu-starsource-break",
+    "deckSlug": "dracotail",
+    "lineSlug": "official-ketu-mululu-starsource-break",
+    "deckName": "Dracotail",
+    "title": "Ketu + Mululu Starsource Break",
+    "summary": "A tournament-observed going-second branch that turns Ketu and Mululu into Khaos Starsource, two backrow sets, a negate, and layered destruction.",
+    "summon": "Fusion",
+    "accent": "#d88f5d",
+    "format": "TCG Advanced · tournament feature",
+    "sourceLabel": "Official Konami event coverage",
+    "sourceUrl": "https://yugiohblog.konami.com/2025/ycs/round-1-feature-match-aditya-dharap-vs-andric-reyna/",
+    "representativeCardName": "Ketu Dracotail",
+    "handSize": 2,
+    "stepCount": 8,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "tags": [],
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "dracotail",
+      "name": "Dracotail",
+      "cards": {
+        "C1": { "name": "Ketu Dracotail", "kind": "spell" },
+        "C2": { "name": "Dracotail Mululu", "kind": "monster" },
+        "C3": { "name": "Dracotail Pan", "kind": "monster" },
+        "C4": { "name": "Khaos Starsource Dragon", "kind": "monster", "level": 0 },
+        "C5": { "name": "Rahu Dracotail", "kind": "trap" },
+        "C6": { "name": "Dracotail Flame", "kind": "trap" }
+      }
+    },
+    "guide": {
+      "contributor": "Konami event coverage staff",
+      "starterCards": ["Ketu Dracotail", "Dracotail Mululu"],
+      "cardNames": ["Ketu Dracotail", "Dracotail Mululu", "Dracotail Pan", "Khaos Starsource Dragon", "Rahu Dracotail", "Dracotail Flame"],
+      "prerequisites": ["The line is shown into an established opposing board; destruction and negate targets depend on that board."],
+      "steps": [
+        "Activate Ketu Dracotail and add Dracotail Pan.",
+        "Fusion Summon Khaos Starsource Dragon using Dracotail Pan and Dracotail Mululu.",
+        "Activate Khaos Starsource Dragon and target an opponent's Set card.",
+        "Activate Dracotail Pan and Dracotail Mululu as Fusion material triggers.",
+        "Set Rahu Dracotail with Dracotail Mululu and negate an opponent's face-up monster.",
+        "Set Dracotail Flame with Dracotail Pan.",
+        "Destroy an opponent's monster with Dracotail Pan.",
+        "Resolve Khaos Starsource Dragon to destroy the targeted Set card."
+      ],
+      "notes": ["Transcribed from Duel 1 of official feature-match coverage; named opposing cards were generalized into target classes."],
+      "endBoard": "Khaos Starsource Dragon with Rahu Dracotail and Dracotail Flame Set after removing two opposing cards and negating a monster.",
+      "variants": [],
+      "tags": ["going second", "board break", "removal", "disruption"],
+      "turnPreference": "Going second"
+    }
+  }
+]

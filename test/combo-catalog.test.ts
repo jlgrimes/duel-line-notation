@@ -7,7 +7,7 @@ test("combo catalog returns lightweight summaries and fetches details separately
   assert.equal(listResponse.status, 200);
   const list = await listResponse.json() as { combos: Array<Record<string, unknown>>; backend: string };
   assert.equal(list.backend, "file-fallback");
-  assert.ok(list.combos.length >= 30);
+  assert.ok(list.combos.length >= 33);
   assert.equal("line" in list.combos[0]!, false);
   assert.equal("manifest" in list.combos[0]!, false);
   assert.ok(Array.isArray(list.combos[0]!.tags));

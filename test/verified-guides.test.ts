@@ -5,7 +5,7 @@ import { buildGuidePlayback } from "../src/guide-visualizer.js";
 
 test("verified guide snapshots are attributed, unique, and visualizable", async () => {
   const guides = (await loadFileCombos()).filter((combo) => combo.contentType === "guide" && !combo.id.includes("/occ-"));
-  assert.equal(guides.length, 24);
+  assert.equal(guides.length, 27);
   assert.equal(new Set(guides.map((guide) => guide.id)).size, guides.length);
 
   for (const combo of guides) {
