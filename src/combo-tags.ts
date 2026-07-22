@@ -53,7 +53,8 @@ function inferTags(combo: TaggableCombo): ComboTag[] {
     .filter(Boolean).join(" ").toLowerCase();
   const tags = new Set<ComboTag>();
 
-  if (/going second|board break|battle|otk|lethal|direct.attack/.test(source) || combo.guide?.otkPotential) tags.add("Going Second");
+  if (/going second/.test(combo.guide?.turnPreference?.toLowerCase() ?? "") || /going second|board break|battle|otk|lethal|direct.attack/.test(source) || combo.guide?.otkPotential) tags.add("Going Second");
+  else if (/going first/.test(combo.guide?.turnPreference?.toLowerCase() ?? "") || /turn one|turn 1/.test(source)) tags.add("Turn 1");
   else if (/grind|resource loop|recovery|recover|rebuild|recursion/.test(source)) tags.add("Midgame");
   else tags.add("Turn 1");
 

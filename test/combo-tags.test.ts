@@ -32,3 +32,15 @@ test("tag taxonomy has no duplicates", () => {
   const tags = COMBO_TAG_GROUPS.flatMap((group) => [...group.tags]);
   assert.equal(new Set(tags).size, tags.length);
 });
+
+test("explicit turn preference wins over grind and recovery language", () => {
+  const tags = categorizeCombo({
+    id: "example/recovery-board",
+    title: "Recovered setup",
+    summary: "Recover resources for follow-up and the grind game.",
+    handSize: 1,
+    guide: { endBoard: "Setup with recovery.", tags: ["grind"], turnPreference: "Going first" },
+  });
+  assert.ok(tags.includes("Turn 1"));
+  assert.ok(!tags.includes("Midgame"));
+});
