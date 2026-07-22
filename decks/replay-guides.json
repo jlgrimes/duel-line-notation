@@ -1,0 +1,2499 @@
+[
+  {
+    "id": "branded/replay-2-white-dragon-fuwalos-virtuous-line",
+    "deckSlug": "branded",
+    "lineSlug": "replay-2-white-dragon-fuwalos-virtuous-line",
+    "deckName": "Branded",
+    "title": "White Dragon + Fuwalos Virtuous Line",
+    "summary": "Fallen of the White Dragon converts an available Fuwalos into a Virtuous Synchro/Fusion setup with Mercourier follow-up.",
+    "summon": "Fusion",
+    "accent": "#b06cff",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/2/",
+    "representativeCardName": "Fallen of the White Dragon",
+    "handSize": 2,
+    "stepCount": 37,
+    "contentType": "guide",
+    "difficulty": "Intermediate",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "branded",
+      "name": "Branded",
+      "cards": {
+        "C1": {
+          "name": "Fallen of the White Dragon",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Mulcharmy Fuwalos",
+          "kind": "monster",
+          "level": 4
+        },
+        "C3": {
+          "name": "Albion the Branded Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C4": {
+          "name": "Incredible Ecclesia, the Virtuous",
+          "kind": "monster",
+          "level": 4
+        },
+        "C5": {
+          "name": "The Golden Swordsoul",
+          "kind": "monster",
+          "level": 4
+        },
+        "C6": {
+          "name": "Ecclesia and the Dark Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C7": {
+          "name": "Guiding Quem, the Virtuous",
+          "kind": "monster",
+          "level": 4
+        },
+        "C8": {
+          "name": "Blazing Cartesia, the Virtuous",
+          "kind": "monster",
+          "level": 4
+        },
+        "C9": {
+          "name": "PSY-Framelord Omega",
+          "kind": "monster",
+          "level": 0
+        },
+        "C10": {
+          "name": "Granguignol the Dusk Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C11": {
+          "name": "The Dragon that Devours the Dogma",
+          "kind": "monster",
+          "level": 0
+        },
+        "C12": {
+          "name": "The Fallen & The Virtuous",
+          "kind": "spell"
+        },
+        "C13": {
+          "name": "Tri-Brigade Mercourier",
+          "kind": "monster",
+          "level": 4
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Fallen of the White Dragon",
+        "Mulcharmy Fuwalos"
+      ],
+      "cardNames": [
+        "Fallen of the White Dragon",
+        "Mulcharmy Fuwalos",
+        "Albion the Branded Dragon",
+        "Incredible Ecclesia, the Virtuous",
+        "The Golden Swordsoul",
+        "Ecclesia and the Dark Dragon",
+        "Guiding Quem, the Virtuous",
+        "Blazing Cartesia, the Virtuous",
+        "PSY-Framelord Omega",
+        "Granguignol the Dusk Dragon",
+        "The Dragon that Devours the Dogma",
+        "The Fallen & The Virtuous",
+        "Tri-Brigade Mercourier"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Fallen of the White Dragon.",
+        "Send to GY Albion the Branded Dragon (cost).",
+        "Special Summon Fallen of the White Dragon.",
+        "Activate CL1 Fallen of the White Dragon.",
+        "Special Summon Incredible Ecclesia, the Virtuous.",
+        "Activate CL1 Incredible Ecclesia, the Virtuous.",
+        "Tribute Incredible Ecclesia, the Virtuous (cost).",
+        "Special Summon The Golden Swordsoul.",
+        "Send to GY Fallen of the White Dragon.",
+        "Special Summon Ecclesia and the Dark Dragon.",
+        "Activate CL1 Ecclesia and the Dark Dragon.",
+        "Banish Ecclesia and the Dark Dragon.",
+        "Special Summon Guiding Quem, the Virtuous.",
+        "Activate CL1 The Golden Swordsoul.",
+        "Banish The Golden Swordsoul (cost).",
+        "Activate CL2 Guiding Quem, the Virtuous.",
+        "Send to GY Blazing Cartesia, the Virtuous.",
+        "Special Summon Blazing Cartesia, the Virtuous.",
+        "Normal Summon Mulcharmy Fuwalos.",
+        "Send to GY Mulcharmy Fuwalos.",
+        "Special Summon PSY-Framelord Omega.",
+        "Activate CL1 Guiding Quem, the Virtuous.",
+        "Special Summon Blazing Cartesia, the Virtuous.",
+        "Activate CL1 Blazing Cartesia, the Virtuous.",
+        "Send to GY Guiding Quem, the Virtuous.",
+        "Special Summon Granguignol the Dusk Dragon.",
+        "Activate CL1 Granguignol the Dusk Dragon.",
+        "Send to GY The Dragon that Devours the Dogma.",
+        "Special Summon Ecclesia and the Dark Dragon.",
+        "Activate CL1 Albion the Branded Dragon.",
+        "Set The Fallen & The Virtuous.",
+        "Activate CL1 The Dragon that Devours the Dogma.",
+        "Add to Hand Tri-Brigade Mercourier.",
+        "Activate CL1 Blazing Cartesia, the Virtuous.",
+        "Add to Hand Blazing Cartesia, the Virtuous.",
+        "Activate CL1 Incredible Ecclesia, the Virtuous.",
+        "Add to Hand Incredible Ecclesia, the Virtuous."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Ecclesia and the Dark Dragon, Granguignol the Dusk Dragon, PSY-Framelord Omega · Spell/Trap: The Fallen & The Virtuous · Hand: Tri-Brigade Mercourier, Blazing Cartesia, the Virtuous, Incredible Ecclesia, the Virtuous",
+      "variants": [],
+      "tags": [
+        "two-card",
+        "setup",
+        "disruption"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "branded/replay-9-white-dragon-into-swordsoul-lock",
+    "deckSlug": "branded",
+    "lineSlug": "replay-9-white-dragon-into-swordsoul-lock",
+    "deckName": "Branded",
+    "title": "White Dragon into Swordsoul Lock",
+    "summary": "A one-card White Dragon hybrid route through Mirrorjade and the Swordsoul package into interaction backed by Secret Village.",
+    "summon": "Fusion / Synchro",
+    "accent": "#b06cff",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/9/",
+    "representativeCardName": "Fallen of the White Dragon",
+    "handSize": 1,
+    "stepCount": 35,
+    "contentType": "guide",
+    "difficulty": "Intermediate",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "branded",
+      "name": "Branded",
+      "cards": {
+        "C1": {
+          "name": "Fallen of the White Dragon",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Mirrorjade the Iceblade Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C3": {
+          "name": "Incredible Ecclesia, the Virtuous",
+          "kind": "monster",
+          "level": 4
+        },
+        "C4": {
+          "name": "Swordsoul of Taia",
+          "kind": "monster",
+          "level": 4
+        },
+        "C5": {
+          "name": "Swordsoul Grandmaster - Chixiao",
+          "kind": "monster",
+          "level": 0
+        },
+        "C6": {
+          "name": "The Golden Swordsoul",
+          "kind": "monster",
+          "level": 4
+        },
+        "C7": {
+          "name": "Swordsoul Blackout",
+          "kind": "trap"
+        },
+        "C8": {
+          "name": "Ecclesia and the Dark Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C9": {
+          "name": "Tenyi Spirit - Mula Adhara",
+          "kind": "monster",
+          "level": 0
+        },
+        "C10": {
+          "name": "Secret Village of the Spellcasters",
+          "kind": "spell"
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Fallen of the White Dragon"
+      ],
+      "cardNames": [
+        "Fallen of the White Dragon",
+        "Mirrorjade the Iceblade Dragon",
+        "Incredible Ecclesia, the Virtuous",
+        "Swordsoul of Taia",
+        "Swordsoul Grandmaster - Chixiao",
+        "The Golden Swordsoul",
+        "Swordsoul Blackout",
+        "Ecclesia and the Dark Dragon",
+        "Tenyi Spirit - Mula Adhara",
+        "Secret Village of the Spellcasters"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Fallen of the White Dragon.",
+        "Send to GY Mirrorjade the Iceblade Dragon (cost).",
+        "Special Summon Fallen of the White Dragon.",
+        "Activate CL1 Fallen of the White Dragon.",
+        "Special Summon Incredible Ecclesia, the Virtuous.",
+        "Activate CL1 Incredible Ecclesia, the Virtuous.",
+        "Tribute Incredible Ecclesia, the Virtuous (cost).",
+        "Special Summon Swordsoul of Taia.",
+        "Activate CL1 Swordsoul of Taia.",
+        "Banish Mirrorjade the Iceblade Dragon (cost).",
+        "Special Summon card 0.",
+        "Send to GY Swordsoul of Taia.",
+        "Special Summon Swordsoul Grandmaster - Chixiao.",
+        "Activate CL1 Swordsoul Grandmaster - Chixiao.",
+        "Activate CL2 Swordsoul of Taia.",
+        "Send to GY The Golden Swordsoul.",
+        "Banish Swordsoul Blackout.",
+        "Activate CL1 Swordsoul Blackout.",
+        "Special Summon card 0.",
+        "Send to GY Fallen of the White Dragon.",
+        "Special Summon Ecclesia and the Dark Dragon.",
+        "Activate CL1 Ecclesia and the Dark Dragon.",
+        "Banish Ecclesia and the Dark Dragon.",
+        "Special Summon Fallen of the White Dragon.",
+        "Activate CL1 The Golden Swordsoul.",
+        "Banish The Golden Swordsoul (cost).",
+        "Special Summon Incredible Ecclesia, the Virtuous.",
+        "Send to GY Incredible Ecclesia, the Virtuous.",
+        "Special Summon Tenyi Spirit - Mula Adhara.",
+        "Activate CL1 Tenyi Spirit - Mula Adhara.",
+        "Add to Hand Secret Village of the Spellcasters.",
+        "Activate CL1 Secret Village of the Spellcasters.",
+        "Activate CL1 Incredible Ecclesia, the Virtuous.",
+        "Add to Hand Incredible Ecclesia, the Virtuous.",
+        "Special Summon Ecclesia and the Dark Dragon."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Ecclesia and the Dark Dragon, Tenyi Spirit - Mula Adhara, Swordsoul Grandmaster - Chixiao · Spell/Trap: Secret Village of the Spellcasters · Hand: Incredible Ecclesia, the Virtuous",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption",
+        "hard counter",
+        "floodgate"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "doomz/replay-21-medius-fuwalos-doomz-route",
+    "deckSlug": "doomz",
+    "lineSlug": "replay-21-medius-fuwalos-doomz-route",
+    "deckName": "DoomZ",
+    "title": "Medius + Fuwalos DoomZ Route",
+    "summary": "Medius opens the DoomZ engine, converts Fuwalos through Vidolia, and reaches Varudras with the Utopic Draco Future package.",
+    "summon": "Xyz",
+    "accent": "#ff6961",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/21/",
+    "representativeCardName": "Medius the Pure",
+    "handSize": 2,
+    "stepCount": 75,
+    "contentType": "guide",
+    "difficulty": "Advanced",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "doomz",
+      "name": "DoomZ",
+      "cards": {
+        "C1": {
+          "name": "Medius the Pure",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Mulcharmy Fuwalos",
+          "kind": "monster",
+          "level": 4
+        },
+        "C3": {
+          "name": "Power Patron DoomZ",
+          "kind": "monster",
+          "level": 1
+        },
+        "C4": {
+          "name": "DoomZ Break - Diactorus",
+          "kind": "monster",
+          "level": 0
+        },
+        "C5": {
+          "name": "DoomZ XII Zero - Drastea",
+          "kind": "monster",
+          "level": 8
+        },
+        "C6": {
+          "name": "DoomZ XIII Over - Graflareio",
+          "kind": "monster",
+          "level": 0
+        },
+        "C7": {
+          "name": "DoomZ Change",
+          "kind": "spell"
+        },
+        "C8": {
+          "name": "DoomZ Command \"D.O.O.M.D.U.R.G.\"",
+          "kind": "spell"
+        },
+        "C9": {
+          "name": "DoomZ V Five - Amalthe",
+          "kind": "monster",
+          "level": 4
+        },
+        "C10": {
+          "name": "DoomZ VII Seven - Elara",
+          "kind": "monster",
+          "level": 4
+        },
+        "C11": {
+          "name": "DoomZ Destruction",
+          "kind": "trap"
+        },
+        "C12": {
+          "name": "Jupredo the Shademachine Power Patron",
+          "kind": "monster",
+          "level": 10
+        },
+        "C13": {
+          "name": "DoomZ Raiders",
+          "kind": "spell"
+        },
+        "C14": {
+          "name": "Prohibited Power Patron Portal - Terminus",
+          "kind": "spell"
+        },
+        "C15": {
+          "name": "Springans Merrymaker",
+          "kind": "monster",
+          "level": 0
+        },
+        "C16": {
+          "name": "Gigantic \"Champion\" Sargas",
+          "kind": "monster",
+          "level": 0
+        },
+        "C17": {
+          "name": "Therion \"King\" Regulus",
+          "kind": "monster",
+          "level": 8
+        },
+        "C18": {
+          "name": "Gagagaga Magician",
+          "kind": "monster",
+          "level": 0
+        },
+        "C19": {
+          "name": "Number F0: Utopic Future",
+          "kind": "monster",
+          "level": 0
+        },
+        "C20": {
+          "name": "Number F0: Utopic Draco Future",
+          "kind": "monster",
+          "level": 0
+        },
+        "C21": {
+          "name": "Vidolium the Unstable Power Patron of Unity",
+          "kind": "monster",
+          "level": 12
+        },
+        "C22": {
+          "name": "Plundered Power Patron Plane - Vidolia",
+          "kind": "spell"
+        },
+        "C23": {
+          "name": "Varudras, the Final Bringer of the End Times",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Medius the Pure",
+        "Mulcharmy Fuwalos"
+      ],
+      "cardNames": [
+        "Medius the Pure",
+        "Mulcharmy Fuwalos",
+        "Power Patron DoomZ",
+        "DoomZ Break - Diactorus",
+        "DoomZ XII Zero - Drastea",
+        "DoomZ XIII Over - Graflareio",
+        "DoomZ Change",
+        "DoomZ Command \"D.O.O.M.D.U.R.G.\"",
+        "DoomZ V Five - Amalthe",
+        "DoomZ VII Seven - Elara",
+        "DoomZ Destruction",
+        "Jupredo the Shademachine Power Patron",
+        "DoomZ Raiders",
+        "Prohibited Power Patron Portal - Terminus",
+        "Springans Merrymaker",
+        "Gigantic \"Champion\" Sargas",
+        "Therion \"King\" Regulus",
+        "Gagagaga Magician",
+        "Number F0: Utopic Future",
+        "Number F0: Utopic Draco Future",
+        "Vidolium the Unstable Power Patron of Unity",
+        "Plundered Power Patron Plane - Vidolia",
+        "Varudras, the Final Bringer of the End Times"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Normal Summon Medius the Pure.",
+        "Activate CL1 Medius the Pure.",
+        "Special Summon Power Patron DoomZ.",
+        "Activate CL1 Power Patron DoomZ.",
+        "Special Summon DoomZ Break - Diactorus.",
+        "Place Power Patron DoomZ.",
+        "Activate CL1 DoomZ Break - Diactorus.",
+        "Send to GY Power Patron DoomZ.",
+        "Activate CL1 Power Patron DoomZ.",
+        "Add to Hand DoomZ XII Zero - Drastea.",
+        "Special Summon DoomZ XIII Over - Graflareio.",
+        "Activate CL1 DoomZ XIII Over - Graflareio.",
+        "Send to GY Medius the Pure (cost).",
+        "Add to Hand DoomZ Change.",
+        "Activate CL1 DoomZ XII Zero - Drastea.",
+        "Send to GY DoomZ XIII Over - Graflareio.",
+        "Send to GY DoomZ Break - Diactorus.",
+        "Special Summon DoomZ XII Zero - Drastea.",
+        "Place DoomZ Command \"D.O.O.M.D.U.R.G.\".",
+        "Activate CL1 DoomZ XIII Over - Graflareio.",
+        "Special Summon DoomZ V Five - Amalthe.",
+        "Activate CL1 DoomZ V Five - Amalthe.",
+        "Add to Hand DoomZ VII Seven - Elara.",
+        "Activate CL1 DoomZ Change.",
+        "Activate CL2 DoomZ XII Zero - Drastea.",
+        "Send to GY DoomZ Change.",
+        "Send to GY DoomZ Destruction.",
+        "Stat Change CL2 DoomZ XII Zero - Drastea.",
+        "Activate CL1 DoomZ Destruction.",
+        "Activate CL2 DoomZ Change.",
+        "Add to Hand DoomZ Destruction.",
+        "Special Summon DoomZ VII Seven - Elara.",
+        "Place Jupredo the Shademachine Power Patron.",
+        "Activate CL1 DoomZ VII Seven - Elara.",
+        "Set DoomZ Raiders.",
+        "Activate CL1 DoomZ Raiders.",
+        "Activate CL1 DoomZ Raiders.",
+        "Return to Extra Deck Jupredo the Shademachine Power Patron.",
+        "Special Summon DoomZ VII Seven - Elara.",
+        "Activate CL1 Jupredo the Shademachine Power Patron.",
+        "Add to Hand Prohibited Power Patron Portal - Terminus.",
+        "Special Summon Springans Merrymaker.",
+        "Special Summon Gigantic \"Champion\" Sargas.",
+        "Activate CL1 Gigantic \"Champion\" Sargas.",
+        "Add to Hand Therion \"King\" Regulus.",
+        "Activate CL1 Therion \"King\" Regulus.",
+        "Special Summon Therion \"King\" Regulus.",
+        "Equip DoomZ XIII Over - Graflareio.",
+        "Activate CL1 Medius the Pure.",
+        "Return to Extra Deck Gigantic \"Champion\" Sargas.",
+        "Send to GY DoomZ V Five - Amalthe.",
+        "Special Summon Medius the Pure.",
+        "Special Summon Gagagaga Magician.",
+        "Activate CL1 Gagagaga Magician.",
+        "Send to GY Medius the Pure (cost).",
+        "Special Summon Springans Merrymaker.",
+        "Send to GY DoomZ VII Seven - Elara.",
+        "Special Summon Number F0: Utopic Future.",
+        "Special Summon Number F0: Utopic Draco Future.",
+        "Activate CL1 Prohibited Power Patron Portal - Terminus.",
+        "Send to GY Jupredo the Shademachine Power Patron.",
+        "Add to Hand Vidolium the Unstable Power Patron of Unity.",
+        "Send to GY Prohibited Power Patron Portal - Terminus.",
+        "Activate CL1 Vidolium the Unstable Power Patron of Unity.",
+        "Activate CL1 Vidolium the Unstable Power Patron of Unity.",
+        "Return to Extra Deck Vidolium the Unstable Power Patron of Unity.",
+        "Special Summon Jupredo the Shademachine Power Patron.",
+        "Activate CL1 Vidolium the Unstable Power Patron of Unity.",
+        "Add to Hand Plundered Power Patron Plane - Vidolia.",
+        "Activate CL1 Plundered Power Patron Plane - Vidolia.",
+        "Activate CL1 Plundered Power Patron Plane - Vidolia.",
+        "Banish Mulcharmy Fuwalos.",
+        "Special Summon Jupredo the Shademachine Power Patron.",
+        "Special Summon Varudras, the Final Bringer of the End Times.",
+        "Set DoomZ Destruction."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: DoomZ XII Zero - Drastea, Therion \"King\" Regulus, Varudras, the Final Bringer of the End Times, Number F0: Utopic Draco Future · Spell/Trap: DoomZ Command \"D.O.O.M.D.U.R.G.\", DoomZ Raiders, DoomZ XIII Over - Graflareio, DoomZ Destruction, Plundered Power Patron Plane - Vidolia",
+      "variants": [],
+      "tags": [
+        "two-card",
+        "setup",
+        "disruption"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "elfnote/replay-24-medius-into-elfnote-synchro-board",
+    "deckSlug": "elfnote",
+    "lineSlug": "replay-24-medius-into-elfnote-synchro-board",
+    "deckName": "Elfnote",
+    "title": "Medius into Elfnote Synchro Board",
+    "summary": "A one-card Medius route through Elfnote Power Patron into Hyper Librarian, Seraphim Strelitzia, and Synchro follow-up.",
+    "summon": "Synchro",
+    "accent": "#7fd3a6",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/24/",
+    "representativeCardName": "Medius the Pure",
+    "handSize": 1,
+    "stepCount": 49,
+    "contentType": "guide",
+    "difficulty": "Intermediate",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "elfnote",
+      "name": "Elfnote",
+      "cards": {
+        "C1": {
+          "name": "Medius the Pure",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Elfnote Power Patron",
+          "kind": "monster",
+          "level": 1
+        },
+        "C3": {
+          "name": "T.G. Hyper Librarian",
+          "kind": "monster",
+          "level": 0
+        },
+        "C4": {
+          "name": "Elfnote Lucina",
+          "kind": "monster",
+          "level": 6
+        },
+        "C5": {
+          "name": "Elfnote Regina",
+          "kind": "monster",
+          "level": 6
+        },
+        "C6": {
+          "name": "Elfnote Tinia",
+          "kind": "monster",
+          "level": 6
+        },
+        "C7": {
+          "name": "Elfnotes: Welcome Home",
+          "kind": "spell"
+        },
+        "C8": {
+          "name": "Elfnote Fortuna",
+          "kind": "monster",
+          "level": 6
+        },
+        "C9": {
+          "name": "Elfnotes: Rhapsodia of Madness",
+          "kind": "trap"
+        },
+        "C10": {
+          "name": "Elfnote Seraphim Strelitzia",
+          "kind": "monster",
+          "level": 0
+        },
+        "C11": {
+          "name": "Infinite Impermanence",
+          "kind": "trap"
+        },
+        "C12": {
+          "name": "Accel Synchro Stardust Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C13": {
+          "name": "PSY-Framelord Omega",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Medius the Pure"
+      ],
+      "cardNames": [
+        "Medius the Pure",
+        "Elfnote Power Patron",
+        "T.G. Hyper Librarian",
+        "Elfnote Lucina",
+        "Elfnote Regina",
+        "Elfnote Tinia",
+        "Elfnotes: Welcome Home",
+        "Elfnote Fortuna",
+        "Elfnotes: Rhapsodia of Madness",
+        "Elfnote Seraphim Strelitzia",
+        "Infinite Impermanence",
+        "Accel Synchro Stardust Dragon",
+        "PSY-Framelord Omega"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Normal Summon Medius the Pure.",
+        "Activate CL1 Medius the Pure.",
+        "Special Summon Elfnote Power Patron.",
+        "Send to GY Medius the Pure.",
+        "Special Summon T.G. Hyper Librarian.",
+        "Activate CL1 Elfnote Power Patron.",
+        "Add to Hand Elfnote Lucina.",
+        "Special Summon Elfnote Lucina.",
+        "Activate CL1 Elfnote Lucina.",
+        "Add to Hand Elfnote Regina.",
+        "Activate CL1 Elfnote Regina.",
+        "Send to GY Elfnote Lucina (cost).",
+        "Special Summon Elfnote Regina.",
+        "Activate CL1 Elfnote Regina.",
+        "Special Summon Elfnote Tinia.",
+        "Activate CL1 Elfnote Tinia.",
+        "Place Elfnotes: Welcome Home.",
+        "Activate CL1 Elfnotes: Welcome Home.",
+        "Send to GY Elfnote Tinia (cost).",
+        "Special Summon Elfnote Fortuna.",
+        "Activate CL1 Elfnote Fortuna.",
+        "Place Elfnotes: Rhapsodia of Madness.",
+        "Activate CL1 Elfnotes: Rhapsodia of Madness.",
+        "Send to GY Elfnote Fortuna (cost).",
+        "Special Summon Elfnote Power Patron.",
+        "Send to GY Elfnote Regina.",
+        "Special Summon Elfnote Seraphim Strelitzia.",
+        "Activate CL1 T.G. Hyper Librarian.",
+        "Activate CL2 Elfnote Regina.",
+        "Add to Hand Elfnote Regina.",
+        "Draw Infinite Impermanence.",
+        "Activate CL1 Elfnote Seraphim Strelitzia.",
+        "Special Summon Elfnote Power Patron.",
+        "Send to GY Elfnote Power Patron.",
+        "Special Summon Accel Synchro Stardust Dragon.",
+        "Activate CL1 T.G. Hyper Librarian.",
+        "Activate CL2 Accel Synchro Stardust Dragon.",
+        "Special Summon Elfnote Power Patron.",
+        "Draw Infinite Impermanence.",
+        "Activate CL1 Medius the Pure.",
+        "Return to Deck Elfnote Regina.",
+        "Special Summon Medius the Pure.",
+        "Activate CL1 Elfnote Power Patron.",
+        "Stat Change CL1 Elfnote Power Patron.",
+        "Send to GY Elfnote Power Patron.",
+        "Banish Medius the Pure.",
+        "Special Summon PSY-Framelord Omega.",
+        "Activate CL1 T.G. Hyper Librarian.",
+        "Draw Infinite Impermanence."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: T.G. Hyper Librarian, PSY-Framelord Omega, Accel Synchro Stardust Dragon · Spell/Trap: Elfnotes: Rhapsodia of Madness, Elfnotes: Welcome Home · Hand: Infinite Impermanence",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption",
+        "draw"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "mitsurugi/replay-16-habakiri-clown-crew-hybrid",
+    "deckSlug": "mitsurugi",
+    "lineSlug": "replay-16-habakiri-clown-crew-hybrid",
+    "deckName": "Mitsurugi",
+    "title": "Habakiri Clown Crew Hybrid",
+    "summary": "Habakiri runs the Mitsurugi Ritual loop before bridging into the Clown Crew engine and its layered backrow.",
+    "summon": "Ritual / Fusion",
+    "accent": "#ef8354",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/16/",
+    "representativeCardName": "Ame no Habakiri no Mitsurugi",
+    "handSize": 1,
+    "stepCount": 79,
+    "contentType": "guide",
+    "difficulty": "Advanced",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "mitsurugi",
+      "name": "Mitsurugi",
+      "cards": {
+        "C1": {
+          "name": "Ame no Habakiri no Mitsurugi",
+          "kind": "monster",
+          "level": 8
+        },
+        "C2": {
+          "name": "Mitsurugi no Mikoto, Saji",
+          "kind": "monster",
+          "level": 4
+        },
+        "C3": {
+          "name": "Mitsurugi Ritual",
+          "kind": "spell"
+        },
+        "C4": {
+          "name": "Mitsurugi no Mikoto, Kusanagi",
+          "kind": "monster",
+          "level": 4
+        },
+        "C5": {
+          "name": "Night Sword Serpent",
+          "kind": "monster",
+          "level": 4
+        },
+        "C6": {
+          "name": "Ame no Murakumo no Mitsurugi",
+          "kind": "monster",
+          "level": 8
+        },
+        "C7": {
+          "name": "Mitsurugi Prayers",
+          "kind": "spell"
+        },
+        "C8": {
+          "name": "Mitsurugi no Mikoto, Aramasa",
+          "kind": "monster",
+          "level": 4
+        },
+        "C9": {
+          "name": "Futsu no Mitama no Mitsurugi",
+          "kind": "monster",
+          "level": 8
+        },
+        "C10": {
+          "name": "Mitsurugi Mirror",
+          "kind": "spell"
+        },
+        "C11": {
+          "name": "Gallant Granite",
+          "kind": "monster",
+          "level": 0
+        },
+        "C12": {
+          "name": "Nibiru, the Primal Being",
+          "kind": "monster",
+          "level": 11
+        },
+        "C13": {
+          "name": "ASHLAN U1000",
+          "kind": "monster",
+          "level": 0
+        },
+        "C14": {
+          "name": "Clown Crew Flair",
+          "kind": "monster",
+          "level": 1
+        },
+        "C15": {
+          "name": "Clown Crew Rehearsal",
+          "kind": "spell"
+        },
+        "C16": {
+          "name": "Clown Crew Malabarisme",
+          "kind": "spell"
+        },
+        "C17": {
+          "name": "Clown Crew Fiends",
+          "kind": "monster",
+          "level": 0
+        },
+        "C18": {
+          "name": "Clown Crew Diabolo",
+          "kind": "monster",
+          "level": 0
+        },
+        "C19": {
+          "name": "Clown Crew Soiree Operations",
+          "kind": "trap"
+        },
+        "C20": {
+          "name": "Clown Crew Biancaviso",
+          "kind": "monster",
+          "level": 7
+        },
+        "C21": {
+          "name": "Clown Crew Matinee Operatics",
+          "kind": "spell"
+        },
+        "C22": {
+          "name": "Mulcharmy Fuwalos",
+          "kind": "monster",
+          "level": 4
+        },
+        "C23": {
+          "name": "Clown Crew Meteor",
+          "kind": "monster",
+          "level": 0
+        },
+        "C24": {
+          "name": "Infinite Impermanence",
+          "kind": "trap"
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Ame no Habakiri no Mitsurugi"
+      ],
+      "cardNames": [
+        "Ame no Habakiri no Mitsurugi",
+        "Mitsurugi no Mikoto, Saji",
+        "Mitsurugi Ritual",
+        "Mitsurugi no Mikoto, Kusanagi",
+        "Night Sword Serpent",
+        "Ame no Murakumo no Mitsurugi",
+        "Mitsurugi Prayers",
+        "Mitsurugi no Mikoto, Aramasa",
+        "Futsu no Mitama no Mitsurugi",
+        "Mitsurugi Mirror",
+        "Gallant Granite",
+        "Nibiru, the Primal Being",
+        "ASHLAN U1000",
+        "Clown Crew Flair",
+        "Clown Crew Rehearsal",
+        "Clown Crew Malabarisme",
+        "Clown Crew Fiends",
+        "Clown Crew Diabolo",
+        "Clown Crew Soiree Operations",
+        "Clown Crew Biancaviso",
+        "Clown Crew Matinee Operatics",
+        "Mulcharmy Fuwalos",
+        "Clown Crew Meteor",
+        "Infinite Impermanence"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Ame no Habakiri no Mitsurugi.",
+        "Special Summon Mitsurugi no Mikoto, Saji.",
+        "Tribute Mitsurugi no Mikoto, Saji.",
+        "Activate CL1 Mitsurugi no Mikoto, Saji.",
+        "Add to Hand Mitsurugi Ritual.",
+        "Activate CL1 Mitsurugi Ritual.",
+        "Tribute Mitsurugi no Mikoto, Kusanagi.",
+        "Tribute Night Sword Serpent.",
+        "Special Summon Ame no Habakiri no Mitsurugi.",
+        "Send to GY Mitsurugi Ritual.",
+        "Activate CL1 Mitsurugi no Mikoto, Kusanagi.",
+        "Activate CL2 Night Sword Serpent.",
+        "Special Summon Night Sword Serpent.",
+        "Add to Hand Mitsurugi Ritual.",
+        "Activate CL1 Mitsurugi Ritual.",
+        "Tribute Ame no Habakiri no Mitsurugi.",
+        "Special Summon Ame no Murakumo no Mitsurugi.",
+        "Send to GY Mitsurugi Ritual.",
+        "Activate CL1 Ame no Habakiri no Mitsurugi.",
+        "Add to Hand Mitsurugi Prayers.",
+        "Special Summon Ame no Habakiri no Mitsurugi.",
+        "Activate CL1 Mitsurugi Prayers.",
+        "Tribute Ame no Murakumo no Mitsurugi (cost).",
+        "Add to Hand Mitsurugi no Mikoto, Aramasa.",
+        "Special Summon Mitsurugi no Mikoto, Aramasa.",
+        "Send to GY Mitsurugi Prayers.",
+        "Activate CL1 Ame no Murakumo no Mitsurugi.",
+        "Activate CL2 Mitsurugi no Mikoto, Aramasa.",
+        "Add to Hand Futsu no Mitama no Mitsurugi.",
+        "Add to Hand Mitsurugi Mirror.",
+        "Special Summon Ame no Murakumo no Mitsurugi.",
+        "Special Summon Gallant Granite.",
+        "Activate CL1 Gallant Granite.",
+        "Send to GY Mitsurugi no Mikoto, Aramasa (cost).",
+        "Add to Hand Nibiru, the Primal Being.",
+        "Send to GY Ame no Habakiri no Mitsurugi.",
+        "Send to GY Night Sword Serpent.",
+        "Special Summon ASHLAN U1000.",
+        "Activate CL1 ASHLAN U1000.",
+        "Add to Hand Clown Crew Flair.",
+        "Activate CL1 Clown Crew Flair.",
+        "Add to Hand Clown Crew Rehearsal.",
+        "Discard Futsu no Mitama no Mitsurugi.",
+        "Activate CL1 Mitsurugi Mirror.",
+        "Tribute Ame no Murakumo no Mitsurugi.",
+        "Special Summon Futsu no Mitama no Mitsurugi.",
+        "Send to GY Mitsurugi Mirror.",
+        "Activate CL1 Clown Crew Rehearsal.",
+        "Tribute Futsu no Mitama no Mitsurugi (cost).",
+        "Add to Hand Clown Crew Malabarisme.",
+        "Send to GY Clown Crew Rehearsal.",
+        "Activate CL1 Futsu no Mitama no Mitsurugi.",
+        "Activate CL2 Mitsurugi Mirror.",
+        "Return to Deck Mitsurugi Mirror.",
+        "Add to Hand Mitsurugi Prayers.",
+        "Special Summon Futsu no Mitama no Mitsurugi.",
+        "Activate CL1 Clown Crew Malabarisme.",
+        "Special Summon Clown Crew Fiends.",
+        "Send to GY Clown Crew Malabarisme.",
+        "Activate CL1 Clown Crew Rehearsal.",
+        "Banish Clown Crew Rehearsal (cost).",
+        "Tribute Clown Crew Diabolo.",
+        "Special Summon Clown Crew Flair.",
+        "Activate CL1 Clown Crew Diabolo.",
+        "Set Clown Crew Soiree Operations.",
+        "Tribute Clown Crew Fiends.",
+        "Tribute ASHLAN U1000.",
+        "Normal Summon Clown Crew Biancaviso.",
+        "Activate CL1 Clown Crew Biancaviso.",
+        "Activate CL2 Clown Crew Fiends.",
+        "Set Clown Crew Matinee Operatics.",
+        "Draw Mulcharmy Fuwalos.",
+        "Activate CL1 Clown Crew Matinee Operatics.",
+        "Activate CL1 Clown Crew Matinee Operatics.",
+        "Special Summon Clown Crew Meteor.",
+        "Set Mitsurugi Prayers.",
+        "Activate CL1 Clown Crew Matinee Operatics.",
+        "Draw Mulcharmy Fuwalos.",
+        "Set Infinite Impermanence."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Futsu no Mitama no Mitsurugi, Clown Crew Biancaviso, Clown Crew Flair, Clown Crew Meteor · Spell/Trap: Clown Crew Soiree Operations, Mitsurugi Prayers, Clown Crew Matinee Operatics, Infinite Impermanence · Hand: Nibiru, the Primal Being, Mulcharmy Fuwalos, Ash Blossom & Joyous Spring",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption",
+        "hybrid"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "mitsurugi/replay-36-habakiri-gimmick-puppet-route",
+    "deckSlug": "mitsurugi",
+    "lineSlug": "replay-36-habakiri-gimmick-puppet-route",
+    "deckName": "Mitsurugi",
+    "title": "Habakiri Gimmick Puppet Route",
+    "summary": "A one-card Habakiri Ritual loop that converts Level 8 bodies into the Gimmick Puppet Rank-Up package.",
+    "summon": "Ritual / Xyz",
+    "accent": "#ef8354",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/36/",
+    "representativeCardName": "Ame no Habakiri no Mitsurugi",
+    "handSize": 1,
+    "stepCount": 71,
+    "contentType": "guide",
+    "difficulty": "Advanced",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "mitsurugi",
+      "name": "Mitsurugi",
+      "cards": {
+        "C1": {
+          "name": "Ame no Habakiri no Mitsurugi",
+          "kind": "monster",
+          "level": 8
+        },
+        "C2": {
+          "name": "Mitsurugi no Mikoto, Saji",
+          "kind": "monster",
+          "level": 4
+        },
+        "C3": {
+          "name": "Mitsurugi Ritual",
+          "kind": "spell"
+        },
+        "C4": {
+          "name": "Mitsurugi no Mikoto, Kusanagi",
+          "kind": "monster",
+          "level": 4
+        },
+        "C5": {
+          "name": "Mitsurugi no Mikoto, Aramasa",
+          "kind": "monster",
+          "level": 4
+        },
+        "C6": {
+          "name": "Futsu no Mitama no Mitsurugi",
+          "kind": "monster",
+          "level": 8
+        },
+        "C7": {
+          "name": "Ame no Murakumo no Mitsurugi",
+          "kind": "monster",
+          "level": 8
+        },
+        "C8": {
+          "name": "Mitsurugi Prayers",
+          "kind": "spell"
+        },
+        "C9": {
+          "name": "Mitsurugi Mirror",
+          "kind": "spell"
+        },
+        "C10": {
+          "name": "Mitsurugi Great Purification",
+          "kind": "trap"
+        },
+        "C11": {
+          "name": "Gimmick Puppet Fantasix Machinix",
+          "kind": "monster",
+          "level": 0
+        },
+        "C12": {
+          "name": "Rank-Up-Magic Argent Chaos Force",
+          "kind": "spell"
+        },
+        "C13": {
+          "name": "Number C107: Neo Galaxy-Eyes Tachyon Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C14": {
+          "name": "Galaxy-Eyes Full Armor Photon Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C15": {
+          "name": "CXyz Gimmick Puppet Fanatix Machinix",
+          "kind": "monster",
+          "level": 0
+        },
+        "C16": {
+          "name": "Raider's Knight",
+          "kind": "monster",
+          "level": 0
+        },
+        "C17": {
+          "name": "Raidraptor - Fiend Eagle",
+          "kind": "monster",
+          "level": 0
+        },
+        "C18": {
+          "name": "Number C15: Gimmick Puppet Giant Hunter",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Ame no Habakiri no Mitsurugi"
+      ],
+      "cardNames": [
+        "Ame no Habakiri no Mitsurugi",
+        "Mitsurugi no Mikoto, Saji",
+        "Mitsurugi Ritual",
+        "Mitsurugi no Mikoto, Kusanagi",
+        "Mitsurugi no Mikoto, Aramasa",
+        "Futsu no Mitama no Mitsurugi",
+        "Ame no Murakumo no Mitsurugi",
+        "Mitsurugi Prayers",
+        "Mitsurugi Mirror",
+        "Mitsurugi Great Purification",
+        "Gimmick Puppet Fantasix Machinix",
+        "Rank-Up-Magic Argent Chaos Force",
+        "Number C107: Neo Galaxy-Eyes Tachyon Dragon",
+        "Galaxy-Eyes Full Armor Photon Dragon",
+        "CXyz Gimmick Puppet Fanatix Machinix",
+        "Raider's Knight",
+        "Raidraptor - Fiend Eagle",
+        "Number C15: Gimmick Puppet Giant Hunter"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Ame no Habakiri no Mitsurugi.",
+        "Special Summon Mitsurugi no Mikoto, Saji.",
+        "Tribute Mitsurugi no Mikoto, Saji.",
+        "Activate CL1 Mitsurugi no Mikoto, Saji.",
+        "Add to Hand Mitsurugi Ritual.",
+        "Activate CL1 Mitsurugi Ritual.",
+        "Tribute Mitsurugi no Mikoto, Kusanagi.",
+        "Tribute Mitsurugi no Mikoto, Aramasa.",
+        "Special Summon Ame no Habakiri no Mitsurugi.",
+        "Send to GY Mitsurugi Ritual.",
+        "Activate CL1 Mitsurugi no Mikoto, Kusanagi.",
+        "Activate CL2 Mitsurugi no Mikoto, Aramasa.",
+        "Add to Hand Futsu no Mitama no Mitsurugi.",
+        "Add to Hand Mitsurugi Ritual.",
+        "Activate CL1 Mitsurugi Ritual.",
+        "Tribute Futsu no Mitama no Mitsurugi.",
+        "Special Summon Ame no Murakumo no Mitsurugi.",
+        "Send to GY Mitsurugi Ritual.",
+        "Activate CL1 Futsu no Mitama no Mitsurugi.",
+        "Add to Hand Mitsurugi Prayers.",
+        "Activate CL1 Mitsurugi Prayers.",
+        "Tribute Ame no Habakiri no Mitsurugi (cost).",
+        "Add to Hand Mitsurugi no Mikoto, Aramasa.",
+        "Special Summon Mitsurugi no Mikoto, Saji.",
+        "Send to GY Mitsurugi Prayers.",
+        "Activate CL1 Ame no Habakiri no Mitsurugi.",
+        "Add to Hand Mitsurugi Mirror.",
+        "Special Summon Ame no Habakiri no Mitsurugi.",
+        "Activate CL1 Mitsurugi Mirror.",
+        "Tribute Ame no Murakumo no Mitsurugi.",
+        "Special Summon Futsu no Mitama no Mitsurugi.",
+        "Send to GY Mitsurugi Mirror.",
+        "Activate CL1 Ame no Murakumo no Mitsurugi.",
+        "Add to Hand Mitsurugi Great Purification.",
+        "Special Summon Ame no Murakumo no Mitsurugi.",
+        "Special Summon Gimmick Puppet Fantasix Machinix.",
+        "Activate CL1 Gimmick Puppet Fantasix Machinix.",
+        "Send to GY Ame no Murakumo no Mitsurugi (cost).",
+        "Add to Hand Rank-Up-Magic Argent Chaos Force.",
+        "Activate CL1 Rank-Up-Magic Argent Chaos Force.",
+        "Special Summon Number C107: Neo Galaxy-Eyes Tachyon Dragon.",
+        "Send to GY Rank-Up-Magic Argent Chaos Force.",
+        "Activate CL1 Number C107: Neo Galaxy-Eyes Tachyon Dragon.",
+        "Send to GY Gimmick Puppet Fantasix Machinix (cost).",
+        "Special Summon Galaxy-Eyes Full Armor Photon Dragon.",
+        "Activate CL1 Rank-Up-Magic Argent Chaos Force.",
+        "Add to Hand Rank-Up-Magic Argent Chaos Force.",
+        "Activate CL1 Rank-Up-Magic Argent Chaos Force.",
+        "Special Summon CXyz Gimmick Puppet Fanatix Machinix.",
+        "Send to GY Rank-Up-Magic Argent Chaos Force.",
+        "Activate CL1 Gimmick Puppet Fantasix Machinix.",
+        "Special Summon Gimmick Puppet Fantasix Machinix.",
+        "Add to Hand Rank-Up-Magic Argent Chaos Force.",
+        "Activate CL1 CXyz Gimmick Puppet Fanatix Machinix.",
+        "Send to GY Number C107: Neo Galaxy-Eyes Tachyon Dragon (cost).",
+        "Special Summon Number C107: Neo Galaxy-Eyes Tachyon Dragon.",
+        "Normal Summon Mitsurugi no Mikoto, Aramasa.",
+        "Special Summon Raider's Knight.",
+        "Activate CL1 Raider's Knight.",
+        "Send to GY Mitsurugi no Mikoto, Saji (cost).",
+        "Special Summon Raidraptor - Fiend Eagle.",
+        "Activate CL1 Raidraptor - Fiend Eagle.",
+        "Send to GY Raider's Knight (cost).",
+        "Damage Raidraptor - Fiend Eagle.",
+        "Activate CL1 Rank-Up-Magic Argent Chaos Force.",
+        "Special Summon Number C15: Gimmick Puppet Giant Hunter.",
+        "Send to GY Rank-Up-Magic Argent Chaos Force.",
+        "Activate CL1 Number C15: Gimmick Puppet Giant Hunter.",
+        "Send to GY Gimmick Puppet Fantasix Machinix (cost).",
+        "Send to GY Number C107: Neo Galaxy-Eyes Tachyon Dragon.",
+        "Damage Number C15: Gimmick Puppet Giant Hunter."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: CXyz Gimmick Puppet Fanatix Machinix, Raidraptor - Fiend Eagle, Futsu no Mitama no Mitsurugi, Number C15: Gimmick Puppet Giant Hunter · Hand: Mitsurugi Great Purification",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "finisher",
+        "hybrid"
+      ],
+      "turnPreference": "Going first",
+      "otkPotential": true
+    }
+  },
+  {
+    "id": "sky-striker/replay-38-engage-into-zero",
+    "deckSlug": "sky-striker",
+    "lineSlug": "replay-38-engage-into-zero",
+    "deckName": "Sky Striker",
+    "title": "Engage into Zero",
+    "summary": "A one-card Engage route that finds Raye, cycles Kagari and Shizuku, and converts Linkage into Sky Striker Ace = Zero.",
+    "summon": "Link",
+    "accent": "#68a7ff",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/38/",
+    "representativeCardName": "Sky Striker Mobilize - Engage!",
+    "handSize": 1,
+    "stepCount": 23,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "sky-striker",
+      "name": "Sky Striker",
+      "cards": {
+        "C1": {
+          "name": "Sky Striker Mobilize - Engage!",
+          "kind": "spell"
+        },
+        "C2": {
+          "name": "Sky Striker Ace - Raye",
+          "kind": "monster",
+          "level": 4
+        },
+        "C3": {
+          "name": "Sky Striker Ace - Kagari",
+          "kind": "monster",
+          "level": 0
+        },
+        "C4": {
+          "name": "Sky Striker Special Maneuver - Lemnisgate!",
+          "kind": "spell"
+        },
+        "C5": {
+          "name": "Sky Striker Ace - Shizuku",
+          "kind": "monster",
+          "level": 0
+        },
+        "C6": {
+          "name": "Sky Striker Mobilize - Linkage!",
+          "kind": "spell"
+        },
+        "C7": {
+          "name": "Sky Striker Ace = Zero",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Sky Striker Mobilize - Engage!"
+      ],
+      "cardNames": [
+        "Sky Striker Mobilize - Engage!",
+        "Sky Striker Ace - Raye",
+        "Sky Striker Ace - Kagari",
+        "Sky Striker Special Maneuver - Lemnisgate!",
+        "Sky Striker Ace - Shizuku",
+        "Sky Striker Mobilize - Linkage!",
+        "Sky Striker Ace = Zero"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Sky Striker Mobilize - Engage!.",
+        "Add to Hand Sky Striker Ace - Raye.",
+        "Send to GY Sky Striker Mobilize - Engage!.",
+        "Normal Summon Sky Striker Ace - Raye.",
+        "Send to GY Sky Striker Ace - Raye.",
+        "Special Summon Sky Striker Ace - Kagari.",
+        "Activate CL1 Sky Striker Ace - Kagari.",
+        "Add to Hand Sky Striker Mobilize - Engage!.",
+        "Stat Change CL1 Sky Striker Ace - Kagari.",
+        "Activate CL1 Sky Striker Mobilize - Engage!.",
+        "Add to Hand Sky Striker Special Maneuver - Lemnisgate!.",
+        "Send to GY Sky Striker Mobilize - Engage!.",
+        "Send to GY Sky Striker Ace - Kagari.",
+        "Special Summon Sky Striker Ace - Shizuku.",
+        "Set Sky Striker Special Maneuver - Lemnisgate!.",
+        "Activate CL1 Sky Striker Ace - Shizuku.",
+        "Add to Hand Sky Striker Mobilize - Linkage!.",
+        "Activate CL1 Sky Striker Mobilize - Linkage!.",
+        "Send to GY Sky Striker Ace - Shizuku.",
+        "Special Summon Sky Striker Ace = Zero.",
+        "Send to GY Sky Striker Mobilize - Linkage!.",
+        "Activate CL1 Sky Striker Ace = Zero.",
+        "Add to Hand Sky Striker Mobilize - Engage!."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Sky Striker Ace = Zero · Spell/Trap: Sky Striker Special Maneuver - Lemnisgate! · Hand: Sky Striker Mobilize - Engage!",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "engage",
+        "zero"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "sky-striker/replay-46-raye-into-zero-otk",
+    "deckSlug": "sky-striker",
+    "lineSlug": "replay-46-raye-into-zero-otk",
+    "deckName": "Sky Striker",
+    "title": "Raye into Zero OTK",
+    "summary": "A recorded going-second Raye line that uses Zero, Linkage, Kagari, and Shizuku to close through an established board.",
+    "summon": "Link",
+    "accent": "#68a7ff",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/46/",
+    "representativeCardName": "Sky Striker Ace - Raye",
+    "handSize": 1,
+    "stepCount": 28,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "sky-striker",
+      "name": "Sky Striker",
+      "cards": {
+        "C1": {
+          "name": "Sky Striker Ace - Raye",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Called by the Grave",
+          "kind": "spell"
+        },
+        "C3": {
+          "name": "Mystical Shine Ball",
+          "kind": "monster",
+          "level": 2
+        },
+        "C4": {
+          "name": "Sky Striker Ace = Zero",
+          "kind": "monster",
+          "level": 0
+        },
+        "C5": {
+          "name": "Sky Striker Mobilize - Linkage!",
+          "kind": "spell"
+        },
+        "C6": {
+          "name": "Sky Striker Ace - Kagari",
+          "kind": "monster",
+          "level": 0
+        },
+        "C7": {
+          "name": "Sky Striker Ace - Shizuku",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Sky Striker Ace - Raye"
+      ],
+      "cardNames": [
+        "Sky Striker Ace - Raye",
+        "Called by the Grave",
+        "Mystical Shine Ball",
+        "Sky Striker Ace = Zero",
+        "Sky Striker Mobilize - Linkage!",
+        "Sky Striker Ace - Kagari",
+        "Sky Striker Ace - Shizuku"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Opponent Turn 1 card 0.",
+        "Draw Called by the Grave.",
+        "Normal Summon Sky Striker Ace - Raye.",
+        "Attack Sky Striker Ace - Raye.",
+        "Battle Damage Sky Striker Ace - Raye.",
+        "Send to GY Mystical Shine Ball.",
+        "Activate CL1 Sky Striker Ace - Raye.",
+        "Tribute Sky Striker Ace - Raye (cost).",
+        "Special Summon Sky Striker Ace = Zero.",
+        "Activate CL1 Sky Striker Ace = Zero.",
+        "Add to Hand Sky Striker Mobilize - Linkage!.",
+        "Attack Sky Striker Ace = Zero.",
+        "Battle Damage Sky Striker Ace = Zero.",
+        "Activate CL1 Sky Striker Mobilize - Linkage!.",
+        "Send to GY Sky Striker Ace = Zero.",
+        "Special Summon Sky Striker Ace - Kagari.",
+        "Send to GY Sky Striker Mobilize - Linkage!.",
+        "Activate CL1 Sky Striker Ace - Kagari.",
+        "Add to Hand Sky Striker Mobilize - Linkage!.",
+        "Stat Change CL1 Sky Striker Ace - Kagari.",
+        "Attack Sky Striker Ace - Kagari.",
+        "Battle Damage Sky Striker Ace - Kagari.",
+        "Activate CL1 Sky Striker Mobilize - Linkage!.",
+        "Send to GY Sky Striker Ace - Kagari.",
+        "Special Summon Sky Striker Ace - Shizuku.",
+        "Send to GY Sky Striker Mobilize - Linkage!.",
+        "Attack Sky Striker Ace - Shizuku.",
+        "Battle Damage Sky Striker Ace - Shizuku."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Sky Striker Ace - Shizuku · Hand: Called by the Grave",
+      "variants": [],
+      "tags": [
+        "going second",
+        "board break",
+        "otk",
+        "finisher"
+      ],
+      "turnPreference": "Going second",
+      "otkPotential": true
+    }
+  },
+  {
+    "id": "sky-striker/replay-50-roze-modern-support-otk",
+    "deckSlug": "sky-striker",
+    "lineSlug": "replay-50-roze-modern-support-otk",
+    "deckName": "Sky Striker",
+    "title": "Roze Modern Support OTK",
+    "summary": "A Roze-led OTK branch through Camellia, Kagari, Hayate, Zero, Amatsu, and Linkage.",
+    "summon": "Link",
+    "accent": "#68a7ff",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/50/",
+    "representativeCardName": "Sky Striker Ace - Roze",
+    "handSize": 1,
+    "stepCount": 48,
+    "contentType": "guide",
+    "difficulty": "Intermediate",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "sky-striker",
+      "name": "Sky Striker",
+      "cards": {
+        "C1": {
+          "name": "Sky Striker Ace - Roze",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Sky Striker Ace - Raye",
+          "kind": "monster",
+          "level": 4
+        },
+        "C3": {
+          "name": "Sky Striker Ace - Camellia",
+          "kind": "monster",
+          "level": 0
+        },
+        "C4": {
+          "name": "Sky Striker Mobilize - Engage!",
+          "kind": "spell"
+        },
+        "C5": {
+          "name": "Sky Striker Ace - Kagari",
+          "kind": "monster",
+          "level": 0
+        },
+        "C6": {
+          "name": "Sky Striker Ace - Hayate",
+          "kind": "monster",
+          "level": 0
+        },
+        "C7": {
+          "name": "Sky Striker Mobilize - Linkage!",
+          "kind": "spell"
+        },
+        "C8": {
+          "name": "Sky Striker Special Maneuver - Lemnisgate!",
+          "kind": "spell"
+        },
+        "C9": {
+          "name": "Sky Striker Ace = Zero",
+          "kind": "monster",
+          "level": 0
+        },
+        "C10": {
+          "name": "Blazing Inpachi",
+          "kind": "monster",
+          "level": 4
+        },
+        "C11": {
+          "name": "Prototype Sky Striker Ace - Amatsu",
+          "kind": "monster",
+          "level": 0
+        },
+        "C12": {
+          "name": "Sky Striker Ace - Shizuku",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Sky Striker Ace - Roze"
+      ],
+      "cardNames": [
+        "Sky Striker Ace - Roze",
+        "Sky Striker Ace - Raye",
+        "Sky Striker Ace - Camellia",
+        "Sky Striker Mobilize - Engage!",
+        "Sky Striker Ace - Kagari",
+        "Sky Striker Ace - Hayate",
+        "Sky Striker Mobilize - Linkage!",
+        "Sky Striker Special Maneuver - Lemnisgate!",
+        "Sky Striker Ace = Zero",
+        "Blazing Inpachi",
+        "Prototype Sky Striker Ace - Amatsu",
+        "Sky Striker Ace - Shizuku"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Opponent Turn 1 card 0.",
+        "Draw Sky Striker Ace - Raye.",
+        "Normal Summon Sky Striker Ace - Raye.",
+        "Activate CL1 Sky Striker Ace - Roze.",
+        "Special Summon Sky Striker Ace - Roze.",
+        "Send to GY Sky Striker Ace - Raye.",
+        "Special Summon Sky Striker Ace - Camellia.",
+        "Activate CL1 Sky Striker Ace - Camellia.",
+        "Send to GY Sky Striker Mobilize - Engage!.",
+        "Send to GY Sky Striker Ace - Camellia.",
+        "Special Summon Sky Striker Ace - Kagari.",
+        "Activate CL1 Sky Striker Ace - Kagari.",
+        "Add to Hand Sky Striker Mobilize - Engage!.",
+        "Stat Change CL1 Sky Striker Ace - Kagari.",
+        "Send to GY Sky Striker Ace - Kagari.",
+        "Special Summon Sky Striker Ace - Hayate.",
+        "Activate CL1 Sky Striker Mobilize - Engage!.",
+        "Add to Hand Sky Striker Mobilize - Linkage!.",
+        "Send to GY Sky Striker Mobilize - Engage!.",
+        "Attack Sky Striker Ace - Hayate.",
+        "Battle Damage Sky Striker Ace - Hayate.",
+        "Activate CL1 Sky Striker Ace - Hayate.",
+        "Send to GY Sky Striker Special Maneuver - Lemnisgate!.",
+        "Activate CL1 Sky Striker Mobilize - Linkage!.",
+        "Send to GY Sky Striker Ace - Hayate.",
+        "Special Summon Sky Striker Ace = Zero.",
+        "Send to GY Sky Striker Mobilize - Linkage!.",
+        "Attack Sky Striker Ace = Zero.",
+        "Battle Damage Sky Striker Ace = Zero.",
+        "Send to GY Blazing Inpachi.",
+        "Activate CL1 Sky Striker Ace = Zero.",
+        "Tribute Sky Striker Ace = Zero (cost).",
+        "Special Summon Sky Striker Ace - Raye.",
+        "Attack Sky Striker Ace - Roze.",
+        "Battle Damage Sky Striker Ace - Roze.",
+        "Attack Sky Striker Ace - Raye.",
+        "Battle Damage Sky Striker Ace - Raye.",
+        "Activate CL1 Sky Striker Ace - Raye.",
+        "Tribute Sky Striker Ace - Raye (cost).",
+        "Special Summon Prototype Sky Striker Ace - Amatsu.",
+        "Activate CL1 Sky Striker Special Maneuver - Lemnisgate!.",
+        "Banish Sky Striker Special Maneuver - Lemnisgate! (cost).",
+        "Send to GY Sky Striker Ace - Roze.",
+        "Special Summon Sky Striker Ace - Shizuku.",
+        "Attack Prototype Sky Striker Ace - Amatsu.",
+        "Battle Damage Prototype Sky Striker Ace - Amatsu.",
+        "Attack Sky Striker Ace - Shizuku.",
+        "Battle Damage Sky Striker Ace - Shizuku."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Sky Striker Ace - Shizuku, Prototype Sky Striker Ace - Amatsu",
+      "variants": [],
+      "tags": [
+        "going second",
+        "board break",
+        "otk",
+        "finisher",
+        "modern support"
+      ],
+      "turnPreference": "Going second",
+      "otkPotential": true
+    }
+  },
+  {
+    "id": "light-and-darkness-ritual/replay-65-white-dragon-into-ritual-draco-berserker",
+    "deckSlug": "light-and-darkness-ritual",
+    "lineSlug": "replay-65-white-dragon-into-ritual-draco-berserker",
+    "deckName": "Light and Darkness Ritual",
+    "title": "White Dragon into Ritual + Draco Berserker",
+    "summary": "Fallen of the White Dragon bridges Branded and Resonator cards into Magician of Dark Chaos, Mind Shuffle, and Draco Berserker.",
+    "summon": "Ritual / Synchro",
+    "accent": "#e7c76c",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/65/",
+    "representativeCardName": "Fallen of the White Dragon",
+    "handSize": 1,
+    "stepCount": 42,
+    "contentType": "guide",
+    "difficulty": "Intermediate",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "light-and-darkness-ritual",
+      "name": "Light and Darkness Ritual",
+      "cards": {
+        "C1": {
+          "name": "Fallen of the White Dragon",
+          "kind": "monster",
+          "level": 4
+        },
+        "C2": {
+          "name": "Albion the Branded Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C3": {
+          "name": "Incredible Ecclesia, the Virtuous",
+          "kind": "monster",
+          "level": 4
+        },
+        "C4": {
+          "name": "The Crimson King",
+          "kind": "monster",
+          "level": 0
+        },
+        "C5": {
+          "name": "Crimson Gaia",
+          "kind": "spell"
+        },
+        "C6": {
+          "name": "Power Vice Dragon",
+          "kind": "monster",
+          "level": 5
+        },
+        "C7": {
+          "name": "Soul Resonator",
+          "kind": "monster",
+          "level": 3
+        },
+        "C8": {
+          "name": "Griffoh",
+          "kind": "monster",
+          "level": 1
+        },
+        "C9": {
+          "name": "Draco Berserker of the Tenyi",
+          "kind": "monster",
+          "level": 0
+        },
+        "C10": {
+          "name": "Mind Shuffle",
+          "kind": "trap"
+        },
+        "C11": {
+          "name": "Skull Archfiend of Chaos",
+          "kind": "monster",
+          "level": 6
+        },
+        "C12": {
+          "name": "Light and Darkness Ritual",
+          "kind": "spell"
+        },
+        "C13": {
+          "name": "Magician of Dark Chaos - Black Chaos",
+          "kind": "monster",
+          "level": 8
+        },
+        "C14": {
+          "name": "The Fallen & The Virtuous",
+          "kind": "spell"
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Fallen of the White Dragon"
+      ],
+      "cardNames": [
+        "Fallen of the White Dragon",
+        "Albion the Branded Dragon",
+        "Incredible Ecclesia, the Virtuous",
+        "The Crimson King",
+        "Crimson Gaia",
+        "Power Vice Dragon",
+        "Soul Resonator",
+        "Griffoh",
+        "Draco Berserker of the Tenyi",
+        "Mind Shuffle",
+        "Skull Archfiend of Chaos",
+        "Light and Darkness Ritual",
+        "Magician of Dark Chaos - Black Chaos",
+        "The Fallen & The Virtuous"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Fallen of the White Dragon.",
+        "Send to GY Albion the Branded Dragon (cost).",
+        "Special Summon Fallen of the White Dragon.",
+        "Activate CL1 Fallen of the White Dragon.",
+        "Special Summon Incredible Ecclesia, the Virtuous.",
+        "Send to GY Fallen of the White Dragon.",
+        "Special Summon The Crimson King.",
+        "Activate CL1 The Crimson King.",
+        "Add to Hand Crimson Gaia.",
+        "Activate CL1 Crimson Gaia.",
+        "Activate CL1 Crimson Gaia.",
+        "Add to Hand Power Vice Dragon.",
+        "Activate CL1 Power Vice Dragon.",
+        "Special Summon Power Vice Dragon.",
+        "Activate CL1 Power Vice Dragon.",
+        "Add to Hand Soul Resonator.",
+        "Normal Summon Soul Resonator.",
+        "Activate CL1 Soul Resonator.",
+        "Add to Hand Griffoh.",
+        "Send to GY Power Vice Dragon.",
+        "Special Summon Draco Berserker of the Tenyi.",
+        "Activate CL1 Griffoh.",
+        "Discard Griffoh (cost).",
+        "Set Mind Shuffle.",
+        "Activate CL1 Mind Shuffle.",
+        "Add to Hand Skull Archfiend of Chaos.",
+        "Discard Skull Archfiend of Chaos.",
+        "Activate CL1 Skull Archfiend of Chaos.",
+        "Send to GY Light and Darkness Ritual (cost).",
+        "Add to Hand Magician of Dark Chaos - Black Chaos.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Banish Griffoh.",
+        "Special Summon Magician of Dark Chaos - Black Chaos.",
+        "Send to GY Light and Darkness Ritual.",
+        "Activate CL1 Magician of Dark Chaos - Black Chaos.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Activate CL1 Albion the Branded Dragon.",
+        "Set The Fallen & The Virtuous.",
+        "Activate CL1 Incredible Ecclesia, the Virtuous.",
+        "Add to Hand Incredible Ecclesia, the Virtuous."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Draco Berserker of the Tenyi, Magician of Dark Chaos - Black Chaos, The Crimson King · Spell/Trap: Crimson Gaia, Mind Shuffle, The Fallen & The Virtuous · Hand: Skull Archfiend of Chaos, Light and Darkness Ritual, Incredible Ecclesia, the Virtuous",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption",
+        "hybrid"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "light-and-darkness-ritual/replay-68-high-spirits-skull-archfiend",
+    "deckSlug": "light-and-darkness-ritual",
+    "lineSlug": "replay-68-high-spirits-skull-archfiend",
+    "deckName": "Light and Darkness Ritual",
+    "title": "High Spirits + Skull Archfiend",
+    "summary": "Branded in High Spirits and Skull Archfiend access the complete Light and Darkness Ritual package with Branded follow-up.",
+    "summon": "Ritual",
+    "accent": "#e7c76c",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/68/",
+    "representativeCardName": "Branded in High Spirits",
+    "handSize": 2,
+    "stepCount": 43,
+    "contentType": "guide",
+    "difficulty": "Intermediate",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "light-and-darkness-ritual",
+      "name": "Light and Darkness Ritual",
+      "cards": {
+        "C1": {
+          "name": "Branded in High Spirits",
+          "kind": "spell"
+        },
+        "C2": {
+          "name": "Skull Archfiend of Chaos",
+          "kind": "monster",
+          "level": 6
+        },
+        "C3": {
+          "name": "Despian Quaeritis",
+          "kind": "monster",
+          "level": 0
+        },
+        "C4": {
+          "name": "Fallen of the White Dragon",
+          "kind": "monster",
+          "level": 4
+        },
+        "C5": {
+          "name": "Light and Darkness Ritual",
+          "kind": "spell"
+        },
+        "C6": {
+          "name": "Magician of Dark Chaos - Black Chaos",
+          "kind": "monster",
+          "level": 8
+        },
+        "C7": {
+          "name": "Albion the Branded Dragon",
+          "kind": "monster",
+          "level": 0
+        },
+        "C8": {
+          "name": "Incredible Ecclesia, the Virtuous",
+          "kind": "monster",
+          "level": 4
+        },
+        "C9": {
+          "name": "The Crimson King",
+          "kind": "monster",
+          "level": 0
+        },
+        "C10": {
+          "name": "Crimson Call",
+          "kind": "spell"
+        },
+        "C11": {
+          "name": "Griffoh",
+          "kind": "monster",
+          "level": 1
+        },
+        "C12": {
+          "name": "Mind Shuffle",
+          "kind": "trap"
+        },
+        "C13": {
+          "name": "Celtic Mystic",
+          "kind": "monster",
+          "level": 4
+        },
+        "C14": {
+          "name": "Fydraulis Harmonia",
+          "kind": "monster",
+          "level": 7
+        },
+        "C15": {
+          "name": "The Fallen & The Virtuous",
+          "kind": "spell"
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Branded in High Spirits",
+        "Skull Archfiend of Chaos"
+      ],
+      "cardNames": [
+        "Branded in High Spirits",
+        "Skull Archfiend of Chaos",
+        "Despian Quaeritis",
+        "Fallen of the White Dragon",
+        "Light and Darkness Ritual",
+        "Magician of Dark Chaos - Black Chaos",
+        "Albion the Branded Dragon",
+        "Incredible Ecclesia, the Virtuous",
+        "The Crimson King",
+        "Crimson Call",
+        "Griffoh",
+        "Mind Shuffle",
+        "Celtic Mystic",
+        "Fydraulis Harmonia",
+        "The Fallen & The Virtuous"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Branded in High Spirits.",
+        "Send to GY Despian Quaeritis.",
+        "Discard Skull Archfiend of Chaos.",
+        "Add to Hand Fallen of the White Dragon.",
+        "Send to GY Branded in High Spirits.",
+        "Activate CL1 Skull Archfiend of Chaos.",
+        "Send to GY Light and Darkness Ritual (cost).",
+        "Add to Hand Magician of Dark Chaos - Black Chaos.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Activate CL1 Fallen of the White Dragon.",
+        "Send to GY Albion the Branded Dragon (cost).",
+        "Special Summon Fallen of the White Dragon.",
+        "Activate CL1 Fallen of the White Dragon.",
+        "Special Summon Incredible Ecclesia, the Virtuous.",
+        "Send to GY Fallen of the White Dragon.",
+        "Special Summon The Crimson King.",
+        "Activate CL1 The Crimson King.",
+        "Add to Hand Crimson Call.",
+        "Activate CL1 Crimson Call.",
+        "Add to Hand Griffoh.",
+        "Send to GY Crimson Call.",
+        "Activate CL1 Griffoh.",
+        "Discard Griffoh (cost).",
+        "Set Mind Shuffle.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Banish Despian Quaeritis.",
+        "Special Summon Magician of Dark Chaos - Black Chaos.",
+        "Send to GY Light and Darkness Ritual.",
+        "Activate CL1 Magician of Dark Chaos - Black Chaos.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Activate CL1 Mind Shuffle.",
+        "Add to Hand Celtic Mystic.",
+        "Discard Light and Darkness Ritual.",
+        "Normal Summon Celtic Mystic.",
+        "Activate CL1 Celtic Mystic.",
+        "Draw Fydraulis Harmonia.",
+        "Discard Fydraulis Harmonia.",
+        "Send to GY Fydraulis Harmonia.",
+        "Activate CL1 Albion the Branded Dragon.",
+        "Set The Fallen & The Virtuous.",
+        "Activate CL1 Incredible Ecclesia, the Virtuous.",
+        "Add to Hand Incredible Ecclesia, the Virtuous."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Celtic Mystic, Magician of Dark Chaos - Black Chaos, The Crimson King · Spell/Trap: Mind Shuffle, The Fallen & The Virtuous · Hand: Skull Archfiend of Chaos, Fydraulis Harmonia, Incredible Ecclesia, the Virtuous",
+      "variants": [],
+      "tags": [
+        "two-card",
+        "setup",
+        "disruption",
+        "hybrid"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "light-and-darkness-ritual/replay-69-power-vice-into-light-and-darkness-ritual",
+    "deckSlug": "light-and-darkness-ritual",
+    "lineSlug": "replay-69-power-vice-into-light-and-darkness-ritual",
+    "deckName": "Light and Darkness Ritual",
+    "title": "Power Vice into Light and Darkness Ritual",
+    "summary": "Power Vice Dragon accesses Soul Resonator and Griffoh before establishing Magician of Dark Chaos, Mind Shuffle, and Draco Berserker.",
+    "summon": "Ritual / Synchro",
+    "accent": "#e7c76c",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/69/",
+    "representativeCardName": "Power Vice Dragon",
+    "handSize": 1,
+    "stepCount": 26,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "light-and-darkness-ritual",
+      "name": "Light and Darkness Ritual",
+      "cards": {
+        "C1": {
+          "name": "Power Vice Dragon",
+          "kind": "monster",
+          "level": 5
+        },
+        "C2": {
+          "name": "Soul Resonator",
+          "kind": "monster",
+          "level": 3
+        },
+        "C3": {
+          "name": "Griffoh",
+          "kind": "monster",
+          "level": 1
+        },
+        "C4": {
+          "name": "Mind Shuffle",
+          "kind": "trap"
+        },
+        "C5": {
+          "name": "Skull Archfiend of Chaos",
+          "kind": "monster",
+          "level": 6
+        },
+        "C6": {
+          "name": "Light and Darkness Ritual",
+          "kind": "spell"
+        },
+        "C7": {
+          "name": "Magician of Dark Chaos - Black Chaos",
+          "kind": "monster",
+          "level": 8
+        },
+        "C8": {
+          "name": "Draco Berserker of the Tenyi",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Power Vice Dragon"
+      ],
+      "cardNames": [
+        "Power Vice Dragon",
+        "Soul Resonator",
+        "Griffoh",
+        "Mind Shuffle",
+        "Skull Archfiend of Chaos",
+        "Light and Darkness Ritual",
+        "Magician of Dark Chaos - Black Chaos",
+        "Draco Berserker of the Tenyi"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Power Vice Dragon.",
+        "Special Summon Power Vice Dragon.",
+        "Activate CL1 Power Vice Dragon.",
+        "Add to Hand Soul Resonator.",
+        "Normal Summon Soul Resonator.",
+        "Activate CL1 Soul Resonator.",
+        "Add to Hand Griffoh.",
+        "Activate CL1 Griffoh.",
+        "Discard Griffoh (cost).",
+        "Set Mind Shuffle.",
+        "Activate CL1 Mind Shuffle.",
+        "Add to Hand Skull Archfiend of Chaos.",
+        "Discard Skull Archfiend of Chaos.",
+        "Activate CL1 Skull Archfiend of Chaos.",
+        "Send to GY Light and Darkness Ritual (cost).",
+        "Add to Hand Magician of Dark Chaos - Black Chaos.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Send to GY Power Vice Dragon.",
+        "Special Summon Draco Berserker of the Tenyi.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Banish Griffoh.",
+        "Special Summon Magician of Dark Chaos - Black Chaos.",
+        "Send to GY Light and Darkness Ritual.",
+        "Activate CL1 Magician of Dark Chaos - Black Chaos.",
+        "Add to Hand Light and Darkness Ritual."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Magician of Dark Chaos - Black Chaos, Draco Berserker of the Tenyi · Spell/Trap: Mind Shuffle · Hand: Skull Archfiend of Chaos, Light and Darkness Ritual",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "light-and-darkness-ritual/replay-70-crimson-gaia-into-light-and-darkness-ritual",
+    "deckSlug": "light-and-darkness-ritual",
+    "lineSlug": "replay-70-crimson-gaia-into-light-and-darkness-ritual",
+    "deckName": "Light and Darkness Ritual",
+    "title": "Crimson Gaia into Light and Darkness Ritual",
+    "summary": "Crimson Gaia searches the Resonator bridge into Griffoh and the full Light and Darkness Ritual setup.",
+    "summon": "Ritual / Synchro",
+    "accent": "#e7c76c",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/70/",
+    "representativeCardName": "Crimson Gaia",
+    "handSize": 1,
+    "stepCount": 29,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "light-and-darkness-ritual",
+      "name": "Light and Darkness Ritual",
+      "cards": {
+        "C1": {
+          "name": "Crimson Gaia",
+          "kind": "spell"
+        },
+        "C2": {
+          "name": "Power Vice Dragon",
+          "kind": "monster",
+          "level": 5
+        },
+        "C3": {
+          "name": "Soul Resonator",
+          "kind": "monster",
+          "level": 3
+        },
+        "C4": {
+          "name": "Griffoh",
+          "kind": "monster",
+          "level": 1
+        },
+        "C5": {
+          "name": "Mind Shuffle",
+          "kind": "trap"
+        },
+        "C6": {
+          "name": "Skull Archfiend of Chaos",
+          "kind": "monster",
+          "level": 6
+        },
+        "C7": {
+          "name": "Light and Darkness Ritual",
+          "kind": "spell"
+        },
+        "C8": {
+          "name": "Magician of Dark Chaos - Black Chaos",
+          "kind": "monster",
+          "level": 8
+        },
+        "C9": {
+          "name": "Draco Berserker of the Tenyi",
+          "kind": "monster",
+          "level": 0
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Crimson Gaia"
+      ],
+      "cardNames": [
+        "Crimson Gaia",
+        "Power Vice Dragon",
+        "Soul Resonator",
+        "Griffoh",
+        "Mind Shuffle",
+        "Skull Archfiend of Chaos",
+        "Light and Darkness Ritual",
+        "Magician of Dark Chaos - Black Chaos",
+        "Draco Berserker of the Tenyi"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Crimson Gaia.",
+        "Activate CL1 Crimson Gaia.",
+        "Add to Hand Power Vice Dragon.",
+        "Activate CL1 Power Vice Dragon.",
+        "Special Summon Power Vice Dragon.",
+        "Activate CL1 Power Vice Dragon.",
+        "Add to Hand Soul Resonator.",
+        "Normal Summon Soul Resonator.",
+        "Activate CL1 Soul Resonator.",
+        "Add to Hand Griffoh.",
+        "Activate CL1 Griffoh.",
+        "Discard Griffoh (cost).",
+        "Set Mind Shuffle.",
+        "Activate CL1 Mind Shuffle.",
+        "Add to Hand Skull Archfiend of Chaos.",
+        "Discard Skull Archfiend of Chaos.",
+        "Activate CL1 Skull Archfiend of Chaos.",
+        "Send to GY Light and Darkness Ritual (cost).",
+        "Add to Hand Magician of Dark Chaos - Black Chaos.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Send to GY Power Vice Dragon.",
+        "Special Summon Draco Berserker of the Tenyi.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Banish Griffoh.",
+        "Special Summon Magician of Dark Chaos - Black Chaos.",
+        "Send to GY Light and Darkness Ritual.",
+        "Activate CL1 Magician of Dark Chaos - Black Chaos.",
+        "Add to Hand Light and Darkness Ritual."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Magician of Dark Chaos - Black Chaos, Draco Berserker of the Tenyi · Spell/Trap: Crimson Gaia, Mind Shuffle · Hand: Skull Archfiend of Chaos, Light and Darkness Ritual",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "light-and-darkness-ritual/replay-71-griffoh-one-card-ritual",
+    "deckSlug": "light-and-darkness-ritual",
+    "lineSlug": "replay-71-griffoh-one-card-ritual",
+    "deckName": "Light and Darkness Ritual",
+    "title": "Griffoh One-Card Ritual",
+    "summary": "The compact Griffoh route establishes Mind Shuffle and Magician of Dark Chaos while recovering Light and Darkness Ritual.",
+    "summon": "Ritual",
+    "accent": "#e7c76c",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/71/",
+    "representativeCardName": "Griffoh",
+    "handSize": 1,
+    "stepCount": 17,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "light-and-darkness-ritual",
+      "name": "Light and Darkness Ritual",
+      "cards": {
+        "C1": {
+          "name": "Griffoh",
+          "kind": "monster",
+          "level": 1
+        },
+        "C2": {
+          "name": "Mind Shuffle",
+          "kind": "trap"
+        },
+        "C3": {
+          "name": "Skull Archfiend of Chaos",
+          "kind": "monster",
+          "level": 6
+        },
+        "C4": {
+          "name": "Light and Darkness Ritual",
+          "kind": "spell"
+        },
+        "C5": {
+          "name": "Magician of Dark Chaos - Black Chaos",
+          "kind": "monster",
+          "level": 8
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Griffoh"
+      ],
+      "cardNames": [
+        "Griffoh",
+        "Mind Shuffle",
+        "Skull Archfiend of Chaos",
+        "Light and Darkness Ritual",
+        "Magician of Dark Chaos - Black Chaos"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Activate CL1 Griffoh.",
+        "Discard Griffoh (cost).",
+        "Set Mind Shuffle.",
+        "Activate CL1 Mind Shuffle.",
+        "Add to Hand Skull Archfiend of Chaos.",
+        "Discard Skull Archfiend of Chaos.",
+        "Activate CL1 Skull Archfiend of Chaos.",
+        "Send to GY Light and Darkness Ritual (cost).",
+        "Add to Hand Magician of Dark Chaos - Black Chaos.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Banish Griffoh.",
+        "Special Summon Magician of Dark Chaos - Black Chaos.",
+        "Send to GY Light and Darkness Ritual.",
+        "Activate CL1 Magician of Dark Chaos - Black Chaos.",
+        "Add to Hand Light and Darkness Ritual."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Magician of Dark Chaos - Black Chaos · Spell/Trap: Mind Shuffle · Hand: Skull Archfiend of Chaos, Light and Darkness Ritual",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "light-and-darkness-ritual/replay-73-soul-resonator-into-ritual",
+    "deckSlug": "light-and-darkness-ritual",
+    "lineSlug": "replay-73-soul-resonator-into-ritual",
+    "deckName": "Light and Darkness Ritual",
+    "title": "Soul Resonator into Ritual",
+    "summary": "Soul Resonator searches Griffoh and converts into the complete Mind Shuffle and Magician of Dark Chaos setup.",
+    "summon": "Ritual",
+    "accent": "#e7c76c",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/73/",
+    "representativeCardName": "Soul Resonator",
+    "handSize": 1,
+    "stepCount": 20,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "light-and-darkness-ritual",
+      "name": "Light and Darkness Ritual",
+      "cards": {
+        "C1": {
+          "name": "Soul Resonator",
+          "kind": "monster",
+          "level": 3
+        },
+        "C2": {
+          "name": "Griffoh",
+          "kind": "monster",
+          "level": 1
+        },
+        "C3": {
+          "name": "Mind Shuffle",
+          "kind": "trap"
+        },
+        "C4": {
+          "name": "Skull Archfiend of Chaos",
+          "kind": "monster",
+          "level": 6
+        },
+        "C5": {
+          "name": "Light and Darkness Ritual",
+          "kind": "spell"
+        },
+        "C6": {
+          "name": "Magician of Dark Chaos - Black Chaos",
+          "kind": "monster",
+          "level": 8
+        }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": [
+        "Soul Resonator"
+      ],
+      "cardNames": [
+        "Soul Resonator",
+        "Griffoh",
+        "Mind Shuffle",
+        "Skull Archfiend of Chaos",
+        "Light and Darkness Ritual",
+        "Magician of Dark Chaos - Black Chaos"
+      ],
+      "prerequisites": [
+        "Use a list containing the named replay targets and Extra Deck package."
+      ],
+      "steps": [
+        "Normal Summon Soul Resonator.",
+        "Activate CL1 Soul Resonator.",
+        "Add to Hand Griffoh.",
+        "Activate CL1 Griffoh.",
+        "Discard Griffoh (cost).",
+        "Set Mind Shuffle.",
+        "Activate CL1 Mind Shuffle.",
+        "Add to Hand Skull Archfiend of Chaos.",
+        "Discard Skull Archfiend of Chaos.",
+        "Activate CL1 Skull Archfiend of Chaos.",
+        "Send to GY Light and Darkness Ritual (cost).",
+        "Add to Hand Magician of Dark Chaos - Black Chaos.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Add to Hand Light and Darkness Ritual.",
+        "Activate CL1 Light and Darkness Ritual.",
+        "Banish Griffoh.",
+        "Special Summon Magician of Dark Chaos - Black Chaos.",
+        "Send to GY Light and Darkness Ritual.",
+        "Activate CL1 Magician of Dark Chaos - Black Chaos.",
+        "Add to Hand Light and Darkness Ritual."
+      ],
+      "notes": [
+        "Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."
+      ],
+      "endBoard": "Monsters: Soul Resonator, Magician of Dark Chaos - Black Chaos · Spell/Trap: Mind Shuffle · Hand: Skull Archfiend of Chaos, Light and Darkness Ritual",
+      "variants": [],
+      "tags": [
+        "one-card",
+        "setup",
+        "disruption"
+      ],
+      "turnPreference": "Going first"
+    }
+  },
+  {
+    "id": "kewl-tune/replay-30-cue-into-rs-synchro",
+    "deckSlug": "kewl-tune",
+    "lineSlug": "replay-30-cue-into-rs-synchro",
+    "deckName": "Kewl Tune",
+    "title": "Cue into RS + Synchro",
+    "summary": "The recorded one-card Cue branch ends on Kewl Tune RS and Mix with Kewl Tune Synchro Set.",
+    "summon": "Synchro",
+    "accent": "#ff5c7a",
+    "format": "TCG Advanced · verified replay",
+    "sourceLabel": "YgoCombo replay",
+    "sourceUrl": "https://www.ygocombo.com/combo/30/",
+    "representativeCardName": "Kewl Tune Cue",
+    "handSize": 1,
+    "stepCount": 23,
+    "contentType": "guide",
+    "difficulty": "Beginner",
+    "manifest": {
+      "schemaVersion": 1,
+      "slug": "kewl-tune",
+      "name": "Kewl Tune",
+      "cards": {
+        "C1": { "name": "Kewl Tune Cue", "kind": "monster" },
+        "C2": { "name": "Kewl Tune Rotary", "kind": "monster" },
+        "C3": { "name": "Kewl Tune Track Maker", "kind": "monster", "level": 0 },
+        "C4": { "name": "JJ \"Kewl Tune\"", "kind": "spell" },
+        "C5": { "name": "Kewl Tune Synchro", "kind": "trap" },
+        "C6": { "name": "Kewl Tune Mix", "kind": "monster" },
+        "C7": { "name": "Kewl Tune Reco", "kind": "monster" },
+        "C8": { "name": "Kewl Tune Clip", "kind": "monster" },
+        "C9": { "name": "Kewl Tune RS", "kind": "monster", "level": 0 }
+      }
+    },
+    "guide": {
+      "contributor": "YgoCombo replay contributor",
+      "starterCards": ["Kewl Tune Cue"],
+      "cardNames": ["Kewl Tune Cue", "Kewl Tune Rotary", "Kewl Tune Track Maker", "JJ \"Kewl Tune\"", "Kewl Tune Synchro", "Kewl Tune Mix", "Kewl Tune Reco", "Kewl Tune Clip", "Kewl Tune RS"],
+      "prerequisites": ["Use a list containing the named replay targets and Extra Deck package."],
+      "steps": [
+        "Normal Summon Kewl Tune Cue.",
+        "Activate CL1 Kewl Tune Cue.",
+        "Special Summon Kewl Tune Rotary.",
+        "Send to GY Kewl Tune Cue.",
+        "Synchro Summon Kewl Tune Track Maker.",
+        "Activate CL1 Kewl Tune Track Maker.",
+        "Activate CL2 Kewl Tune Rotary.",
+        "Activate CL3 Kewl Tune Cue.",
+        "Add to Hand JJ \"Kewl Tune\".",
+        "Add to Hand Kewl Tune Synchro.",
+        "Activate CL1 JJ \"Kewl Tune\".",
+        "Activate CL1 JJ \"Kewl Tune\".",
+        "Tribute Kewl Tune Track Maker.",
+        "Special Summon Kewl Tune Mix.",
+        "Activate CL1 Kewl Tune Mix.",
+        "Add to Hand Kewl Tune Reco.",
+        "Normal Summon Kewl Tune Reco.",
+        "Activate CL1 Kewl Tune Reco.",
+        "Add to Hand Kewl Tune Clip.",
+        "Send to GY Kewl Tune Clip.",
+        "Synchro Summon Kewl Tune RS.",
+        "Activate CL1 Kewl Tune Clip.",
+        "Set Kewl Tune Synchro."
+      ],
+      "notes": ["Curated replay snapshot. The source page preserves target, material, and board-state context for each atomic event."],
+      "endBoard": "Kewl Tune Mix and Kewl Tune RS with Kewl Tune Synchro Set and JJ \"Kewl Tune\" active.",
+      "variants": [],
+      "tags": ["one-card", "setup", "disruption", "cue", "rs"],
+      "turnPreference": "Going first"
+    }
+  }
+]
