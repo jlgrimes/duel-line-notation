@@ -122,7 +122,7 @@ export function App() {
         <section className="combo-detail">
           <button className="detail-back" onClick={browseCombos}>← All combos</button>
           <header className="detail-header">
-            <div><p className="eyebrow">{combo.deckName} · {combo.summon}</p><h1>{combo.title}</h1><p>{combo.summary}</p></div>
+            <div><p className="eyebrow">{combo.deckName} · {combo.summon}</p><h1>{combo.title}</h1><p>{combo.summary}</p><div className="detail-tags">{combo.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></div>
             <div className="detail-source"><span>{combo.contentType === "dln" ? "Authored DLN route" : `${combo.sourceLicense ?? "Community"} guide`}</span><a href={combo.sourceUrl} target="_blank" rel="noreferrer">Source ↗</a></div>
           </header>
 

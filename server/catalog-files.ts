@@ -1,6 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { ComboDetail } from "../src/catalog-model.js";
+import { categorizeCombo } from "../src/combo-tags.js";
 import type { DeckManifest } from "../src/model.js";
 
 interface MetaDeck {
@@ -29,6 +30,7 @@ export async function loadFileCombos(root = process.cwd()): Promise<ComboDetail[
     return [loadDeckCombos(root, meta.format, deck, details)];
   }));
   return [...combos.flat(), ...verifiedGuides]
+    .map((combo) => ({ ...combo, tags: categorizeCombo(combo) }))
     .sort((left, right) => left.deckName.localeCompare(right.deckName) || left.title.localeCompare(right.title));
 }
 
@@ -60,6 +62,7 @@ async function loadDeckCombos(root: string, format: string, deck: MetaDeck, deta
       handSize: startAliases.length,
       stepCount: line.match(/^\d+\s/gm)?.length ?? 0,
       contentType: "dln",
+      tags: [],
       manifest,
       line,
     } satisfies ComboDetail;

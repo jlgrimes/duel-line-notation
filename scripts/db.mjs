@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { neon } from "@neondatabase/serverless";
 import { loadFileCombos } from "../dist/server/catalog-files.js";
+import { categorizeCombo } from "../dist/src/combo-tags.js";
 import { fetchOpenComboCodex } from "./open-combo-codex.mjs";
 
 const connectionString = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
@@ -33,8 +34,8 @@ for (const combo of [...localCombos, ...importedCombos]) {
     INSERT INTO combos (
       id, deck_slug, line_slug, deck_name, title, summary, summon, accent, format,
       source_label, source_url, representative_card_name, hand_size, step_count, content_type,
-      difficulty, source_license, manifest, line, guide, updated_at
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,$19,$20::jsonb,NOW())
+      difficulty, source_license, tags, manifest, line, guide, updated_at
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,$19::jsonb,$20,$21::jsonb,NOW())
     ON CONFLICT (id) DO UPDATE SET
       deck_name = EXCLUDED.deck_name, title = EXCLUDED.title, summary = EXCLUDED.summary,
       summon = EXCLUDED.summon, accent = EXCLUDED.accent, format = EXCLUDED.format,
@@ -42,12 +43,13 @@ for (const combo of [...localCombos, ...importedCombos]) {
       representative_card_name = EXCLUDED.representative_card_name, hand_size = EXCLUDED.hand_size,
       step_count = EXCLUDED.step_count, content_type = EXCLUDED.content_type,
       difficulty = EXCLUDED.difficulty, source_license = EXCLUDED.source_license,
+      tags = EXCLUDED.tags,
       manifest = EXCLUDED.manifest, line = EXCLUDED.line, guide = EXCLUDED.guide, updated_at = NOW()
   `, [
     combo.id, combo.deckSlug, combo.lineSlug, combo.deckName, combo.title, combo.summary,
     combo.summon, combo.accent, combo.format, combo.sourceLabel, combo.sourceUrl,
     combo.representativeCardName, combo.handSize, combo.stepCount, combo.contentType,
-    combo.difficulty ?? null, combo.sourceLicense ?? null, JSON.stringify(combo.manifest), combo.line ?? null,
+    combo.difficulty ?? null, combo.sourceLicense ?? null, JSON.stringify(categorizeCombo(combo)), JSON.stringify(combo.manifest), combo.line ?? null,
     combo.guide ? JSON.stringify(combo.guide) : null,
   ]);
 }

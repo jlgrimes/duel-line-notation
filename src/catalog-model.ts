@@ -1,4 +1,5 @@
 import type { DeckManifest } from "./model.js";
+import type { ComboTag } from "./combo-tags.js";
 
 export interface ComboSummary {
   id: string;
@@ -18,6 +19,7 @@ export interface ComboSummary {
   contentType: "dln" | "guide";
   difficulty?: string;
   sourceLicense?: string;
+  tags: ComboTag[];
 }
 
 export interface ComboDetail extends ComboSummary {

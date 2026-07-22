@@ -302,6 +302,16 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .catalog-search span { color: var(--muted); font: .5625rem "DM Mono", monospace; text-transform: uppercase; letter-spacing: .14em; }
 .catalog-search input { width: 100%; padding: 13px 14px; border: 1px solid #34373e; border-radius: 7px; outline: 0; color: #ece9e3; background: #0e1013; font: .75rem "DM Mono", monospace; }
 .catalog-search input:focus { border-color: color-mix(in srgb, var(--accent) 60%, #34373e); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent); }
+.catalog-filters { position: relative; display: grid; gap: 10px; margin: -4px 0 20px; padding: 14px 16px; border: 1px solid #292c31; border-radius: 9px; background: #101216; }
+.filter-group { display: grid; grid-template-columns: 64px minmax(0,1fr); align-items: start; gap: 10px; }
+.filter-group > span { padding-top: 7px; color: #626771; font: .5rem "DM Mono", monospace; text-transform: uppercase; letter-spacing: .12em; }
+.filter-group > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-group button, .clear-filters { appearance: none; padding: 6px 8px; border: 1px solid #30343a; border-radius: 999px; color: #9297a0; background: #15171b; cursor: pointer; font: .5625rem "DM Mono", monospace; }
+.filter-group button:hover { border-color: #494e57; color: #dedbd5; }
+.filter-group button.active { border-color: color-mix(in srgb, var(--accent) 60%, #30343a); color: #f5f1ea; background: color-mix(in srgb, var(--accent) 14%, #15171b); }
+.filter-group button small { margin-left: 6px; color: #5e636c; font-size: .5rem; }
+.filter-group button.active small { color: color-mix(in srgb, var(--accent) 70%, #9297a0); }
+.clear-filters { position: absolute; top: 12px; right: 14px; border-color: transparent; color: var(--accent); background: transparent; }
 .catalog-count { margin-bottom: 12px; color: var(--muted); font: .5625rem "DM Mono", monospace; text-transform: uppercase; letter-spacing: .1em; }
 .catalog-count strong { color: var(--soft); font-weight: 500; }
 .catalog-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -317,7 +327,9 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .product-copy small { display: block; margin-bottom: 6px; color: var(--product-accent, var(--accent)); font: .5625rem "DM Mono", monospace; text-transform: uppercase; letter-spacing: .12em; }
 .product-copy h2 { margin: 0; font-size: 1rem; line-height: 1.25; letter-spacing: -.025em; }
 .product-copy p { display: -webkit-box; margin: 9px 0 0; overflow: hidden; color: var(--muted); font-size: .75rem; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
-.product-copy > div { display: flex; gap: 12px; margin-top: 14px; color: #6f747d; font: .5625rem "DM Mono", monospace; text-transform: uppercase; }
+.product-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.product-tags span, .detail-tags span { padding: 4px 6px; border: 1px solid color-mix(in srgb, var(--product-accent, var(--accent)) 22%, #30343a); border-radius: 999px; color: #9a9fa7; background: #111317; font: .5rem "DM Mono", monospace; text-transform: uppercase; letter-spacing: .035em; }
+.product-stats { display: flex; gap: 12px; margin-top: 10px; color: #6f747d; font: .5625rem "DM Mono", monospace; text-transform: uppercase; }
 .combo-product > b { position: absolute; right: 17px; top: 50%; color: var(--muted); font: 14px "DM Mono", monospace; font-weight: 400; transform: translateY(-50%); }
 .combo-product:hover > b { color: var(--product-accent, var(--accent)); }
 .catalog-empty { grid-column: 1/-1; padding: 60px 20px; border: 1px dashed #30343a; border-radius: 10px; color: var(--muted); text-align: center; font-size: .6875rem; }
@@ -333,6 +345,7 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .detail-header { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 35px; margin-bottom: 16px; }
 .detail-header h1 { margin: 0 0 7px; font-size: clamp(1.75rem,4vw,2.875rem); line-height: 1; letter-spacing: -.055em; }
 .detail-header p:not(.eyebrow) { max-width: 720px; margin: 0; color: var(--muted); font-size: .6875rem; line-height: 1.55; }
+.detail-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
 .detail-source { display: grid; justify-items: end; gap: 5px; padding-bottom: 3px; }
 .detail-source span { color: #6d727a; font: .5rem "DM Mono", monospace; text-transform: uppercase; letter-spacing: .12em; }
 .detail-source a { color: var(--accent); font-size: .625rem; text-decoration: none; }
@@ -499,6 +512,13 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
   .catalog-header { grid-template-columns: 1fr; gap: 22px; margin-bottom: 20px; }
   .catalog-header h1 { font-size: 2.75rem; }
   .catalog-search input, textarea { font-size: 1rem; }
+  .catalog-filters { gap: 9px; margin-bottom: 15px; padding: 12px; }
+  .filter-group { grid-template-columns: 1fr; gap: 5px; }
+  .filter-group > span { padding-top: 0; }
+  .filter-group > div { flex-wrap: nowrap; margin-right: -12px; padding-right: 12px; overflow-x: auto; scrollbar-width: none; }
+  .filter-group > div::-webkit-scrollbar { display: none; }
+  .filter-group button { flex: 0 0 auto; min-height: 32px; }
+  .clear-filters { top: 7px; right: 8px; }
   .catalog-grid { grid-template-columns: 1fr; }
   .source-shelf { align-items: flex-start; flex-direction: column; }
   .source-shelf > div { justify-content: flex-start; }
@@ -506,7 +526,7 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
   .detail-header { position: relative; display: block; min-height: 37px; margin-bottom: 7px; padding-right: 52px; }
   .detail-header .eyebrow { margin-bottom: 3px !important; font-size: .5625rem !important; letter-spacing: .12em; }
   .detail-header h1 { margin: 0; font-size: clamp(1.375rem,6.8vw,1.75rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .detail-header p:not(.eyebrow), .detail-source span { display: none; }
+  .detail-header p:not(.eyebrow), .detail-tags, .detail-source span { display: none; }
   .detail-source { position: absolute; top: 17px; right: 0; display: block; padding: 0; }
   .detail-source a { font-size: 0; }
   .detail-source a::after { content: "Source ↗"; font-size: .5625rem; }

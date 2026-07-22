@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS combos (
   content_type TEXT NOT NULL DEFAULT 'dln' CHECK (content_type IN ('dln', 'guide')),
   difficulty TEXT,
   source_license TEXT,
+  tags JSONB NOT NULL DEFAULT '[]'::jsonb,
   manifest JSONB NOT NULL,
   line TEXT,
   guide JSONB,
@@ -30,5 +31,6 @@ CREATE INDEX IF NOT EXISTS combos_title_idx ON combos (title);
 ALTER TABLE combos ADD COLUMN IF NOT EXISTS content_type TEXT NOT NULL DEFAULT 'dln';
 ALTER TABLE combos ADD COLUMN IF NOT EXISTS difficulty TEXT;
 ALTER TABLE combos ADD COLUMN IF NOT EXISTS source_license TEXT;
+ALTER TABLE combos ADD COLUMN IF NOT EXISTS tags JSONB NOT NULL DEFAULT '[]'::jsonb;
 ALTER TABLE combos ADD COLUMN IF NOT EXISTS guide JSONB;
 ALTER TABLE combos ALTER COLUMN line DROP NOT NULL;

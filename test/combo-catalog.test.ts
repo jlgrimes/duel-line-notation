@@ -10,6 +10,8 @@ test("combo catalog returns lightweight summaries and fetches details separately
   assert.ok(list.combos.length >= 14);
   assert.equal("line" in list.combos[0]!, false);
   assert.equal("manifest" in list.combos[0]!, false);
+  assert.ok(Array.isArray(list.combos[0]!.tags));
+  assert.ok((list.combos[0]!.tags as string[]).length >= 3);
 
   const id = String(list.combos[0]!.id);
   const detailResponse = await combos.fetch(new Request(`https://example.test/api/combos?id=${encodeURIComponent(id)}`));

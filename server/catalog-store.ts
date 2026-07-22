@@ -1,5 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import type { ComboDetail, ComboSummary } from "../src/catalog-model.js";
+import type { ComboTag } from "../src/combo-tags.js";
+import { COMBO_TAG_GROUPS } from "../src/combo-tags.js";
 import type { DeckManifest } from "../src/model.js";
 import { loadFileCombos } from "./catalog-files.js";
 
@@ -12,9 +14,9 @@ export async function listCombos(query = ""): Promise<{ combos: ComboSummary[]; 
   const rows = await sql.query(`
     SELECT id, deck_slug, line_slug, deck_name, title, summary, summon, accent, format,
       source_label, source_url, representative_card_name, hand_size, step_count,
-      content_type, difficulty, source_license
+      content_type, difficulty, source_license, tags
     FROM combos
-    WHERE $1 = '%%' OR deck_name ILIKE $1 OR title ILIKE $1 OR summary ILIKE $1 OR summon ILIKE $1
+    WHERE $1 = '%%' OR deck_name ILIKE $1 OR title ILIKE $1 OR summary ILIKE $1 OR summon ILIKE $1 OR tags::text ILIKE $1
     ORDER BY deck_name, title
   `, [search]) as DatabaseCombo[];
   return { combos: rows.map(fromDatabaseSummary), backend: "database" };
@@ -29,7 +31,7 @@ export async function getCombo(id: string): Promise<{ combo?: ComboDetail; backe
   const rows = await sql.query(`
     SELECT id, deck_slug, line_slug, deck_name, title, summary, summon, accent, format,
       source_label, source_url, representative_card_name, hand_size, step_count,
-      content_type, difficulty, source_license, manifest, line, guide
+      content_type, difficulty, source_license, tags, manifest, line, guide
     FROM combos WHERE id = $1 LIMIT 1
   `, [id]) as DatabaseCombo[];
   const row = rows[0];
@@ -62,6 +64,7 @@ interface DatabaseCombo {
   content_type: "dln" | "guide";
   difficulty?: string | null;
   source_license?: string | null;
+  tags?: unknown;
   manifest?: unknown;
   line?: string | null;
   guide?: unknown;
@@ -86,6 +89,7 @@ function fromDatabaseSummary(row: DatabaseCombo): ComboSummary {
     contentType: row.content_type,
     ...(row.difficulty ? { difficulty: row.difficulty } : {}),
     ...(row.source_license ? { sourceLicense: row.source_license } : {}),
+    tags: asTags(row.tags),
   };
 }
 
@@ -104,4 +108,10 @@ function asManifest(value: unknown): DeckManifest {
 
 function asGuide(value: unknown): NonNullable<ComboDetail["guide"]> {
   return (typeof value === "string" ? JSON.parse(value) : value) as NonNullable<ComboDetail["guide"]>;
+}
+
+function asTags(value: unknown): ComboTag[] {
+  const parsed = (typeof value === "string" ? JSON.parse(value) : value) as unknown;
+  const allowed = new Set<string>(COMBO_TAG_GROUPS.flatMap((group) => [...group.tags]));
+  return Array.isArray(parsed) ? parsed.filter((tag): tag is ComboTag => typeof tag === "string" && allowed.has(tag)) : [];
 }
