@@ -4,45 +4,43 @@ import { DuelBoard } from "../DuelBoard";
 import { useCardScans } from "../card-service";
 import "./SimulatorBoardPreview.css";
 
-const PURE_MITSURUGI_MANIFEST: DeckManifest = {
+const OCGCORE_BOOTSTRAP_MANIFEST: DeckManifest = {
   schemaVersion: 1,
-  slug: "pure-mitsurugi-simulator-preview",
-  name: "Pure Mitsurugi simulator preview",
+  slug: "ocgcore-bootstrap-simulator",
+  name: "ocgcore bootstrap simulator",
   cards: {
-    ARA: { name: "Mitsurugi no Miko, Aramasa", kind: "monster", level: 4 },
-    PRY: { name: "Mitsurugi Prayers", kind: "spell" },
-    HAB: { name: "Ame no Habakiri no Mitsurugi", kind: "monster", level: 4 },
+    ELF: { name: "Mystical Elf", kind: "monster", level: 4 },
   },
 };
 
 export function SimulatorBoardPreview({ frame }: { frame: PlaybackFrame | null }) {
-  const { scans, loading } = useCardScans(PURE_MITSURUGI_MANIFEST);
+  const { scans, loading } = useCardScans(OCGCORE_BOOTSTRAP_MANIFEST);
 
   return (
     <section className="simulator-board-preview" aria-labelledby="simulator-board-title">
       <header>
         <div>
-          <p className="eyebrow">Milestone 05 · decoder boundary</p>
+          <p className="eyebrow">Milestone 06 · queried core state</p>
           <h2 id="simulator-board-title">Decoded engine board</h2>
         </div>
         <p>
-          The real core is running, but React will not invent a board while card records and field-query decoding are still
-          absent. This surface will render only state projected from ocgcore through the shared snapshot model.
+          Every visible card and movement on this board now comes from ocgcore card queries and processed engine responses,
+          translated into the shared immutable PlaybackFrame model.
         </p>
       </header>
       {frame ? (
         <>
           <div className="duel-visualizer simulator-board-surface">
-            <DuelBoard frame={frame} scans={scans} ariaLabel="Pure Mitsurugi decoded engine board" />
+            <DuelBoard frame={frame} scans={scans} ariaLabel="Decoded ocgcore duel board" />
           </div>
           <p className={`scan-credit ${loading ? "loading" : ""}`}>
-            <i /> {loading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and
+            <i /> {loading ? "Resolving card scan…" : `${Object.keys(scans).length} real card scan loaded`} · Data and
             images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
           </p>
         </>
       ) : (
         <div className="simulator-note">
-          Real ocgcore is ready. Waiting for the card database, Lua resolver, and field-query decoder before publishing a board snapshot.
+          Loading the real duel, drawing the bootstrap card, and querying the first engine-owned frame.
         </div>
       )}
     </section>
