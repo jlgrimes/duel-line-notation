@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { findEmscriptenToolchain } from "./emscripten-toolchain.mjs";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceRoot = resolve(packageRoot, "vendor/ocgcore");
@@ -19,14 +20,19 @@ if (!existsSync(resolve(packageRoot, "CMakeLists.txt"))) {
   throw new Error("Missing packages/ocgcore/CMakeLists.txt wrapper.");
 }
 
+const toolchain = findEmscriptenToolchain();
+if (!toolchain) {
+  throw new Error("Could not locate Emscripten.cmake from the active SDK.");
+}
+
 mkdirSync(buildRoot, { recursive: true });
 mkdirSync(distRoot, { recursive: true });
 
-run("emcmake", [
-  "cmake",
+run("cmake", [
   "-S", packageRoot,
   "-B", buildRoot,
   "-DCMAKE_BUILD_TYPE=Release",
+  `-DCMAKE_TOOLCHAIN_FILE=${toolchain}`,
   `-DOCGCORE_SOURCE_DIR=${sourceRoot}`,
   `-DOCGCORE_DIST_DIR=${distRoot}`,
 ]);
