@@ -1,4 +1,5 @@
 import type { PlaybackFrame } from "../visualizer.js";
+import type { EngineFieldState } from "./engine-state.js";
 
 export type EnginePhase = "idle" | "starting" | "ready" | "error";
 
@@ -26,7 +27,13 @@ export interface EngineSnapshot {
   statusMessage: string;
   engineVersion: number | null;
   stepValue: number;
+  /** The viewer's side of the board, projected for the visualizer. */
   board: PlaybackFrame | null;
+  /**
+   * The complete normalized engine state behind that board: both players, every
+   * location, and the current turn, phase, and Chain. `null` until the first query.
+   */
+  field: EngineFieldState | null;
   prompt: EngineActionPrompt | null;
 }
 
@@ -69,5 +76,6 @@ export const INITIAL_ENGINE_SNAPSHOT: EngineSnapshot = {
   engineVersion: null,
   stepValue: 0,
   board: null,
+  field: null,
   prompt: null,
 };

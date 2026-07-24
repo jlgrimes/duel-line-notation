@@ -28,7 +28,16 @@ The current simulator vertical slice is intentionally tiny but real:
 - The chosen response is written back to `ocgcore`.
 - The card leaves the hand and appears in the selected monster zone according to engine field queries.
 
-**Automated status:** the WebAssembly build, smoke test, and Vercel deployment are green.
+The **duel content** is still that one card, but the **state layer underneath it is no longer
+bootstrap-specific**. Every snapshot now queries both players, every supported location, and every
+occupied sequence, decodes the full card record, and normalizes the result into one immutable
+`EngineFieldState`. The board the visualizer renders is a projection of that state for one viewer,
+and its movements are diffed from consecutive snapshots rather than declared by the interface.
+Adding real cards is now a card-data problem, not a snapshot-plumbing problem.
+
+**Automated status:** the WebAssembly build, smoke test, and Vercel deployment are green. `npm run ci`
+additionally drives the shipping runtime against the published core in Node, and the packet, card, and
+field decoders are covered by golden buffers captured from the pinned core.
 
 **Manual status:** the latest board-first choice resolver still needs a fresh browser/mobile tap-through after the July 24 choice-UI update.
 
@@ -197,18 +206,35 @@ The current simulator vertical slice is intentionally tiny but real:
 - [x] Render the same card identity moving from hand to field.
 - [x] Map the selected engine sequence to M1–M5 instead of hard-coding M1 after every action.
 - [x] Put the game board before diagnostics and logs on the Simulator page.
+- [x] Replace the bootstrap-specific board builder with a generic full-field snapshot builder.
+- [x] Query every occupied sequence for both players and every supported location.
+- [x] Include complete LP, turn player, turn count, phase, and chain state.
+- [x] Include card status, reason, owner, controller, position, type, level/rank/link, counters, and overlays.
+- [x] Preserve stable card instance IDs across moves instead of relying on bootstrap-specific IDs.
+- [x] Build state diffs from consecutive snapshots rather than manually declaring movement.
+- [x] Make animations derive from engine-observed state transitions.
+- [x] Model hidden and public information separately.
+- [x] Decode the full `card::get_infos` segment format instead of reading single flags.
+- [x] Decode `OCG_DuelQueryField` for life points, zone occupancy, per-location counts, and the Chain.
+- [x] Transcribe the pinned core's location, position, type, phase, and query constants into one shared module.
+
+Notes on the three items above that are easy to over-read:
+
+- Hidden information is modelled but not yet enforced on the wire. `EngineFieldState` deliberately
+  holds engine truth, and `redactFieldStateForViewer` strips what a given viewer may not know. The
+  local single-viewer worker keeps full truth for diagnostics; any two-player or networked path must
+  redact before sending.
+- Counters and overlays are decoded and carried in the state. The visualizer does not draw them yet;
+  that work is tracked in section 3.
+- Separate Pendulum Zones (spell sequences 6 and 7) have no visual slot. With the duel flags this
+  project uses, the core places Pendulum cards in spell sequence 0 or 4, which already map to S1/S5.
 
 ## Still required
 
-- [ ] Replace the bootstrap-specific board builder with a generic full-field snapshot builder.
-- [ ] Query every occupied sequence for both players and every supported location.
-- [ ] Include complete LP, turn player, turn count, phase, priority, and chain state.
-- [ ] Include card status, reason, owner, controller, position, type, level/rank/link, counters, and overlays.
-- [ ] Preserve stable card instance IDs across moves instead of relying on bootstrap-specific IDs.
-- [ ] Build state diffs from consecutive snapshots rather than manually declaring movement.
-- [ ] Make animations derive from engine-observed state transitions.
-- [ ] Model hidden and public information separately.
+- [ ] Include priority in the snapshot; the pinned core does not expose it through any query.
 - [ ] Add snapshot serialization fixtures for tests and replay/debug reports.
+- [ ] Add `OCG_DuelQueryLocation` to the bridge so a location is read in one call instead of per sequence.
+- [ ] Reconcile turn and phase tracking with the engine after actions that skip or repeat a phase.
 
 ---
 
@@ -422,13 +448,17 @@ The authored notation, visual playback, and real rules engine should converge on
 - [x] Real card registration and field-query smoke test.
 - [x] Real legal Normal Summon prompt smoke test.
 - [x] Real action + monster-zone choice + resulting field-state smoke test.
+- [x] Golden packet, card-query, and field-query fixtures captured from the pinned core.
+- [x] A reproducible capture script (`npm run ocgcore:fixtures`) that regenerates those fixtures.
+- [x] Snapshot tests for normalized engine states, including JSON round-tripping.
+- [x] Unit tests for the message framer, the card-query decoder, and the field-query decoder.
+- [x] An end-to-end test that drives the shipping runtime against the published core in Node.
 
 ## Still required
 
-- [ ] Unit tests for every packet decoder.
+- [ ] Unit tests for the remaining prompt decoders: idle command, place, and position.
 - [ ] Unit tests for every response encoder.
-- [ ] Golden packet fixtures captured from the pinned core.
-- [ ] Snapshot tests for normalized engine states.
+- [ ] A drift check that fails CI when the golden fixtures no longer match a freshly published core.
 - [ ] Browser end-to-end test for the Simulator choice flow.
 - [ ] Mobile viewport end-to-end test.
 - [ ] Tests for stale prompt rejection and double taps.
@@ -504,7 +534,7 @@ These are the next practical milestones, in order:
 
 1. [ ] Manually verify the deployed action → zone → summon flow on mobile and desktop.
 2. [ ] Add browser end-to-end coverage for that flow.
-3. [ ] Generalize snapshot construction beyond the one-card bootstrap.
+3. [x] Generalize snapshot construction beyond the one-card bootstrap.
 4. [ ] Add the real card database and Lua script resolver.
 5. [ ] Load the minimum real Mitsurugi card/script set.
 6. [ ] Implement the next required prompt types encountered by that line, rather than implementing every protocol message speculatively.

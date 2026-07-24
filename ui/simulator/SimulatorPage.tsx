@@ -135,6 +135,7 @@ export function SimulatorPage() {
 
   const ready = snapshot.phase === "ready";
   const processStatus = PROCESS_STATUS_NAMES[snapshot.stepValue] ?? `Unknown (${snapshot.stepValue})`;
+  const field = snapshot.field;
 
   return (
     <section className="simulator-page">
@@ -170,7 +171,19 @@ export function SimulatorPage() {
           <dl className="engine-facts">
             <div><dt>Duel scope</dt><dd>Deterministic one-card decks</dd></div>
             <div><dt>Execution</dt><dd>Web Worker + real WASM</dd></div>
-            <div><dt>Board source</dt><dd>{snapshot.board ? "OCG field queries" : "Waiting"}</dd></div>
+            <div>
+              <dt>Turn · phase</dt>
+              <dd>{field ? `Turn ${field.turnCount} · ${field.phaseName}` : "Waiting"}</dd>
+            </div>
+            <div>
+              <dt>Cards located</dt>
+              <dd>{field ? `${field.cards.length} across both players` : "Waiting"}</dd>
+            </div>
+            <div>
+              <dt>Life points</dt>
+              <dd>{field ? `${field.players[0].lp.toLocaleString()} · ${field.players[1].lp.toLocaleString()}` : "Waiting"}</dd>
+            </div>
+            <div><dt>Chain</dt><dd>{field ? (field.chain.length === 0 ? "No Chain" : `${field.chain.length} link(s)`) : "Waiting"}</dd></div>
             <div><dt>Current choice</dt><dd>{snapshot.prompt?.title ?? "No choice pending"}</dd></div>
             <div><dt>Core API</dt><dd>{snapshot.engineVersion === null ? "Not loaded" : snapshot.engineVersion.toFixed(1)}</dd></div>
             <div><dt>Process status</dt><dd>{ready ? processStatus : "Waiting"}</dd></div>

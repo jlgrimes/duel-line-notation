@@ -20,12 +20,13 @@ export function SimulatorBoardPreview({ frame }: { frame: PlaybackFrame | null }
     <section className="simulator-board-preview" aria-labelledby="simulator-board-title">
       <header>
         <div>
-          <p className="eyebrow">Milestone 06 · queried core state</p>
+          <p className="eyebrow">Milestone 08 · generic engine snapshots</p>
           <h2 id="simulator-board-title">Decoded engine board</h2>
         </div>
         <p>
-          Every visible card and movement on this board now comes from ocgcore card queries and processed engine responses,
-          translated into the shared immutable PlaybackFrame model.
+          Every player, location, and occupied sequence is queried from ocgcore and normalized into one immutable state.
+          This board is that state projected for you; the movements below it are diffed from consecutive snapshots rather
+          than declared by the interface.
         </p>
       </header>
       {frame ? (

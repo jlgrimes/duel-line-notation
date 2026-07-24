@@ -65,7 +65,7 @@ export class SmokeEngineRuntime {
   }
 
   private async initialize(events: EngineEvent[]): Promise<void> {
-    this.currentSnapshot = { phase: "starting", statusMessage: "Starting engine worker…", engineVersion: null, stepValue: 0, board: null, prompt: null };
+    this.currentSnapshot = { phase: "starting", statusMessage: "Starting engine worker…", engineVersion: null, stepValue: 0, board: null, field: null, prompt: null };
     events.push(
       { type: "status", phase: "starting", message: this.currentSnapshot.statusMessage },
       { type: "log", level: "info", message: "Web Worker started", detail: "The simulator engine is isolated from the React render thread." },
@@ -88,6 +88,7 @@ export class SmokeEngineRuntime {
       engineVersion,
       stepValue: 0,
       board: structuredClone(PURE_MITSURUGI_OPENING),
+      field: null,
       prompt: null,
     };
     events.push(
@@ -111,7 +112,7 @@ export class SmokeEngineRuntime {
 
   private reset(events: EngineEvent[]): void {
     this.engine = null;
-    this.currentSnapshot = { phase: "idle", statusMessage: "Engine reset", engineVersion: null, stepValue: 0, board: null, prompt: null };
+    this.currentSnapshot = { phase: "idle", statusMessage: "Engine reset", engineVersion: null, stepValue: 0, board: null, field: null, prompt: null };
     events.push(
       { type: "status", phase: "idle", message: this.currentSnapshot.statusMessage },
       { type: "log", level: "info", message: "Engine reset", detail: "The worker remains alive and can initialize a fresh module instance." },

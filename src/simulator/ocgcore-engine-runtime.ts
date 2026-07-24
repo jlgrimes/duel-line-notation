@@ -8,9 +8,45 @@ import {
   type EngineWorkerRequest,
   type EngineWorkerResponse,
 } from "./engine-protocol.js";
-import type { PlaybackFrame, VisualFieldSlot } from "../visualizer.js";
+import {
+  FULL_CARD_QUERY_FLAGS,
+  LOCATION_DECK,
+  LOCATION_EXTRA,
+  LOCATION_GRAVE,
+  LOCATION_HAND,
+  LOCATION_MZONE,
+  LOCATION_REMOVED,
+  LOCATION_SZONE,
+  MSG_NEW_PHASE,
+  MSG_NEW_TURN,
+  MSG_SELECT_IDLECMD,
+  MSG_SELECT_PLACE,
+  MSG_SELECT_POSITION,
+  PHASE_DRAW,
+  POS_FACEDOWN_DEFENSE,
+  QUERYABLE_LOCATIONS,
+  messageName,
+} from "./engine-constants.js";
+import {
+  decodeCardQuery,
+  decodeFieldQuery,
+  parsePackets,
+  type OcgcorePacket,
+  type QueriedField,
+} from "./engine-query.js";
+import {
+  buildBoardFrame,
+  buildEngineFieldState,
+  diffFieldStates,
+  type EngineCardRegistry,
+  type EngineFieldState,
+  type QueriedCardAtAddress,
+} from "./engine-state.js";
+import type { PlaybackFrame } from "../visualizer.js";
 
-interface OcgcoreModule {
+export { summarizeFirstOcgcorePacket, type OcgcorePacketSummary } from "./engine-query.js";
+
+export interface OcgcoreModule {
   HEAPU8: Uint8Array;
   HEAPU32: Uint32Array;
   _malloc(size: number): number;
@@ -21,6 +57,13 @@ interface OcgcoreModule {
     argumentTypes: Array<"number">,
   ): (...arguments_: number[]) => number;
 }
+
+/**
+ * How the runtime obtains an instantiated core. The browser worker uses the default
+ * same-origin loader; tests inject a loader that reads the published artifacts from
+ * disk, so the class under test is the one that actually ships.
+ */
+export type OcgcoreModuleLoader = () => Promise<OcgcoreModule>;
 
 interface OcgcoreFactoryOptions {
   locateFile(file: string): string;
@@ -81,12 +124,7 @@ interface OcgcoreBindings {
     overlaySequence: number,
     lengthPointer: number,
   ): number;
-}
-
-interface OcgcorePacket {
-  type: number;
-  payload: Uint8Array;
-  packetBytes: number;
+  queryField(handle: number, lengthPointer: number): number;
 }
 
 interface SupportedChoice {
@@ -99,60 +137,20 @@ interface SupportedPrompt {
   choices: SupportedChoice[];
 }
 
-interface QueriedCard {
-  code: number;
-  position: number;
-  sequence: number;
-}
-
-export interface OcgcorePacketSummary {
-  totalBytes: number;
-  packetBytes: number;
-  messageType: number;
-  messageName: string;
-}
-
 const CARD_CODE = 15025844;
 const CARD_NAME = "Mystical Elf";
 const CARD_ALIAS = "ELF";
 
-const LOCATION_DECK = 0x01;
-const LOCATION_HAND = 0x02;
-const LOCATION_MZONE = 0x04;
-const POS_FACEUP = 0x05;
-const POS_FACEDOWN_DEFENSE = 0x08;
-const QUERY_CODE = 0x01;
-const QUERY_POSITION = 0x02;
-
-const MSG_SELECT_IDLECMD = 11;
-const MSG_SELECT_PLACE = 18;
-const MSG_SELECT_POSITION = 19;
-const MSG_NEW_TURN = 40;
-
-const MESSAGE_NAMES: Readonly<Record<number, string>> = {
-  1: "MSG_RETRY",
-  2: "MSG_HINT",
-  3: "MSG_WAITING",
-  4: "MSG_START",
-  5: "MSG_WIN",
-  6: "MSG_UPDATE_DATA",
-  7: "MSG_UPDATE_CARD",
-  8: "MSG_REQUEST_DECK",
-  10: "MSG_SELECT_BATTLECMD",
-  11: "MSG_SELECT_IDLECMD",
-  12: "MSG_SELECT_EFFECTYN",
-  13: "MSG_SELECT_YESNO",
-  14: "MSG_SELECT_OPTION",
-  15: "MSG_SELECT_CARD",
-  18: "MSG_SELECT_PLACE",
-  19: "MSG_SELECT_POSITION",
-  40: "MSG_NEW_TURN",
-  41: "MSG_NEW_PHASE",
-  50: "MSG_MOVE",
-  60: "MSG_SUMMONING",
-  61: "MSG_SUMMONED",
-  90: "MSG_DRAW",
+/**
+ * The only card the simulator currently registers. Section 7 of the checklist replaces
+ * this with a real card database and script resolver; until then the board builder reads
+ * names from this registry and falls back to engine-derived values for anything else.
+ */
+const BOOTSTRAP_CARD_REGISTRY: EngineCardRegistry = {
+  [CARD_CODE]: { alias: CARD_ALIAS, name: CARD_NAME, kind: "monster", level: 4 },
 };
+
+const VIEWER = 0;
 
 const POSITION_OPTIONS = [
   { value: 0x01, label: "Face-up Attack", detail: "Summon the monster in Attack Position." },
@@ -175,53 +173,26 @@ function uint32Response(value: number): Uint8Array {
   return response;
 }
 
-function parsePackets(bytes: Uint8Array): OcgcorePacket[] {
-  const packets: OcgcorePacket[] = [];
-  let offset = 0;
-  while (offset < bytes.byteLength) {
-    if (offset + 4 > bytes.byteLength) {
-      throw new Error(`Truncated ocgcore packet header at byte ${offset}.`);
-    }
-    const packetBytes = new DataView(bytes.buffer, bytes.byteOffset + offset, 4).getUint32(0, true);
-    if (packetBytes < 1 || offset + 4 + packetBytes > bytes.byteLength) {
-      throw new Error(`Malformed ocgcore packet length ${packetBytes} at byte ${offset}.`);
-    }
-    const payload = bytes.slice(offset + 4, offset + 4 + packetBytes);
-    packets.push({ type: payload[0]!, payload, packetBytes });
-    offset += 4 + packetBytes;
+/** Loads the CI-published core from the origin serving the app. */
+async function loadSameOriginModule(): Promise<OcgcoreModule> {
+  const moduleUrl = new URL("/ocgcore/ocgcore.js", globalThis.location.origin).href;
+  const wasmUrl = new URL("/ocgcore/ocgcore.wasm", globalThis.location.origin).href;
+  const imported = await import(/* @vite-ignore */ moduleUrl) as { default?: OcgcoreFactory };
+  if (typeof imported.default !== "function") {
+    throw new Error("The published ocgcore module does not expose its Emscripten factory.");
   }
-  return packets;
-}
 
-export function summarizeFirstOcgcorePacket(bytes: Uint8Array): OcgcorePacketSummary {
-  const first = parsePackets(bytes)[0];
-  if (!first) throw new Error("ocgcore produced an empty message buffer.");
-  return {
-    totalBytes: bytes.byteLength,
-    packetBytes: first.packetBytes,
-    messageType: first.type,
-    messageName: MESSAGE_NAMES[first.type] ?? `MSG_${first.type}`,
-  };
-}
-
-function queryUint32(bytes: Uint8Array, wantedFlag: number): number {
-  let offset = 0;
-  while (offset + 6 <= bytes.byteLength) {
-    const view = new DataView(bytes.buffer, bytes.byteOffset + offset, bytes.byteLength - offset);
-    const segmentLength = view.getUint16(0, true);
-    const segmentEnd = offset + 2 + segmentLength;
-    if (segmentLength < 4 || segmentEnd > bytes.byteLength) {
-      throw new Error(`Malformed ocgcore query segment at byte ${offset}.`);
-    }
-    const flag = view.getUint32(2, true);
-    if (flag === wantedFlag) {
-      if (segmentLength < 8) throw new Error(`Query flag ${wantedFlag} has no uint32 payload.`);
-      return view.getUint32(6, true);
-    }
-    if (flag === 0x80000000) break;
-    offset = segmentEnd;
-  }
-  throw new Error(`ocgcore query did not include flag ${wantedFlag}.`);
+  let abortReason: unknown = null;
+  const loaded = await imported.default({
+    locateFile(file) {
+      return file.endsWith(".wasm") ? wasmUrl : new URL(`/ocgcore/${file}`, globalThis.location.origin).href;
+    },
+    onAbort(reason) {
+      abortReason = reason;
+    },
+  });
+  if (abortReason !== null) throw new Error(`ocgcore aborted while loading: ${String(abortReason)}`);
+  return loaded;
 }
 
 function bindModule(module: OcgcoreModule): OcgcoreBindings {
@@ -239,6 +210,7 @@ function bindModule(module: OcgcoreModule): OcgcoreBindings {
     setResponse: module.cwrap("dln_ocg_set_response", "number", ["number", "number", "number"]) as OcgcoreBindings["setResponse"],
     queryCount: module.cwrap("dln_ocg_query_count", "number", ["number", "number", "number"]) as OcgcoreBindings["queryCount"],
     queryCard: module.cwrap("dln_ocg_query_card", "number", numberArguments(7)) as OcgcoreBindings["queryCard"],
+    queryField: module.cwrap("dln_ocg_query_field", "number", ["number", "number"]) as OcgcoreBindings["queryField"],
   };
 }
 
@@ -248,6 +220,16 @@ export class OcgcoreEngineRuntime {
   private bindings: OcgcoreBindings | null = null;
   private duelHandle = 0;
   private pendingPrompt: SupportedPrompt | null = null;
+  private fieldState: EngineFieldState | null = null;
+  private turnPlayer = 0;
+  private turnCount = 0;
+  private phase = PHASE_DRAW;
+  private stepNumber = 0;
+  private readonly loadModule: OcgcoreModuleLoader;
+
+  constructor(loadModule: OcgcoreModuleLoader = loadSameOriginModule) {
+    this.loadModule = loadModule;
+  }
 
   snapshot(): EngineSnapshot {
     return copySnapshot(this.currentSnapshot);
@@ -287,12 +269,18 @@ export class OcgcoreEngineRuntime {
     this.module = null;
     this.bindings = null;
     this.pendingPrompt = null;
+    this.fieldState = null;
+    this.turnPlayer = 0;
+    this.turnCount = 0;
+    this.phase = PHASE_DRAW;
+    this.stepNumber = 0;
     this.currentSnapshot = {
       phase: "starting",
       statusMessage: "Loading real ocgcore…",
       engineVersion: null,
       stepValue: 0,
       board: null,
+      field: null,
       prompt: null,
     };
     events.push(
@@ -300,24 +288,7 @@ export class OcgcoreEngineRuntime {
       { type: "log", level: "info", message: "Engine worker started", detail: "Loading the CI-built Project Ignis core from the same origin." },
     );
 
-    const moduleUrl = new URL("/ocgcore/ocgcore.js", globalThis.location.origin).href;
-    const wasmUrl = new URL("/ocgcore/ocgcore.wasm", globalThis.location.origin).href;
-    const imported = await import(/* @vite-ignore */ moduleUrl) as { default?: OcgcoreFactory };
-    if (typeof imported.default !== "function") {
-      throw new Error("The published ocgcore module does not expose its Emscripten factory.");
-    }
-
-    let abortReason: unknown = null;
-    const loadedModule = await imported.default({
-      locateFile(file) {
-        return file.endsWith(".wasm") ? wasmUrl : new URL(`/ocgcore/${file}`, globalThis.location.origin).href;
-      },
-      onAbort(reason) {
-        abortReason = reason;
-      },
-    });
-    if (abortReason !== null) throw new Error(`ocgcore aborted while loading: ${String(abortReason)}`);
-
+    const loadedModule = await this.loadModule();
     this.module = loadedModule;
     const bindings = bindModule(loadedModule);
     this.bindings = bindings;
@@ -352,7 +323,7 @@ export class OcgcoreEngineRuntime {
       throw new Error("ocgcore reached a prompt, but no supported choice was decoded.");
     }
 
-    const board = this.buildBoard(false);
+    const { board, state } = this.captureState();
     const engineVersion = major + minor / 100;
     this.currentSnapshot = {
       phase: "ready",
@@ -360,10 +331,11 @@ export class OcgcoreEngineRuntime {
       engineVersion,
       stepValue: processed.status,
       board,
+      field: state,
       prompt: this.pendingPrompt.prompt,
     };
     events.push(
-      { type: "log", level: "success", message: "Real opening hand queried", detail: `${CARD_NAME} is in player 0's hand according to ocgcore.` },
+      { type: "log", level: "success", message: "Full engine state queried", detail: this.describeState() },
       { type: "log", level: "success", message: "Engine choice decoded", detail: this.pendingPrompt.prompt.title },
       { type: "initialized", engineVersion },
       { type: "board-updated", frameKey: board.key },
@@ -385,7 +357,7 @@ export class OcgcoreEngineRuntime {
     }
 
     const previous = this.currentSnapshot.stepValue;
-    const hadFieldCard = this.hasFieldCard();
+    const previousState = this.fieldState;
     const promptTitle = this.pendingPrompt.prompt.title;
     this.writeResponse(selected.response);
     this.pendingPrompt = null;
@@ -393,10 +365,11 @@ export class OcgcoreEngineRuntime {
     const processed = this.processUntilPause();
     const nextPrompt = this.findSupportedPrompt(processed.packets);
     this.pendingPrompt = nextPrompt;
-    const hasFieldCard = this.hasFieldCard();
-    const board = this.buildBoard(!hadFieldCard && hasFieldCard);
-    const statusMessage = nextPrompt?.prompt.title
-      ?? (hasFieldCard ? `${CARD_NAME} was Normal Summoned by ocgcore` : "Engine choice resolved");
+
+    this.stepNumber += 1;
+    const { board, state } = this.captureState();
+    const transitions = diffFieldStates(previousState, state);
+    const statusMessage = nextPrompt?.prompt.title ?? board.label;
 
     this.currentSnapshot = {
       ...this.currentSnapshot,
@@ -404,16 +377,124 @@ export class OcgcoreEngineRuntime {
       statusMessage,
       stepValue: processed.status,
       board,
+      field: state,
       prompt: nextPrompt?.prompt ?? null,
     };
-    const packetNames = processed.packets.map((packet) => MESSAGE_NAMES[packet.type] ?? `MSG_${packet.type}`);
     events.push(
       { type: "step-result", previous, next: processed.status },
       { type: "log", level: "success", message: selectedOption.label, detail: `Resolved “${promptTitle}” through the real ocgcore response buffer.` },
-      { type: "log", level: "success", message: "Core packets processed", detail: packetNames.join(" → ") || "No packets" },
+      { type: "log", level: "success", message: "Core packets processed", detail: processed.packets.map((packet) => messageName(packet.type)).join(" → ") || "No packets" },
+      {
+        type: "log",
+        level: "success",
+        message: "State diff observed",
+        detail: transitions.length === 0
+          ? "No card changed location or position."
+          : transitions.map((transition) => `${transition.kind} #${transition.code}`).join(", "),
+      },
       { type: "board-updated", frameKey: board.key },
       { type: "status", phase: "ready", message: statusMessage },
     );
+  }
+
+  /**
+   * Queries everything the engine knows, normalizes it, and projects the viewer's board.
+   *
+   * The previous state is passed through so card instance ids survive the move and the
+   * frame's movements are derived from the observed diff.
+   */
+  private captureState(): { board: PlaybackFrame; state: EngineFieldState; previous: EngineFieldState | null } {
+    const previous = this.fieldState;
+    const field = this.queryField();
+    const state = buildEngineFieldState({
+      field,
+      cards: this.queryAllCards(field),
+      turnPlayer: this.turnPlayer,
+      turnCount: this.turnCount,
+      phase: this.phase,
+      previous,
+    });
+    this.fieldState = state;
+    const board = buildBoardFrame(state, {
+      viewer: VIEWER,
+      stepNumber: this.stepNumber,
+      registry: BOOTSTRAP_CARD_REGISTRY,
+      previous,
+    });
+    return { board, state, previous };
+  }
+
+  private describeState(): string {
+    const state = this.fieldState;
+    if (!state) return "No state has been queried yet.";
+    const player = state.players[VIEWER];
+    return `${state.phaseName}, turn ${state.turnCount}. `
+      + `LP ${player.lp} · deck ${player.deckCount} · hand ${player.handCount} · GY ${player.graveCount}. `
+      + `${state.cards.length} card${state.cards.length === 1 ? "" : "s"} located across both players.`;
+  }
+
+  /**
+   * Walks every player, every queryable location, and every sequence within it.
+   *
+   * Zone-shaped locations are sparse, so their occupancy comes from the field query and
+   * only the occupied sequences are queried. List-shaped locations are dense, so their
+   * count is enough. Xyz materials are queried underneath the monster holding them.
+   */
+  private queryAllCards(field: QueriedField): QueriedCardAtAddress[] {
+    const entries: QueriedCardAtAddress[] = [];
+    field.players.forEach((player, controller) => {
+      for (const location of QUERYABLE_LOCATIONS) {
+        for (const sequence of this.sequencesFor(player, location)) {
+          const card = this.queryCardAt(controller, location, sequence, 0);
+          if (!card) continue;
+          entries.push({ card, address: { controller, location, sequence, overlaySequence: null } });
+
+          if (location !== LOCATION_MZONE) continue;
+          const overlayCount = player.monsterZones[sequence]?.overlayCount ?? 0;
+          for (let overlaySequence = 0; overlaySequence < overlayCount; overlaySequence += 1) {
+            const material = this.queryCardAt(controller, location, sequence, overlaySequence);
+            if (!material) continue;
+            entries.push({ card: material, address: { controller, location, sequence, overlaySequence } });
+          }
+        }
+      }
+    });
+    return entries;
+  }
+
+  private sequencesFor(player: QueriedField["players"][number], location: number): number[] {
+    if (location === LOCATION_MZONE) {
+      return player.monsterZones.flatMap((slot, sequence) => (slot.occupied ? [sequence] : []));
+    }
+    if (location === LOCATION_SZONE) {
+      return player.spellZones.flatMap((slot, sequence) => (slot.occupied ? [sequence] : []));
+    }
+    const counts: Readonly<Record<number, number>> = {
+      [LOCATION_DECK]: player.deckCount,
+      [LOCATION_HAND]: player.handCount,
+      [LOCATION_GRAVE]: player.graveCount,
+      [LOCATION_REMOVED]: player.banishedCount,
+      [LOCATION_EXTRA]: player.extraCount,
+    };
+    return Array.from({ length: counts[location] ?? 0 }, (_, sequence) => sequence);
+  }
+
+  private queryCardAt(controller: number, location: number, sequence: number, overlaySequence: number) {
+    if (!this.bindings || this.duelHandle <= 0) throw new Error("Cannot query cards before duel allocation.");
+    const bytes = this.readBuffer(this.bindings.queryCard, [
+      this.duelHandle,
+      FULL_CARD_QUERY_FLAGS,
+      controller,
+      location,
+      sequence,
+      overlaySequence,
+    ]);
+    return decodeCardQuery(bytes);
+  }
+
+  private queryField(): QueriedField {
+    if (!this.bindings || this.duelHandle <= 0) throw new Error("Cannot query the field before duel allocation.");
+    return decodeFieldQuery(this.readBuffer(this.bindings.queryField, [this.duelHandle]));
   }
 
   private processUntilPause(): { status: number; packets: OcgcorePacket[] } {
@@ -426,9 +507,29 @@ export class OcgcoreEngineRuntime {
       status = this.bindings.process(this.duelHandle);
       if (![0, 1, 2].includes(status)) throw new Error(`ocgcore returned unknown process status ${status}.`);
       packets.push(...parsePackets(this.readBuffer(this.bindings.getMessage, [this.duelHandle])));
-      if (status !== 2) return { status, packets };
+      if (status !== 2) break;
+      if (iteration === 63) throw new Error("ocgcore did not reach a stable prompt within 64 process calls.");
     }
-    throw new Error("ocgcore did not reach a stable prompt within 64 process calls.");
+    this.trackTurnAndPhase(packets);
+    return { status, packets };
+  }
+
+  /**
+   * Turn and phase are not part of any query, so they are read from the packet stream:
+   * `MSG_NEW_TURN` carries the turn player as one byte, `MSG_NEW_PHASE` the phase as two.
+   */
+  private trackTurnAndPhase(packets: OcgcorePacket[]): void {
+    for (const packet of packets) {
+      if (packet.type === MSG_NEW_TURN && packet.payload.byteLength >= 2) {
+        this.turnPlayer = packet.payload[1]!;
+        this.turnCount += 1;
+        continue;
+      }
+      if (packet.type === MSG_NEW_PHASE && packet.payload.byteLength >= 3) {
+        this.phase = new DataView(packet.payload.buffer, packet.payload.byteOffset, packet.payload.byteLength)
+          .getUint16(1, true);
+      }
+    }
   }
 
   private findSupportedPrompt(packets: OcgcorePacket[]): SupportedPrompt | null {
@@ -447,9 +548,14 @@ export class OcgcoreEngineRuntime {
     return null;
   }
 
+  /** The display name for a code, using the registry when it knows one. */
+  private nameFor(code: number): string {
+    return BOOTSTRAP_CARD_REGISTRY[code]?.name ?? `Card #${code}`;
+  }
+
   private decodeIdleCommand(packet: OcgcorePacket): SupportedPrompt | null {
     const payload = packet.payload;
-    if (payload.byteLength < 16 || payload[1] !== 0) return null;
+    if (payload.byteLength < 16 || payload[1] !== VIEWER) return null;
     const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
     const summonCount = view.getUint32(2, true);
     if (summonCount < 1) return null;
@@ -457,17 +563,18 @@ export class OcgcoreEngineRuntime {
     const controller = payload[10]!;
     const location = payload[11]!;
     const sequence = view.getUint32(12, true);
-    if (code !== CARD_CODE || controller !== 0 || location !== LOCATION_HAND) return null;
+    if (controller !== VIEWER || location !== LOCATION_HAND) return null;
 
     const optionId = `normal-summon-${code}-${sequence}`;
+    const name = this.nameFor(code);
     return {
       prompt: {
         id: "idle-command-player-0",
         title: "Choose an action",
-        detail: `${CARD_NAME} is in your hand. Pick one of the legal actions reported by ocgcore.`,
+        detail: `${name} is in your hand. Pick one of the legal actions reported by ocgcore.`,
         kind: "action",
         cardCode: code,
-        options: [{ id: optionId, label: `Normal Summon ${CARD_NAME}`, detail: "Begin a real Normal Summon through the engine." }],
+        options: [{ id: optionId, label: `Normal Summon ${name}`, detail: "Begin a real Normal Summon through the engine." }],
       },
       choices: [{ optionId, response: uint32Response(0) }],
     };
@@ -478,7 +585,7 @@ export class OcgcoreEngineRuntime {
     if (payload.byteLength < 7) return null;
     const player = payload[1]!;
     const count = payload[2]!;
-    if (player !== 0 || count !== 1) return null;
+    if (player !== VIEWER || count !== 1) return null;
     const unavailable = new DataView(payload.buffer, payload.byteOffset, payload.byteLength).getUint32(3, true);
     const options: EnginePromptOption[] = [];
     const choices: SupportedChoice[] = [];
@@ -488,7 +595,7 @@ export class OcgcoreEngineRuntime {
       options.push({
         id: optionId,
         label: `M${sequence + 1}`,
-        detail: `Place ${CARD_NAME} in Main Monster Zone ${sequence + 1}.`,
+        detail: `Place the card in Main Monster Zone ${sequence + 1}.`,
       });
       choices.push({
         optionId,
@@ -502,7 +609,7 @@ export class OcgcoreEngineRuntime {
         title: "Choose a monster zone",
         detail: "ocgcore is waiting for the exact zone. The selected zone will be sent back as a three-byte place response.",
         kind: "zone",
-        cardCode: CARD_CODE,
+        cardCode: null,
         options,
       },
       choices,
@@ -511,7 +618,7 @@ export class OcgcoreEngineRuntime {
 
   private decodePositionChoice(packet: OcgcorePacket): SupportedPrompt | null {
     const payload = packet.payload;
-    if (payload.byteLength < 7 || payload[1] !== 0) return null;
+    if (payload.byteLength < 7 || payload[1] !== VIEWER) return null;
     const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
     const code = view.getUint32(2, true);
     const allowedPositions = payload[6]!;
@@ -535,99 +642,6 @@ export class OcgcoreEngineRuntime {
       },
       choices,
     };
-  }
-
-  private buildBoard(movedToField: boolean): PlaybackFrame {
-    if (!this.bindings || this.duelHandle <= 0) {
-      throw new Error("Cannot build a board before duel allocation.");
-    }
-    const handCard = this.bindings.queryCount(this.duelHandle, 0, LOCATION_HAND) > 0
-      ? this.tryQueryCard(LOCATION_HAND, 0)
-      : null;
-    const fieldCard = this.findFieldCard();
-    const fieldSlot = fieldCard ? this.fieldSlotForSequence(fieldCard.sequence) : null;
-
-    const cards: PlaybackFrame["cards"] = [];
-    if (handCard?.code === CARD_CODE) {
-      cards.push({
-        id: "ocgcore-mystical-elf",
-        alias: CARD_ALIAS,
-        name: CARD_NAME,
-        kind: "monster",
-        level: 4,
-        zone: "H",
-        faceUp: true,
-      });
-    }
-    if (fieldCard?.code === CARD_CODE && fieldSlot) {
-      cards.push({
-        id: "ocgcore-mystical-elf",
-        alias: CARD_ALIAS,
-        name: CARD_NAME,
-        kind: "monster",
-        level: 4,
-        zone: "F",
-        fieldSlot,
-        faceUp: (fieldCard.position & POS_FACEUP) !== 0,
-      });
-    }
-
-    return {
-      key: fieldCard ? `ocgcore-after-normal-summon-${fieldCard.sequence}` : "ocgcore-opening-hand",
-      stepNumber: fieldCard ? 1 : 0,
-      label: fieldCard ? `${CARD_NAME} Normal Summoned` : "Real ocgcore opening hand",
-      expression: fieldCard && fieldSlot ? `NS ${CARD_ALIAS}:H>F@${fieldSlot}` : `DRAW ${CARD_ALIAS}:D>H`,
-      lp: 8000,
-      cards,
-      activeAliases: fieldCard ? [CARD_ALIAS] : [],
-      movements: movedToField && fieldCard
-        ? [{ cardId: "ocgcore-mystical-elf", alias: CARD_ALIAS, from: "H", to: "F" }]
-        : [],
-    };
-  }
-
-  private hasFieldCard(): boolean {
-    return Boolean(this.bindings && this.duelHandle > 0 && this.bindings.queryCount(this.duelHandle, 0, LOCATION_MZONE) > 0);
-  }
-
-  private findFieldCard(): QueriedCard | null {
-    if (!this.bindings || this.duelHandle <= 0 || this.bindings.queryCount(this.duelHandle, 0, LOCATION_MZONE) === 0) {
-      return null;
-    }
-    for (let sequence = 0; sequence < 7; sequence += 1) {
-      const card = this.tryQueryCard(LOCATION_MZONE, sequence);
-      if (card?.code === CARD_CODE) return card;
-    }
-    return null;
-  }
-
-  private fieldSlotForSequence(sequence: number): VisualFieldSlot | null {
-    if (sequence >= 0 && sequence < 5) return `M${sequence + 1}` as VisualFieldSlot;
-    if (sequence === 5) return "EMZ1";
-    if (sequence === 6) return "EMZ2";
-    return null;
-  }
-
-  private tryQueryCard(location: number, sequence: number): QueriedCard | null {
-    if (!this.bindings || this.duelHandle <= 0) return null;
-    const bytes = this.readBuffer(this.bindings.queryCard, [
-      this.duelHandle,
-      QUERY_CODE | QUERY_POSITION,
-      0,
-      location,
-      sequence,
-      0,
-    ]);
-    if (bytes.byteLength === 0) return null;
-    try {
-      return {
-        code: queryUint32(bytes, QUERY_CODE),
-        position: queryUint32(bytes, QUERY_POSITION),
-        sequence,
-      };
-    } catch {
-      return null;
-    }
   }
 
   private readBuffer(reader: (...arguments_: number[]) => number, arguments_: number[]): Uint8Array {
@@ -665,12 +679,16 @@ export class OcgcoreEngineRuntime {
     this.module = null;
     this.bindings = null;
     this.pendingPrompt = null;
+    this.fieldState = null;
+    this.turnCount = 0;
+    this.stepNumber = 0;
     this.currentSnapshot = {
       phase: "idle",
       statusMessage: "Engine reset",
       engineVersion: null,
       stepValue: 0,
       board: null,
+      field: null,
       prompt: null,
     };
     events.push(
@@ -684,3 +702,6 @@ export class OcgcoreEngineRuntime {
     this.duelHandle = 0;
   }
 }
+
+/** Exported so tests and future deck loaders can reuse the same card identities. */
+export { BOOTSTRAP_CARD_REGISTRY };
