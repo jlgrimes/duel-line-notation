@@ -1,5 +1,8 @@
 #include <cstdint>
+#include <cstring>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "ocgapi.h"
 
@@ -18,11 +21,33 @@ struct DuelSlot {
 
 struct CardRecord {
   OCG_CardData data{};
+  // Owns the storage `data.setcodes` points at. The core copies the values out during
+  // read_card and terminates on a zero entry, so this must stay zero-terminated.
+  std::vector<uint16_t> setcodes;
 };
 
 std::unordered_map<uint32_t, DuelSlot> duels;
 std::unordered_map<uint32_t, CardRecord> card_records;
 uint32_t next_handle = 1;
+
+// Lua sources keyed by the exact name the core asks for, such as "c15025844.lua".
+// The host owns every script: the WebAssembly build has no filesystem.
+std::unordered_map<std::string, std::string> scripts;
+
+// Bounded so a duel that requests scripts in a loop cannot exhaust memory. Reading a log
+// clears it, so a caller that drains after each step never hits the cap.
+constexpr size_t LOG_ENTRY_LIMIT = 512;
+
+std::vector<std::string> script_log;
+std::vector<std::string> engine_log;
+std::string log_buffer;
+
+void record(std::vector<std::string>& log, std::string entry) {
+  if(log.size() >= LOG_ENTRY_LIMIT) {
+    return;
+  }
+  log.push_back(std::move(entry));
+}
 
 uint64_t combine_u64(uint32_t low, uint32_t high) {
   return static_cast<uint64_t>(low) | (static_cast<uint64_t>(high) << 32U);
@@ -52,11 +77,39 @@ void read_card(void*, uint32_t code, OCG_CardData* data) {
 
 void card_reader_done(void*, OCG_CardData*) {}
 
-int read_script(void*, OCG_Duel, const char*) {
-  return 0;
+// Resolves a script the core asked for and hands it to the interpreter, which both
+// compiles and runs it. Every lookup is recorded so a caller can tell a missing script
+// apart from one that failed to compile.
+//
+// The log is faithful, not filtered: creating a duel makes the core probe "c0.lua" for
+// its internal temporary card, so a "MISS c0.lua" entry is normal and expected. Register
+// an empty script under that name to silence it.
+int read_script(void*, OCG_Duel duel, const char* name) {
+  if(name == nullptr || duel == nullptr) {
+    return 0;
+  }
+
+  const std::string key(name);
+  const auto iterator = scripts.find(key);
+  if(iterator == scripts.end()) {
+    record(script_log, "MISS " + key);
+    return 0;
+  }
+
+  const std::string& source = iterator->second;
+  const int status = OCG_LoadScript(duel, source.data(), static_cast<uint32_t>(source.size()), name);
+  record(script_log, (status != 0 ? "OK " : "FAIL ") + key);
+  return status;
 }
 
-void log_message(void*, const char*, int) {}
+// Lua compile and runtime errors arrive here. Without this they are silently discarded,
+// which makes a broken script indistinguishable from a missing one.
+void log_message(void*, const char* message, int type) {
+  if(message == nullptr) {
+    return;
+  }
+  record(engine_log, std::to_string(type) + " " + std::string(message));
+}
 
 DuelSlot* find_duel(uint32_t handle) {
   const auto iterator = duels.find(handle);
@@ -68,6 +121,25 @@ uintptr_t query_result(void* buffer, uint32_t buffer_length, uint32_t* length) {
     *length = buffer_length;
   }
   return reinterpret_cast<uintptr_t>(buffer);
+}
+
+// Drains a log into a newline-delimited buffer. The buffer stays valid until the next
+// call, matching how the core's own query buffers behave.
+uintptr_t take_log(std::vector<std::string>& log, uint32_t* length) {
+  log_buffer.clear();
+  for(const auto& entry : log) {
+    log_buffer.append(entry);
+    log_buffer.push_back('\n');
+  }
+  log.clear();
+
+  if(log_buffer.empty()) {
+    if(length != nullptr) {
+      *length = 0;
+    }
+    return 0;
+  }
+  return query_result(&log_buffer[0], static_cast<uint32_t>(log_buffer.size()), length);
 }
 
 } // namespace
@@ -102,25 +174,101 @@ DLN_EXPORT int dln_ocg_set_card_data(
     return 0;
   }
 
-  CardRecord record{};
-  record.data.code = code;
-  record.data.alias = alias;
-  record.data.setcodes = nullptr;
-  record.data.type = type;
-  record.data.level = level;
-  record.data.attribute = attribute;
-  record.data.race = combine_u64(race_low, race_high);
-  record.data.attack = attack;
-  record.data.defense = defense;
-  record.data.lscale = lscale;
-  record.data.rscale = rscale;
-  record.data.link_marker = link_marker;
-  card_records.insert_or_assign(code, record);
+  CardRecord entry{};
+  entry.data.code = code;
+  entry.data.alias = alias;
+  entry.data.setcodes = nullptr;
+  entry.data.type = type;
+  entry.data.level = level;
+  entry.data.attribute = attribute;
+  entry.data.race = combine_u64(race_low, race_high);
+  entry.data.attack = attack;
+  entry.data.defense = defense;
+  entry.data.lscale = lscale;
+  entry.data.rscale = rscale;
+  entry.data.link_marker = link_marker;
+
+  // Replacing a record drops its set codes; call dln_ocg_set_card_setcodes afterwards.
+  card_records[code] = std::move(entry);
+  return 1;
+}
+
+// Archetype membership, which the core reads separately from the fixed card fields.
+// Values are copied, zero-terminated, and owned by the record they belong to.
+DLN_EXPORT int dln_ocg_set_card_setcodes(uint32_t code, const uint16_t* values, uint32_t count) {
+  const auto iterator = card_records.find(code);
+  if(iterator == card_records.end()) {
+    return 0;
+  }
+
+  CardRecord& entry = iterator->second;
+  entry.setcodes.clear();
+  if(values != nullptr) {
+    for(uint32_t index = 0; index < count; ++index) {
+      uint16_t value = 0;
+      std::memcpy(&value, values + index, sizeof(uint16_t));
+      if(value != 0) {
+        entry.setcodes.push_back(value);
+      }
+    }
+  }
+
+  if(entry.setcodes.empty()) {
+    entry.data.setcodes = nullptr;
+    return 1;
+  }
+
+  entry.setcodes.push_back(0);
+  entry.data.setcodes = entry.setcodes.data();
   return 1;
 }
 
 DLN_EXPORT void dln_ocg_clear_card_data() {
   card_records.clear();
+}
+
+// Registers one Lua source. Name and data are passed as pointer plus length so the caller
+// never has to worry about embedded NULs or JavaScript string encoding.
+DLN_EXPORT int dln_ocg_set_script(
+  const char* name,
+  uint32_t name_length,
+  const char* data,
+  uint32_t data_length
+) {
+  if(name == nullptr || name_length == 0 || (data == nullptr && data_length > 0)) {
+    return 0;
+  }
+  scripts.insert_or_assign(std::string(name, name_length), std::string(data, data_length));
+  return 1;
+}
+
+DLN_EXPORT void dln_ocg_clear_scripts() {
+  scripts.clear();
+  script_log.clear();
+}
+
+DLN_EXPORT uint32_t dln_ocg_script_count() {
+  return static_cast<uint32_t>(scripts.size());
+}
+
+// Loads a registered script into a duel up front. The core resolves card scripts on
+// demand, but shared libraries such as constant.lua and utility.lua have to be pushed in
+// before the scripts that expect them run.
+DLN_EXPORT int dln_ocg_load_script(uint32_t handle, const char* name, uint32_t name_length) {
+  DuelSlot* slot = find_duel(handle);
+  if(slot == nullptr || name == nullptr || name_length == 0) {
+    return 0;
+  }
+  const std::string key(name, name_length);
+  return read_script(nullptr, slot->duel, key.c_str());
+}
+
+DLN_EXPORT uintptr_t dln_ocg_take_script_log(uint32_t* length) {
+  return take_log(script_log, length);
+}
+
+DLN_EXPORT uintptr_t dln_ocg_take_engine_log(uint32_t* length) {
+  return take_log(engine_log, length);
 }
 
 DLN_EXPORT uint32_t dln_ocg_create(

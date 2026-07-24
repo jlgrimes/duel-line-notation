@@ -16,6 +16,20 @@ jobs:
       - run: npm ci
       - run: npm run ci
 
+  # Verifies bridge.cpp against the pinned core with an ordinary C++ compiler. The
+  # WebAssembly build needs Emscripten and only republishes from the ocgcore-wasm workflow
+  # on main, so without this a bridge regression would not surface until after merge.
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run ocgcore:fetch
+      - run: npm run ocgcore:native-check
+
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 20

@@ -114,6 +114,13 @@ try {
   const queryCount = module.cwrap("dln_ocg_query_count", "number", ["number", "number", "number"]);
   const queryCard = module.cwrap("dln_ocg_query_card", "number", Array(7).fill("number"));
   const queryField = module.cwrap("dln_ocg_query_field", "number", ["number", "number"]);
+  const setCardSetcodes = module.cwrap("dln_ocg_set_card_setcodes", "number", Array(3).fill("number"));
+  const setScript = module.cwrap("dln_ocg_set_script", "number", Array(4).fill("number"));
+  const clearScripts = module.cwrap("dln_ocg_clear_scripts", null, []);
+  const scriptCount = module.cwrap("dln_ocg_script_count", "number", []);
+  const loadScript = module.cwrap("dln_ocg_load_script", "number", Array(3).fill("number"));
+  const takeScriptLog = module.cwrap("dln_ocg_take_script_log", "number", ["number"]);
+  const takeEngineLog = module.cwrap("dln_ocg_take_engine_log", "number", ["number"]);
 
   const readBuffer = (reader, ...arguments_) => {
     const lengthPointer = module._malloc(4);
@@ -235,6 +242,90 @@ try {
   const fieldQuery = readBuffer(queryField, handle);
   assert.ok(fieldQuery.byteLength > 0, "Field query returned no data");
 
+  announce("exercising the script resolver");
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+
+  const withBytes = (values, run) => {
+    const pointers = values.map((value) => {
+      const bytes = encoder.encode(value);
+      const pointer = module._malloc(Math.max(1, bytes.byteLength));
+      module.HEAPU8.set(bytes, pointer);
+      return { pointer, length: bytes.byteLength };
+    });
+    try {
+      return run(...pointers.flatMap(({ pointer, length }) => [pointer, length]));
+    } finally {
+      for (const { pointer } of pointers) module._free(pointer);
+    }
+  };
+
+  // Creating a duel makes the core probe c0.lua for its internal temporary card, so that
+// miss is expected and is dropped here rather than being hidden inside the bridge.
+  const readLog = (reader) => decoder
+    .decode(readBuffer(reader))
+    .split("\n")
+    .filter(Boolean)
+    .filter((entry) => !entry.endsWith(" c0.lua"));
+
+  assert.equal(scriptCount(), 0, "The script registry should start empty");
+
+  // A script that compiles and runs, one that cannot compile, and one never registered:
+  // the three outcomes the resolver has to keep distinguishable.
+  assert.equal(
+    withBytes(["dln-smoke.lua", "local marker = 1 + 1"], (...args) => setScript(...args)),
+    1,
+    "Could not register a script",
+  );
+  assert.equal(
+    withBytes(["dln-broken.lua", "this is not lua"], (...args) => setScript(...args)),
+    1,
+    "Could not register the malformed script",
+  );
+  assert.equal(scriptCount(), 2, "Both scripts should be registered");
+
+  assert.equal(
+    withBytes(["dln-smoke.lua"], (pointer, length) => loadScript(handle, pointer, length)),
+    1,
+    "A valid script should load and run",
+  );
+  assert.equal(
+    withBytes(["dln-broken.lua"], (pointer, length) => loadScript(handle, pointer, length)),
+    0,
+    "A malformed script must fail rather than appear to load",
+  );
+  assert.equal(
+    withBytes(["dln-absent.lua"], (pointer, length) => loadScript(handle, pointer, length)),
+    0,
+    "An unregistered script must fail",
+  );
+
+  const scriptTrace = readLog(takeScriptLog);
+  assert.deepEqual(
+    scriptTrace,
+    ["OK dln-smoke.lua", "FAIL dln-broken.lua", "MISS dln-absent.lua"],
+    `Script log did not distinguish the three outcomes: ${scriptTrace.join(" | ")}`,
+  );
+  assert.deepEqual(readLog(takeScriptLog), [], "Reading the script log should drain it");
+
+  const engineTrace = readLog(takeEngineLog);
+  assert.ok(
+    engineTrace.some((entry) => entry.includes("dln-broken.lua")),
+    `The Lua error for the malformed script was not surfaced: ${engineTrace.join(" | ")}`,
+  );
+
+  announce("registering card set codes");
+  assert.equal(setCardSetcodes(CARD_CODE, 0, 0), 1, "Clearing set codes on a known card should succeed");
+  const setcodePointer = module._malloc(4);
+  try {
+    // Only HEAPU8 is exported, so the uint16 values are written a byte at a time.
+    module.HEAPU8.set(Uint8Array.from([0x34, 0x12, 0x78, 0x56]), setcodePointer);
+    assert.equal(setCardSetcodes(CARD_CODE, setcodePointer, 2), 1, "Could not register set codes");
+  } finally {
+    module._free(setcodePointer);
+  }
+  assert.equal(setCardSetcodes(1, 0, 0), 0, "Set codes for an unregistered card must be rejected");
+
   console.log(JSON.stringify({
     apiVersion: `${versionMajor()}.${versionMinor()}`,
     startupMessageTypes: messageTypes,
@@ -246,12 +337,19 @@ try {
       queriedCardCode: readQueryUint32(monsterQuery, QUERY_CODE),
       fieldQueryBytes: fieldQuery.byteLength,
     },
+    scriptResolver: {
+      registered: scriptCount(),
+      outcomes: scriptTrace,
+      engineLogEntries: engineTrace.length,
+    },
   }, null, 2));
 
   announce("destroying duel");
   assert.equal(destroy(handle), 1, "OCG_DestroyDuel failed");
   handle = 0;
   clearCardData();
+  clearScripts();
+  assert.equal(scriptCount(), 0, "Clearing the registry should remove every script");
   announce("passed");
 } catch (error) {
   console.error(`[ocgcore smoke] FAILED during ${stage}`);
@@ -273,3 +371,4 @@ try {
     }
   }
 }
+

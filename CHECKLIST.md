@@ -183,6 +183,10 @@ phone viewport passes but is not the same browser.
 - [x] Decode the framed message buffer used by the pinned API.
 - [x] Correct the startup assumption: the first meaningful startup packet in this setup is `MSG_NEW_TURN`, not a required legacy `MSG_START` packet.
 - [x] Add clear worker/runtime diagnostics for load, allocation, processing, and packet failures.
+- [x] Add a native bridge check (`npm run ocgcore:native-check`) that compiles the pinned core,
+      Lua, and `bridge.cpp` with an ordinary C++ compiler and exercises the bridge directly.
+      Emscripten is not needed, so bridge changes are verified on every push rather than only
+      when the WebAssembly workflow runs on `main`.
 
 ## Still required
 
@@ -240,7 +244,9 @@ Notes on the three items above that are easy to over-read:
 
 - [ ] Include priority in the snapshot; the pinned core does not expose it through any query.
 - [ ] Add snapshot serialization fixtures for tests and replay/debug reports.
-- [ ] Add `OCG_DuelQueryLocation` to the bridge so a location is read in one call instead of per sequence.
+- [ ] Add `OCG_DuelQueryLocation` to the bridge so a location is read in one call instead of per
+      sequence. Deliberately held back from the script-resolver bridge change so that rebuild
+      carried only exports with a caller; it belongs in the next one.
 - [ ] Reconcile turn and phase tracking with the engine after actions that skip or repeat a phase.
 
 ---
@@ -310,16 +316,41 @@ option in a prompt is anchored, which keeps unanchored options reachable.
 
 The simulator currently registers one scriptless bootstrap card directly in memory. It does **not** yet load the real Yu-Gi-Oh! card database or resolve real card scripts.
 
+## Bridge support (done)
+
+The engine side is in place. What is missing is the data, not the plumbing.
+
+- [x] Implement the script reader/resolver expected by `ocgcore`. `read_script` now resolves
+      against a host-owned registry and hands the source to `OCG_LoadScript`, which both
+      compiles and runs it.
+- [x] Register scripts from the host: `dln_ocg_set_script`, `dln_ocg_clear_scripts`,
+      `dln_ocg_script_count`, and `dln_ocg_load_script` for shared libraries that must be
+      pushed in before the scripts expecting them run.
+- [x] Add deterministic script lookup diagnostics. Every lookup is recorded as `OK`, `FAIL`,
+      or `MISS` and drained through `dln_ocg_take_script_log`.
+- [x] Surface Lua compile and runtime errors. The core's log handler was discarding them,
+      which made a broken script indistinguishable from a missing one; they now drain
+      through `dln_ocg_take_engine_log`.
+- [x] Support archetype set codes via `dln_ocg_set_card_setcodes`, without which real
+      archetype cards cannot work.
+- [x] Add tests for missing scripts, malformed scripts, and script errors.
+
+Two things to know before loading real scripts:
+
+- Creating a duel makes the core probe `c0.lua` for its internal temporary card, so a
+  `MISS c0.lua` entry is normal. Register an empty script under that name to silence it.
+- The bridge only changes behaviour once the `ocgcore-wasm` workflow republishes
+  `public/ocgcore`. That workflow runs on `main`, so the published artifact lags this
+  commit until it merges. Nothing breaks in the meantime: with no scripts registered the
+  resolver behaves exactly as the previous stub did.
+
 ## Still required
 
 - [ ] Choose and document the authoritative card-data source and update process.
 - [ ] Add a build-time or runtime card database package compatible with the pinned core.
 - [ ] Implement the card reader against real card records.
-- [ ] Implement the script reader/resolver expected by `ocgcore`.
 - [ ] Package required constants and utility scripts.
 - [ ] Package individual `c<card-code>.lua` scripts.
-- [ ] Add deterministic script lookup diagnostics.
-- [ ] Add tests for missing scripts, malformed scripts, and script errors.
 - [ ] Add a card-data/script version manifest.
 - [ ] Verify card codes, aliases, types, levels/ranks/links, races, attributes, ATK/DEF, scales, and link markers.
 - [ ] Confirm legal licensing/distribution boundaries for bundled data and scripts.

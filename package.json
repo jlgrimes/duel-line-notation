@@ -21,6 +21,7 @@
     "ocgcore:fetch": "npm --prefix packages/ocgcore run fetch",
     "ocgcore:build": "npm --prefix packages/ocgcore run build",
     "ocgcore:smoke": "npm --prefix packages/ocgcore run smoke",
+    "ocgcore:native-check": "npm --prefix packages/ocgcore run native-check",
     "ocgcore:fixtures": "node packages/ocgcore/scripts/capture-fixtures.mjs",
     "preview": "vite preview",
     "prepack": "npm run build:cli"

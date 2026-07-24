@@ -83,6 +83,6 @@ target_link_options(ocgcore PRIVATE
   "-sFILESYSTEM=0"
   "-sINVOKE_RUN=0"
   "-sERROR_ON_UNDEFINED_SYMBOLS=1"
-  "-sEXPORTED_FUNCTIONS=['_dln_ocg_version_major','_dln_ocg_version_minor','_dln_ocg_set_card_data','_dln_ocg_clear_card_data','_dln_ocg_create','_dln_ocg_destroy','_dln_ocg_new_card','_dln_ocg_start','_dln_ocg_process','_dln_ocg_get_message','_dln_ocg_set_response','_dln_ocg_query_count','_dln_ocg_query_card','_dln_ocg_query_field','_malloc','_free']"
+  "-sEXPORTED_FUNCTIONS=['_dln_ocg_version_major','_dln_ocg_version_minor','_dln_ocg_set_card_data','_dln_ocg_set_card_setcodes','_dln_ocg_clear_card_data','_dln_ocg_set_script','_dln_ocg_clear_scripts','_dln_ocg_script_count','_dln_ocg_load_script','_dln_ocg_take_script_log','_dln_ocg_take_engine_log','_dln_ocg_create','_dln_ocg_destroy','_dln_ocg_new_card','_dln_ocg_start','_dln_ocg_process','_dln_ocg_get_message','_dln_ocg_set_response','_dln_ocg_query_count','_dln_ocg_query_card','_dln_ocg_query_field','_malloc','_free']"
   "-sEXPORTED_RUNTIME_METHODS=['cwrap','HEAPU8','HEAPU32']"
 )
