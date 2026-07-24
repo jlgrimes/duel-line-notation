@@ -1,0 +1,46 @@
+name: OCGCore WASM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ocgcore-wasm.yml"
+      - "package.json"
+      - "packages/ocgcore/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out DLN
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v16
+
+      - name: Build pinned ocgcore
+        run: npm run ocgcore:build
+
+      - name: Boot duel engine and read first packet
+        run: npm run ocgcore:smoke
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ocgcore-wasm
+          path: |
+            packages/ocgcore/dist/ocgcore.js
+            packages/ocgcore/dist/ocgcore.wasm
+          if-no-files-found: error
