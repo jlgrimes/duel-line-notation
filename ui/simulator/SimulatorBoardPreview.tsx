@@ -1,6 +1,30 @@
+import type { DeckManifest } from "../../src/model.js";
 import type { PlaybackFrame } from "../../src/visualizer.js";
 import { DuelBoard } from "../DuelBoard";
+import { useCardScans } from "../card-service";
 import "./SimulatorBoardPreview.css";
+
+const PURE_MITSURUGI_MANIFEST: DeckManifest = {
+  schemaVersion: 1,
+  slug: "pure-mitsurugi-simulator-preview",
+  name: "Pure Mitsurugi simulator preview",
+  cards: {
+    ARA: {
+      name: "Mitsurugi no Miko, Aramasa",
+      kind: "monster",
+      level: 4,
+    },
+    PRY: {
+      name: "Mitsurugi Prayers",
+      kind: "spell",
+    },
+    HAB: {
+      name: "Ame no Habakiri no Mitsurugi",
+      kind: "monster",
+      level: 4,
+    },
+  },
+};
 
 const PURE_MITSURUGI_OPENING: PlaybackFrame = {
   key: "simulator-opening-preview",
@@ -12,7 +36,7 @@ const PURE_MITSURUGI_OPENING: PlaybackFrame = {
     {
       id: "preview-aramasa",
       alias: "ARA",
-      name: "Mitsurugi no Miko, Aramasa",
+      name: PURE_MITSURUGI_MANIFEST.cards.ARA!.name,
       kind: "monster",
       level: 4,
       zone: "H",
@@ -21,7 +45,7 @@ const PURE_MITSURUGI_OPENING: PlaybackFrame = {
     {
       id: "preview-prayers",
       alias: "PRY",
-      name: "Mitsurugi Prayers",
+      name: PURE_MITSURUGI_MANIFEST.cards.PRY!.name,
       kind: "spell",
       zone: "H",
       faceUp: true,
@@ -29,7 +53,7 @@ const PURE_MITSURUGI_OPENING: PlaybackFrame = {
     {
       id: "preview-habakiri",
       alias: "HAB",
-      name: "Ame no Habakiri no Mitsurugi",
+      name: PURE_MITSURUGI_MANIFEST.cards.HAB!.name,
       kind: "monster",
       level: 4,
       zone: "H",
@@ -57,6 +81,8 @@ const PURE_MITSURUGI_OPENING: PlaybackFrame = {
 };
 
 export function SimulatorBoardPreview() {
+  const { scans, loading } = useCardScans(PURE_MITSURUGI_MANIFEST);
+
   return (
     <section className="simulator-board-preview" aria-labelledby="simulator-board-title">
       <header>
@@ -70,8 +96,16 @@ export function SimulatorBoardPreview() {
         </p>
       </header>
       <div className="duel-visualizer simulator-board-surface">
-        <DuelBoard frame={PURE_MITSURUGI_OPENING} ariaLabel="Pure Mitsurugi simulator board preview" />
+        <DuelBoard
+          frame={PURE_MITSURUGI_OPENING}
+          scans={scans}
+          ariaLabel="Pure Mitsurugi simulator board preview"
+        />
       </div>
+      <p className={`scan-credit ${loading ? "loading" : ""}`}>
+        <i /> {loading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and
+        images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
+      </p>
     </section>
   );
 }
