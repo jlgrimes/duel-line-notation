@@ -99,8 +99,8 @@ export function SimulatorPage() {
           <p className="eyebrow">Project Ignis ocgcore · live WebAssembly worker</p>
           <h1>Simulator</h1>
           <p>
-            The simulator now loads the pinned, CI-built duel engine instead of the tiny smoke module. React still sees
-            only immutable snapshots and typed events; the native core remains isolated behind the worker boundary.
+            The worker now loads a real card record, creates deterministic decks, decodes ocgcore&apos;s idle-command packet,
+            and publishes both the queried board and legal action through immutable engine snapshots.
           </p>
         </div>
         <div className={`simulator-status simulator-status-${snapshot.phase}`}>
@@ -112,14 +112,14 @@ export function SimulatorPage() {
       <div className="simulator-grid">
         <section className="simulator-panel" aria-labelledby="engine-bridge-title">
           <div className="simulator-panel-heading">
-            <div><p>Milestone 05</p><h2 id="engine-bridge-title">Real ocgcore boot</h2></div>
+            <div><p>Milestone 06</p><h2 id="engine-bridge-title">First legal ocgcore action</h2></div>
             <span>{ready ? "Ready" : snapshot.phase}</span>
           </div>
           <dl className="engine-facts">
-            <div><dt>Duel scope</dt><dd>Empty bootstrap duel</dd></div>
+            <div><dt>Duel scope</dt><dd>Deterministic one-card decks</dd></div>
             <div><dt>Execution</dt><dd>Web Worker + real WASM</dd></div>
-            <div><dt>Adapter</dt><dd>Typed snapshots + events</dd></div>
-            <div><dt>Board source</dt><dd>{snapshot.board ? "Decoded core state" : "Packet decoder pending"}</dd></div>
+            <div><dt>Board source</dt><dd>{snapshot.board ? "OCG field queries" : "Waiting"}</dd></div>
+            <div><dt>Legal action</dt><dd>{snapshot.prompt?.label ?? "No supported action"}</dd></div>
             <div><dt>Core API</dt><dd>{snapshot.engineVersion === null ? "Not loaded" : snapshot.engineVersion.toFixed(1)}</dd></div>
             <div><dt>Process status</dt><dd>{ready ? processStatus : "Waiting"}</dd></div>
           </dl>
@@ -127,14 +127,18 @@ export function SimulatorPage() {
             <button type="button" onClick={() => void runRequest((engine) => engine.restart())} disabled={requestPending || snapshot.phase === "starting"}>
               {snapshot.phase === "starting" ? "Initializing…" : "Restart engine"}
             </button>
-            <button type="button" className="secondary" disabled={!ready || requestPending} onClick={() => void runRequest((engine) => engine.processStep())}>
-              {requestPending ? "Processing…" : "Process next core step"}
+            <button
+              type="button"
+              className="secondary"
+              disabled={!ready || requestPending || !snapshot.prompt}
+              onClick={() => snapshot.prompt && void runRequest((engine) => engine.performAction(snapshot.prompt!.id))}
+            >
+              {requestPending ? "Processing…" : snapshot.prompt?.label ?? "No supported action"}
             </button>
           </div>
           <div className="simulator-note">
-            <strong>Honest scope:</strong> this is the real duel engine and its real first framed packet. The bootstrap duel
-            intentionally contains no cards yet, so the next vertical slice is loading card data and scripts, then decoding
-            core queries into the board snapshot.
+            <strong>Honest scope:</strong> the card, opening draw, hand query, legal prompt, response encoding, and summon are
+            all owned by ocgcore. Mystical Elf is a deliberately scriptless bootstrap card; Mitsurugi Lua effects come next.
           </div>
         </section>
 
@@ -158,10 +162,10 @@ export function SimulatorPage() {
 
       <section className="simulator-next">
         <p className="eyebrow">Next checkpoint</p>
-        <h2>Load real card records and scripts, then project ocgcore field queries into the shared DuelBoard.</h2>
+        <h2>Replace the scriptless bootstrap card with real Mitsurugi card data and Lua scripts.</h2>
         <p>
-          The engine binary, worker isolation, lifecycle, and packet boundary are now real. The next layer supplies the card
-          database and Lua script resolver needed to create a Pure Mitsurugi opening and expose its legal actions.
+          The full browser-to-core action loop is now established. The next vertical slice adds the script resolver and a
+          minimal Pure Mitsurugi opening, then maps its effect prompts onto the same typed action interface.
         </p>
       </section>
     </section>
