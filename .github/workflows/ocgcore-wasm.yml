@@ -10,8 +10,12 @@ on:
       - "packages/ocgcore/**"
   workflow_dispatch:
 
+concurrency:
+  group: ocgcore-wasm-main
+  cancel-in-progress: true
+
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -20,10 +24,12 @@ jobs:
 
     steps:
       - name: Check out DLN
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -31,16 +37,54 @@ jobs:
         uses: mymindstorm/setup-emsdk@v16
 
       - name: Build pinned ocgcore
-        run: npm run ocgcore:build
+        id: build
+        shell: bash
+        run: |
+          set +e
+          npm run ocgcore:build 2>&1 | tee /tmp/ocgcore-build.log
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Boot duel engine and read first packet
-        run: npm run ocgcore:smoke
+        id: smoke
+        if: steps.build.outputs.exit_code == '0'
+        shell: bash
+        run: |
+          set +e
+          npm run ocgcore:smoke 2>&1 | tee /tmp/ocgcore-smoke.log
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish diagnostics and browser assets
+        env:
+          BUILD_EXIT: ${{ steps.build.outputs.exit_code }}
+          SMOKE_EXIT: ${{ steps.smoke.outputs.exit_code || '1' }}
+        run: |
+          node packages/ocgcore/scripts/publish-ci-result.mjs "$BUILD_EXIT" "$SMOKE_EXIT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f .github/ocgcore-ci-status.json
+          if [ "$BUILD_EXIT" = "0" ] && [ "$SMOKE_EXIT" = "0" ]; then
+            git add -f public/ocgcore/ocgcore.js public/ocgcore/ocgcore.wasm
+          fi
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: publish ocgcore WASM result [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       - name: Upload WASM artifacts
-        uses: actions/upload-artifact@v7
+        if: steps.build.outputs.exit_code == '0' && steps.smoke.outputs.exit_code == '0'
+        uses: actions/upload-artifact@v6
         with:
           name: ocgcore-wasm
           path: |
             packages/ocgcore/dist/ocgcore.js
             packages/ocgcore/dist/ocgcore.wasm
           if-no-files-found: error
+
+      - name: Fail unsuccessful build
+        if: steps.build.outputs.exit_code != '0' || steps.smoke.outputs.exit_code != '0'
+        run: exit 1
