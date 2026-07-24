@@ -1,3 +1,5 @@
+import type { PlaybackFrame } from "../visualizer.js";
+
 export type EnginePhase = "idle" | "starting" | "ready" | "error";
 
 export type EngineLogLevel = "info" | "success" | "error";
@@ -7,6 +9,7 @@ export interface EngineSnapshot {
   statusMessage: string;
   engineVersion: number | null;
   stepValue: number;
+  board: PlaybackFrame | null;
 }
 
 export type EngineCommand =
@@ -18,6 +21,7 @@ export type EngineEvent =
   | { type: "status"; phase: EnginePhase; message: string }
   | { type: "log"; level: EngineLogLevel; message: string; detail: string | null }
   | { type: "initialized"; engineVersion: number }
+  | { type: "board-updated"; frameKey: string }
   | { type: "step-result"; previous: number; next: number };
 
 export interface EngineWorkerRequest {
@@ -45,4 +49,5 @@ export const INITIAL_ENGINE_SNAPSHOT: EngineSnapshot = {
   statusMessage: "Waiting to initialize",
   engineVersion: null,
   stepValue: 0,
+  board: null,
 };
