@@ -48,7 +48,7 @@ export class SmokeEngineRuntime {
       return { requestId: request.requestId, ok: true, snapshot: this.snapshot(), events };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      this.currentSnapshot = { ...this.currentSnapshot, phase: "error", statusMessage: message };
+      this.currentSnapshot = { ...this.currentSnapshot, phase: "error", statusMessage: message, prompt: null };
       events.push(
         { type: "log", level: "error", message: "Engine worker failed", detail: message },
         { type: "status", phase: "error", message },
@@ -60,11 +60,12 @@ export class SmokeEngineRuntime {
   private async execute(command: EngineCommand, events: EngineEvent[]): Promise<void> {
     if (command.type === "initialize") return this.initialize(events);
     if (command.type === "process-step") return this.processStep(command.state, events);
+    if (command.type === "perform-action") return this.processStep(this.currentSnapshot.stepValue, events);
     this.reset(events);
   }
 
   private async initialize(events: EngineEvent[]): Promise<void> {
-    this.currentSnapshot = { phase: "starting", statusMessage: "Starting engine worker…", engineVersion: null, stepValue: 0, board: null };
+    this.currentSnapshot = { phase: "starting", statusMessage: "Starting engine worker…", engineVersion: null, stepValue: 0, board: null, prompt: null };
     events.push(
       { type: "status", phase: "starting", message: this.currentSnapshot.statusMessage },
       { type: "log", level: "info", message: "Web Worker started", detail: "The simulator engine is isolated from the React render thread." },
@@ -87,6 +88,7 @@ export class SmokeEngineRuntime {
       engineVersion,
       stepValue: 0,
       board: structuredClone(PURE_MITSURUGI_OPENING),
+      prompt: null,
     };
     events.push(
       { type: "log", level: "success", message: "WebAssembly bridge ready", detail: `ABI smoke version ${engineVersion} loaded from ${SIMULATOR_WASM_SMOKE_BYTES.byteLength} bytes.` },
@@ -109,7 +111,7 @@ export class SmokeEngineRuntime {
 
   private reset(events: EngineEvent[]): void {
     this.engine = null;
-    this.currentSnapshot = { phase: "idle", statusMessage: "Engine reset", engineVersion: null, stepValue: 0, board: null };
+    this.currentSnapshot = { phase: "idle", statusMessage: "Engine reset", engineVersion: null, stepValue: 0, board: null, prompt: null };
     events.push(
       { type: "status", phase: "idle", message: this.currentSnapshot.statusMessage },
       { type: "log", level: "info", message: "Engine reset", detail: "The worker remains alive and can initialize a fresh module instance." },
