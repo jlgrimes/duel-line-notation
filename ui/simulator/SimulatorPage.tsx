@@ -24,8 +24,10 @@ const INITIAL_LOG: DisplayLogEntry = {
   id: 1,
   level: "info",
   message: "Simulator route mounted",
-  detail: "Preparing an engine-owned normalized duel snapshot.",
+  detail: "Preparing the real Project Ignis duel engine in an isolated worker.",
 };
+
+const PROCESS_STATUS_NAMES = ["End", "Awaiting response", "Continue"] as const;
 
 export function SimulatorPage() {
   const engineRef = useRef<DuelEngine | null>(null);
@@ -88,16 +90,17 @@ export function SimulatorPage() {
   }, []);
 
   const ready = snapshot.phase === "ready";
+  const processStatus = PROCESS_STATUS_NAMES[snapshot.stepValue] ?? `Unknown (${snapshot.stepValue})`;
 
   return (
     <section className="simulator-page">
       <header className="simulator-hero">
         <div>
-          <p className="eyebrow">Pure Mitsurugi · engine-owned board state</p>
+          <p className="eyebrow">Project Ignis ocgcore · live WebAssembly worker</p>
           <h1>Simulator</h1>
           <p>
-            The worker now publishes normalized duel state through the typed adapter. React renders that state without
-            constructing its own cards or zones, preparing the same boundary for the real ocgcore decoder.
+            The simulator now loads the pinned, CI-built duel engine instead of the tiny smoke module. React still sees
+            only immutable snapshots and typed events; the native core remains isolated behind the worker boundary.
           </p>
         </div>
         <div className={`simulator-status simulator-status-${snapshot.phase}`}>
@@ -109,28 +112,29 @@ export function SimulatorPage() {
       <div className="simulator-grid">
         <section className="simulator-panel" aria-labelledby="engine-bridge-title">
           <div className="simulator-panel-heading">
-            <div><p>Milestone 04</p><h2 id="engine-bridge-title">Engine-owned duel snapshot</h2></div>
+            <div><p>Milestone 05</p><h2 id="engine-bridge-title">Real ocgcore boot</h2></div>
             <span>{ready ? "Ready" : snapshot.phase}</span>
           </div>
           <dl className="engine-facts">
-            <div><dt>Deck scope</dt><dd>Pure Mitsurugi only</dd></div>
-            <div><dt>Execution</dt><dd>Web Worker + WASM</dd></div>
+            <div><dt>Duel scope</dt><dd>Empty bootstrap duel</dd></div>
+            <div><dt>Execution</dt><dd>Web Worker + real WASM</dd></div>
             <div><dt>Adapter</dt><dd>Typed snapshots + events</dd></div>
-            <div><dt>Board source</dt><dd>{snapshot.board ? "Engine snapshot" : "Waiting"}</dd></div>
-            <div><dt>Smoke ABI</dt><dd>{snapshot.engineVersion === null ? "Not loaded" : `Version ${snapshot.engineVersion}`}</dd></div>
-            <div><dt>Current test state</dt><dd>{snapshot.stepValue}</dd></div>
+            <div><dt>Board source</dt><dd>{snapshot.board ? "Decoded core state" : "Packet decoder pending"}</dd></div>
+            <div><dt>Core API</dt><dd>{snapshot.engineVersion === null ? "Not loaded" : snapshot.engineVersion.toFixed(1)}</dd></div>
+            <div><dt>Process status</dt><dd>{ready ? processStatus : "Waiting"}</dd></div>
           </dl>
           <div className="simulator-actions">
             <button type="button" onClick={() => void runRequest((engine) => engine.restart())} disabled={requestPending || snapshot.phase === "starting"}>
               {snapshot.phase === "starting" ? "Initializing…" : "Restart engine"}
             </button>
             <button type="button" className="secondary" disabled={!ready || requestPending} onClick={() => void runRequest((engine) => engine.processStep())}>
-              {requestPending ? "Processing…" : "Process one WASM step"}
+              {requestPending ? "Processing…" : "Process next core step"}
             </button>
           </div>
           <div className="simulator-note">
-            <strong>Honest scope:</strong> the duel frame now comes from the engine boundary, but the runtime still uses
-            the tiny smoke WASM module rather than ocgcore. The next step is decoding real core messages into this shape.
+            <strong>Honest scope:</strong> this is the real duel engine and its real first framed packet. The bootstrap duel
+            intentionally contains no cards yet, so the next vertical slice is loading card data and scripts, then decoding
+            core queries into the board snapshot.
           </div>
         </section>
 
@@ -154,10 +158,10 @@ export function SimulatorPage() {
 
       <section className="simulator-next">
         <p className="eyebrow">Next checkpoint</p>
-        <h2>Replace the smoke producer with the first decoded ocgcore state and legal Aramasa prompt.</h2>
+        <h2>Load real card records and scripts, then project ocgcore field queries into the shared DuelBoard.</h2>
         <p>
-          The UI now consumes engine-owned duel state. The remaining core work is loading scripts and card data,
-          processing ocgcore messages, and translating legal actions into typed prompts.
+          The engine binary, worker isolation, lifecycle, and packet boundary are now real. The next layer supplies the card
+          database and Lua script resolver needed to create a Pure Mitsurugi opening and expose its legal actions.
         </p>
       </section>
     </section>
