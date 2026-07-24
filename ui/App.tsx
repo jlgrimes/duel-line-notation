@@ -8,7 +8,10 @@ import { comboSources, metaSnapshot, type ComboDetail, type ComboSummary } from 
 import { ComboCatalog, comboPath } from "./ComboCatalog";
 import { DuelVisualizer } from "./DuelVisualizer";
 import { GuideSteps } from "./GuideVisualizer";
+import { SimulatorPage } from "./simulator/SimulatorPage";
 import { useWorkspace } from "./workspace-store";
+
+type AppPage = "combos" | "simulator";
 
 function analyze(source: string, combo: ComboDetail): { document?: LineDocument; diagnostics: Diagnostic[] } {
   try {
@@ -25,12 +28,17 @@ function routeId(): string | undefined {
   return match ? `${match[1]}/${match[2]}` : undefined;
 }
 
+function currentPage(): AppPage {
+  return window.location.hash === "#/simulator" ? "simulator" : "combos";
+}
+
 export function App() {
   const { state, dispatch } = useWorkspace();
   const { selectedId, detailView, drafts } = state;
   const { combos, loading: catalogLoading, error: catalogError } = state.catalog;
   const { combo, loading: detailLoading, error: detailError } = state.detail;
   const [copied, setCopied] = useState(false);
+  const [page, setPage] = useState<AppPage>(currentPage);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -62,7 +70,9 @@ export function App() {
 
   useEffect(() => {
     const onRouteChange = () => {
-      dispatch({ type: "routeChanged", id: routeId() });
+      const nextPage = currentPage();
+      setPage(nextPage);
+      dispatch({ type: "routeChanged", id: nextPage === "simulator" ? undefined : routeId() });
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
     window.addEventListener("hashchange", onRouteChange);
@@ -76,13 +86,21 @@ export function App() {
   const clean = editorResult.diagnostics.length === 0;
 
   function openCombo(summary: ComboSummary) {
+    setPage("combos");
     dispatch({ type: "routeChanged", id: summary.id });
     window.location.hash = comboPath(summary);
   }
 
   function browseCombos() {
+    setPage("combos");
     dispatch({ type: "routeChanged" });
     window.location.hash = "/combos";
+  }
+
+  function openSimulator() {
+    setPage("simulator");
+    dispatch({ type: "routeChanged" });
+    window.location.hash = "/simulator";
   }
 
   function updateSource(value: string) {
@@ -101,18 +119,23 @@ export function App() {
   }
 
   const selectedSummary = combos.find((item) => item.id === selectedId);
-  const accent = combo?.accent ?? selectedSummary?.accent ?? "#87a7ff";
+  const accent = page === "simulator" ? "#87a7ff" : combo?.accent ?? selectedSummary?.accent ?? "#87a7ff";
   return (
     <main className="app-shell" style={{ "--accent": accent } as React.CSSProperties}>
       <header className="topbar">
         <button className="brand brand-button" onClick={browseCombos} aria-label="Browse Duel Line Notation combos">
           <span className="brand-mark">D<span>/</span>LN</span><span className="brand-sub">Combo Library</span>
         </button>
-        <nav className="topnav" aria-label="Primary navigation"><button className={!selectedId ? "active" : ""} onClick={browseCombos}>Browse combos</button></nav>
+        <nav className="topnav" aria-label="Primary navigation">
+          <button className={page === "combos" && !selectedId ? "active" : ""} onClick={browseCombos}>Browse combos</button>
+          <button className={page === "simulator" ? "active" : ""} onClick={openSimulator}>Simulator</button>
+        </nav>
         <a className="github-link" href="https://github.com/jlgrimes/duel-line-notation" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       </header>
 
-      {!selectedId ? (
+      {page === "simulator" ? (
+        <SimulatorPage />
+      ) : !selectedId ? (
         <ComboCatalog combos={combos} sources={comboSources} format={combos[0]?.format ?? metaSnapshot.format} loading={catalogLoading} error={catalogError} onOpen={openCombo} />
       ) : detailLoading ? (
         <DetailMessage message="Loading combo…" onBack={browseCombos} />
