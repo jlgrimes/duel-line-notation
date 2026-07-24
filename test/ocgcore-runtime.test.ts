@@ -143,3 +143,52 @@ test(
     assert.equal(reset.board, null);
   },
 );
+
+test(
+  "the runtime rejects stale prompts and options without corrupting the duel",
+  { skip: distRoot ? false : "no published ocgcore artifacts in this checkout" },
+  async () => {
+    const runtime = new OcgcoreEngineRuntime(loadPublishedModule);
+    const opening = expectOk(await send(runtime, { type: "initialize" }));
+    const action = opening.prompt;
+    assert.ok(action);
+
+    // An option that belongs to a different prompt is refused.
+    const wrongOption = await send(runtime, {
+      type: "perform-action",
+      promptId: action.id,
+      optionId: "monster-zone-0",
+    });
+    assert.equal(wrongOption.ok, false);
+    assert.match(wrongOption.ok ? "" : wrongOption.error, /no longer legal/);
+
+    // The duel survives the refusal: the same prompt is still answerable.
+    const resumed = expectOk(await send(runtime, {
+      type: "perform-action",
+      promptId: action.id,
+      optionId: action.options[0]!.id,
+    }));
+    const placePrompt = resumed.prompt;
+    assert.ok(placePrompt, "the engine still advanced to the zone prompt");
+
+    // Replaying the prompt that was already answered — a double tap — is refused.
+    const stale = await send(runtime, {
+      type: "perform-action",
+      promptId: action.id,
+      optionId: action.options[0]!.id,
+    });
+    assert.equal(stale.ok, false);
+    assert.match(stale.ok ? "" : stale.error, /no longer active/);
+
+    // And the real choice still resolves afterwards.
+    const summoned = expectOk(await send(runtime, {
+      type: "perform-action",
+      promptId: placePrompt.id,
+      optionId: placePrompt.options[0]!.id,
+    }));
+    assert.equal(summoned.field?.players[0].handCount, 0);
+    assert.equal(summoned.board?.cards.length, 1);
+
+    expectOk(await send(runtime, { type: "reset" }));
+  },
+);

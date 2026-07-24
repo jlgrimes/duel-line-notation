@@ -47,6 +47,20 @@ npm test
 npm run dev
 ```
 
+Browser coverage for the Simulator runs separately, because it needs a browser:
+
+```sh
+npx playwright install chromium
+npm run test:e2e
+```
+
+That suite plays the real duel flow — real `ocgcore` WebAssembly, real Web Worker, choices made by
+tapping the board — on a desktop and a phone viewport. If your environment already has a Chromium
+that Playwright did not install, point `CHROMIUM_PATH` at the binary to use it instead of downloading
+another copy.
+
+Progress and remaining work are tracked in [CHECKLIST.md](CHECKLIST.md).
+
 Check a particular deck or line:
 
 ```sh

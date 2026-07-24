@@ -37,7 +37,9 @@ Adding real cards is now a card-data problem, not a snapshot-plumbing problem.
 
 **Automated status:** the WebAssembly build, smoke test, and Vercel deployment are green. `npm run ci`
 additionally drives the shipping runtime against the published core in Node, and the packet, card, and
-field decoders are covered by golden buffers captured from the pinned core.
+field decoders are covered by golden buffers captured from the pinned core. `npm run test:e2e` then
+plays the whole flow in a real browser — real WASM, real Worker, tapping the board — on a desktop and
+a phone viewport.
 
 Choices are now made **on the board**. The engine names the card or zone each legal option belongs to,
 the interface highlights exactly those targets, and the button list below the field appears only for
@@ -154,7 +156,7 @@ phone viewport passes but is not the same browser.
 - [ ] Add a compact mobile board mode for real duel interaction.
 - [ ] Add keyboard navigation and stronger screen-reader semantics.
 - [ ] Add visual regression tests for major board states.
-- [ ] Add browser end-to-end tests for catalog, Line Lab, and simulator flows.
+- [ ] Add browser end-to-end tests for the catalog and Line Lab. The simulator flow is covered.
 
 ---
 
@@ -272,10 +274,10 @@ option in a prompt is anchored, which keeps unanchored options reachable.
 ## Manual verification pending
 
 - [x] Confirm the latest deployed flow on desktop.
+- [x] Confirm selecting each of M1–M5 renders the card in the chosen zone. Now covered automatically
+      by the browser suite on both a desktop and a phone viewport, so it is no longer a manual check.
 - [ ] Confirm the latest deployed flow on iPhone/mobile Safari. Chromium at a phone viewport passes,
-      but that is not Safari and does not count.
-- [ ] Confirm selecting each of M1–M5 renders the card in the chosen zone. M4 is covered
-      automatically; the other four are offered but only spot-checked.
+      but that is not Safari and does not count. This is the only remaining manual item.
 - [ ] Confirm a future scenario with multiple legal positions displays and resolves the position chooser correctly.
 
 ## Still required prompt types
@@ -469,12 +471,17 @@ The authored notation, visual playback, and real rules engine should converge on
 - [x] Snapshot tests for normalized engine states, including JSON round-tripping.
 - [x] Unit tests for the message framer, the card-query decoder, and the field-query decoder.
 - [x] An end-to-end test that drives the shipping runtime against the published core in Node.
+- [x] Browser end-to-end test for the Simulator choice flow, running the real WASM in a real Worker.
+- [x] Mobile viewport end-to-end test, on the same suite.
+- [x] Tests for stale prompt rejection and double taps.
+- [x] A CI job that installs Chromium and runs the browser suite, uploading a report on failure.
 
 ## Still required
 
 - [ ] Unit tests for the remaining prompt decoders: idle command, place, and position.
 - [ ] Unit tests for every response encoder.
 - [ ] A drift check that fails CI when the golden fixtures no longer match a freshly published core.
+- [ ] Browser end-to-end tests for the catalog and Line Lab; only the Simulator flow is covered.
 - [ ] Browser end-to-end test for the Simulator choice flow.
 - [ ] Mobile viewport end-to-end test.
 - [ ] Tests for stale prompt rejection and double taps.
@@ -530,11 +537,12 @@ The authored notation, visual playback, and real rules engine should converge on
 - [x] Source/provenance documentation.
 - [x] Automated database setup notes.
 - [x] Initial `ocgcore` package diagnostics and build scripts.
+- [x] Link this checklist from the README.
+- [x] Document how to run the browser suite, including the preinstalled-Chromium escape hatch.
 
 ## Still required
 
 - [ ] Keep this checklist current after every meaningful checkpoint.
-- [ ] Link this checklist from the README.
 - [ ] Document Simulator architecture and worker protocol.
 - [ ] Document the bridge ABI.
 - [ ] Document packet normalization and response encoding.
@@ -551,8 +559,8 @@ The authored notation, visual playback, and real rules engine should converge on
 
 These are the next practical milestones, in order:
 
-1. [ ] Manually verify the deployed action → zone → summon flow on mobile and desktop.
-2. [ ] Add browser end-to-end coverage for that flow.
+1. [x] Verify the deployed action → zone → summon flow on desktop. Mobile Safari is still open.
+2. [x] Add browser end-to-end coverage for that flow.
 3. [x] Generalize snapshot construction beyond the one-card bootstrap.
 4. [ ] Add the real card database and Lua script resolver.
 5. [ ] Load the minimum real Mitsurugi card/script set.

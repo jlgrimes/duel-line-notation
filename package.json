@@ -14,6 +14,7 @@
     "check": "npm run build:cli && node dist/src/cli.js check decks",
     "test": "npm run build:cli && node --test dist/test/*.test.js",
     "ci": "npm run check && npm test && npm run build:web",
+    "test:e2e": "playwright test",
     "db:setup": "npm run build:cli && node scripts/db.mjs",
     "db:setup:optional": "npm run build:cli && node scripts/db.mjs --optional",
     "ocgcore:doctor": "npm --prefix packages/ocgcore run doctor",
@@ -47,6 +48,7 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
