@@ -22,25 +22,29 @@ export function SimulatorBoardPreview({ frame }: { frame: PlaybackFrame | null }
     <section className="simulator-board-preview" aria-labelledby="simulator-board-title">
       <header>
         <div>
-          <p className="eyebrow">Milestone 04 · engine-owned state</p>
-          <h2 id="simulator-board-title">Engine snapshot board</h2>
+          <p className="eyebrow">Milestone 05 · decoder boundary</p>
+          <h2 id="simulator-board-title">Decoded engine board</h2>
         </div>
         <p>
-          The simulator UI no longer constructs its own opening frame. The worker runtime now supplies normalized duel
-          state through the typed engine snapshot—the same seam the real ocgcore decoder will use.
+          The real core is running, but React will not invent a board while card records and field-query decoding are still
+          absent. This surface will render only state projected from ocgcore through the shared snapshot model.
         </p>
       </header>
       {frame ? (
-        <div className="duel-visualizer simulator-board-surface">
-          <DuelBoard frame={frame} scans={scans} ariaLabel="Pure Mitsurugi engine snapshot board" />
-        </div>
+        <>
+          <div className="duel-visualizer simulator-board-surface">
+            <DuelBoard frame={frame} scans={scans} ariaLabel="Pure Mitsurugi decoded engine board" />
+          </div>
+          <p className={`scan-credit ${loading ? "loading" : ""}`}>
+            <i /> {loading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and
+            images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
+          </p>
+        </>
       ) : (
-        <div className="simulator-note">Waiting for the engine to publish its first duel snapshot…</div>
+        <div className="simulator-note">
+          Real ocgcore is ready. Waiting for the card database, Lua resolver, and field-query decoder before publishing a board snapshot.
+        </div>
       )}
-      <p className={`scan-credit ${loading ? "loading" : ""}`}>
-        <i /> {loading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and
-        images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
-      </p>
     </section>
   );
 }
