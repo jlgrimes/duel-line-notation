@@ -11,10 +11,13 @@ const wasmPath = resolve(distRoot, "ocgcore.wasm");
 const CARD_CODE = 15025844; // Mystical Elf
 const LOCATION_DECK = 0x01;
 const LOCATION_HAND = 0x02;
+const LOCATION_MZONE = 0x04;
 const POS_FACEDOWN_DEFENSE = 0x08;
 const QUERY_CODE = 0x01;
-const MSG_NEW_TURN = 40;
 const MSG_SELECT_IDLECMD = 11;
+const MSG_SELECT_PLACE = 18;
+const MSG_SELECT_POSITION = 19;
+const MSG_NEW_TURN = 40;
 
 let stage = "checking artifacts";
 let handle = 0;
@@ -73,6 +76,12 @@ function readQueryUint32(bytes, wantedFlag) {
   throw new Error(`Query flag ${wantedFlag} was not present`);
 }
 
+function uint32Bytes(value) {
+  const bytes = new Uint8Array(4);
+  new DataView(bytes.buffer).setUint32(0, value >>> 0, true);
+  return bytes;
+}
+
 try {
   assert.ok(existsSync(modulePath), `Missing ${modulePath}`);
   assert.ok(existsSync(wasmPath), `Missing ${wasmPath}`);
@@ -101,6 +110,7 @@ try {
   const start = module.cwrap("dln_ocg_start", "number", ["number"]);
   const processDuel = module.cwrap("dln_ocg_process", "number", ["number"]);
   const getMessage = module.cwrap("dln_ocg_get_message", "number", ["number", "number"]);
+  const setResponse = module.cwrap("dln_ocg_set_response", "number", ["number", "number", "number"]);
   const queryCount = module.cwrap("dln_ocg_query_count", "number", ["number", "number", "number"]);
   const queryCard = module.cwrap("dln_ocg_query_card", "number", Array(7).fill("number"));
   const queryField = module.cwrap("dln_ocg_query_field", "number", ["number", "number"]);
@@ -116,6 +126,28 @@ try {
     } finally {
       module._free(lengthPointer);
     }
+  };
+
+  const writeResponse = (bytes) => {
+    const pointer = module._malloc(bytes.byteLength);
+    try {
+      module.HEAPU8.set(bytes, pointer);
+      assert.equal(setResponse(handle, pointer, bytes.byteLength), 1, "OCG_DuelSetResponse failed");
+    } finally {
+      module._free(pointer);
+    }
+  };
+
+  const processUntilPause = () => {
+    const packets = [];
+    let status = 2;
+    for (let iteration = 0; iteration < 32; iteration += 1) {
+      status = processDuel(handle);
+      assert.ok([0, 1, 2].includes(status), `Unexpected duel status ${status}`);
+      packets.push(...parsePackets(readBuffer(getMessage, handle)));
+      if (status !== 2) return { status, packets };
+    }
+    throw new Error("ocgcore did not pause within 32 process calls");
   };
 
   announce("reading ocgcore API version");
@@ -139,15 +171,7 @@ try {
   ), 1, "Could not register card data");
 
   announce("allocating duel");
-  handle = create(
-    0x12345678,
-    0x9abcdef0,
-    0,
-    0,
-    8000,
-    1,
-    1,
-  );
+  handle = create(0x12345678, 0x9abcdef0, 0, 0, 8000, 1, 1);
   assert.ok(handle > 0, "OCG_CreateDuel did not return a duel handle");
 
   announce("loading deterministic decks");
@@ -158,61 +182,68 @@ try {
   assert.equal(start(handle), 1, "OCG_StartDuel failed");
 
   announce("processing until the first legal-action prompt");
-  let status = 2;
-  let idlePacket = null;
-  const messageTypes = [];
-  for (let iteration = 0; iteration < 32; iteration += 1) {
-    status = processDuel(handle);
-    assert.ok([0, 1, 2].includes(status), `Unexpected duel status ${status}`);
-    const messageBytes = readBuffer(getMessage, handle);
-    for (const packet of parsePackets(messageBytes)) {
-      messageTypes.push(packet.type);
-      if (packet.type === MSG_SELECT_IDLECMD) idlePacket = packet;
-    }
-    if (status !== 2) break;
-  }
-
+  const startup = processUntilPause();
+  const messageTypes = startup.packets.map((packet) => packet.type);
+  const idlePacket = startup.packets.findLast((packet) => packet.type === MSG_SELECT_IDLECMD) ?? null;
   assert.ok(messageTypes.includes(MSG_NEW_TURN), `Missing MSG_NEW_TURN; received ${messageTypes.join(", ")}`);
-  assert.equal(status, 1, `Expected ocgcore to await a response, received status ${status}`);
+  assert.equal(startup.status, 1, `Expected ocgcore to await a response, received status ${startup.status}`);
   assert.ok(idlePacket, `Missing MSG_SELECT_IDLECMD; received ${messageTypes.join(", ")}`);
 
   announce("decoding normal-summon action");
   const idleView = new DataView(idlePacket.payload.buffer, idlePacket.payload.byteOffset, idlePacket.payload.byteLength);
-  assert.equal(idlePacket.payload[0], MSG_SELECT_IDLECMD);
   assert.equal(idlePacket.payload[1], 0, "Expected player 0 to receive the idle prompt");
-  const summonCount = idleView.getUint32(2, true);
-  assert.equal(summonCount, 1, "Expected exactly one normal-summon action");
-  const summonCode = idleView.getUint32(6, true);
-  const summonController = idlePacket.payload[10];
-  const summonLocation = idlePacket.payload[11];
-  const summonSequence = idleView.getUint32(12, true);
-  assert.equal(summonCode, CARD_CODE);
-  assert.equal(summonController, 0);
-  assert.equal(summonLocation, LOCATION_HAND);
-  assert.equal(summonSequence, 0);
+  assert.equal(idleView.getUint32(2, true), 1, "Expected exactly one normal-summon action");
+  assert.equal(idleView.getUint32(6, true), CARD_CODE);
+  assert.equal(idlePacket.payload[10], 0);
+  assert.equal(idlePacket.payload[11], LOCATION_HAND);
+  assert.equal(idleView.getUint32(12, true), 0);
 
-  announce("querying real field state");
-  assert.equal(queryCount(handle, 0, LOCATION_HAND), 1, "Player 0 should have one card in hand");
-  const cardQuery = readBuffer(queryCard, handle, QUERY_CODE, 0, LOCATION_HAND, 0, 0);
-  assert.equal(readQueryUint32(cardQuery, QUERY_CODE), CARD_CODE, "Hand query returned the wrong card code");
+  announce("submitting normal-summon action");
+  writeResponse(uint32Bytes(0));
+
+  const choiceTrace = [];
+  for (let choiceIndex = 0; choiceIndex < 4 && queryCount(handle, 0, LOCATION_MZONE) === 0; choiceIndex += 1) {
+    const result = processUntilPause();
+    choiceTrace.push(...result.packets.map((packet) => packet.type));
+    if (queryCount(handle, 0, LOCATION_MZONE) > 0) break;
+
+    const prompt = result.packets.findLast((packet) => packet.type === MSG_SELECT_PLACE || packet.type === MSG_SELECT_POSITION);
+    assert.ok(prompt, `Expected a place or position prompt; received ${result.packets.map((packet) => packet.type).join(", ")}`);
+
+    if (prompt.type === MSG_SELECT_PLACE) {
+      announce("resolving monster-zone choice");
+      assert.equal(prompt.payload[1], 0, "Expected player 0 place prompt");
+      assert.equal(prompt.payload[2], 1, "Expected one place selection");
+      const unavailable = new DataView(prompt.payload.buffer, prompt.payload.byteOffset, prompt.payload.byteLength).getUint32(3, true);
+      assert.equal(unavailable & 1, 0, "M1 should be legal on an empty board");
+      writeResponse(Uint8Array.from([0, LOCATION_MZONE, 0]));
+      continue;
+    }
+
+    announce("resolving battle-position choice");
+    const allowed = prompt.payload[6];
+    const selectedPosition = (allowed & 0x01) !== 0 ? 0x01 : allowed & -allowed;
+    assert.ok(selectedPosition > 0, `No legal position in mask ${allowed}`);
+    writeResponse(uint32Bytes(selectedPosition));
+  }
+
+  announce("verifying the selected card moved");
+  assert.equal(queryCount(handle, 0, LOCATION_HAND), 0, "Player 0 hand should be empty after the summon");
+  assert.equal(queryCount(handle, 0, LOCATION_MZONE), 1, "Player 0 should have one monster on the field");
+  const monsterQuery = readBuffer(queryCard, handle, QUERY_CODE, 0, LOCATION_MZONE, 0, 0);
+  assert.equal(readQueryUint32(monsterQuery, QUERY_CODE), CARD_CODE, "M1 query returned the wrong card code");
   const fieldQuery = readBuffer(queryField, handle);
   assert.ok(fieldQuery.byteLength > 0, "Field query returned no data");
 
   console.log(JSON.stringify({
     apiVersion: `${versionMajor()}.${versionMinor()}`,
-    status,
-    messageTypes,
-    legalAction: {
-      kind: "normal-summon",
-      code: summonCode,
-      controller: summonController,
-      location: summonLocation,
-      sequence: summonSequence,
-      responseValue: 0,
-    },
+    startupMessageTypes: messageTypes,
+    choiceMessageTypes: choiceTrace,
+    resolvedAction: "Normal Summon Mystical Elf to M1",
     field: {
       player0HandCount: queryCount(handle, 0, LOCATION_HAND),
-      queriedCardCode: readQueryUint32(cardQuery, QUERY_CODE),
+      player0MonsterCount: queryCount(handle, 0, LOCATION_MZONE),
+      queriedCardCode: readQueryUint32(monsterQuery, QUERY_CODE),
       fieldQueryBytes: fieldQuery.byteLength,
     },
   }, null, 2));
