@@ -4,17 +4,28 @@ export type EnginePhase = "idle" | "starting" | "ready" | "error";
 
 export type EngineLogLevel = "info" | "success" | "error";
 
+export type EngineActionKind = "normal-summon";
+
+export interface EngineActionPrompt {
+  id: string;
+  label: string;
+  kind: EngineActionKind;
+  cardCode: number;
+}
+
 export interface EngineSnapshot {
   phase: EnginePhase;
   statusMessage: string;
   engineVersion: number | null;
   stepValue: number;
   board: PlaybackFrame | null;
+  prompt: EngineActionPrompt | null;
 }
 
 export type EngineCommand =
   | { type: "initialize" }
   | { type: "process-step"; state: number }
+  | { type: "perform-action"; actionId: string }
   | { type: "reset" };
 
 export type EngineEvent =
@@ -50,4 +61,5 @@ export const INITIAL_ENGINE_SNAPSHOT: EngineSnapshot = {
   engineVersion: null,
   stepValue: 0,
   board: null,
+  prompt: null,
 };
