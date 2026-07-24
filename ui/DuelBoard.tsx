@@ -22,6 +22,8 @@ export function DuelBoard({
   ariaLabel = "Duel board",
   showActionCallout = true,
 }: DuelBoardProps) {
+  const chainLink = frame.chainLink;
+
   return (
     <CardScanContext.Provider value={scans}>
       <div className="duel-canvas" aria-label={ariaLabel}>
@@ -32,18 +34,18 @@ export function DuelBoard({
 
         <div className="life-points"><small>LP</small><strong>{frame.lp.toLocaleString()}</strong></div>
 
-        {frame.chainLink && (
+        {chainLink !== undefined && (
           <div className="chain-resolver">
             <span>{frame.chainPhase === "activation" ? "Building Chain" : "Chain resolving"}</span>
             <div>
               {Array.from({ length: frame.chainSize ?? 0 }, (_, index) => index + 1).reverse().map((link) => (
                 <i
                   key={link}
-                  className={link === frame.chainLink
+                  className={link === chainLink
                     ? "active"
-                    : frame.chainPhase === "resolution" && link > frame.chainLink
+                    : frame.chainPhase === "resolution" && link > chainLink
                       ? "resolved"
-                      : frame.chainPhase === "activation" && link < frame.chainLink
+                      : frame.chainPhase === "activation" && link < chainLink
                         ? "queued"
                         : ""}
                 >
