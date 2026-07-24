@@ -1,0 +1,45 @@
+.simulator-board-preview {
+  margin-top: 14px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #101216;
+}
+
+.simulator-board-preview > header {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(280px, 1.2fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.simulator-board-preview h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  letter-spacing: -.035em;
+}
+
+.simulator-board-preview > header > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .75rem;
+  line-height: 1.65;
+}
+
+.simulator-board-surface {
+  overflow: hidden;
+  border: 1px solid #292d33;
+  border-radius: 10px;
+}
+
+.simulator-board-surface .duel-canvas {
+  min-height: 660px;
+}
+
+@media (max-width: 780px) {
+  .simulator-board-preview > header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
