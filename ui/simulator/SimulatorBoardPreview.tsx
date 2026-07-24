@@ -1,5 +1,6 @@
 import type { PlaybackFrame } from "../../src/visualizer.js";
 import { DuelBoard } from "../DuelBoard";
+import "./SimulatorBoardPreview.css";
 
 const PURE_MITSURUGI_OPENING: PlaybackFrame = {
   key: "simulator-opening-preview",
