@@ -96,13 +96,26 @@ try {
     const messageLength = module.HEAPU32[lengthPointer >>> 2];
 
     assert.ok(messagePointer > 0, "OCG_DuelGetMessage returned a null pointer");
-    assert.ok(messageLength > 0, "ocgcore produced no startup packet");
+    assert.ok(messageLength >= 5, `ocgcore startup buffer is too short: ${messageLength}`);
+
+    const packetLength = new DataView(
+      module.HEAPU8.buffer,
+      messagePointer,
+      4,
+    ).getUint32(0, true);
+    assert.ok(packetLength >= 1, `ocgcore returned invalid packet length ${packetLength}`);
+    assert.ok(packetLength + 4 <= messageLength, `Packet length ${packetLength} exceeds buffer length ${messageLength}`);
+
+    const messageType = module.HEAPU8[messagePointer + 4];
+    assert.equal(messageType, 4, `Expected MSG_START (4), received message type ${messageType}`);
 
     console.log(JSON.stringify({
       apiVersion: `${versionMajor()}.${versionMinor()}`,
       status,
-      messageLength,
-      firstMessageByte: module.HEAPU8[messagePointer],
+      bufferLength: messageLength,
+      packetLength,
+      messageType,
+      messageName: "MSG_START",
     }, null, 2));
   } finally {
     module._free(lengthPointer);
