@@ -88,7 +88,7 @@ try {
   const status = processDuel(handle);
   assert.ok([0, 1, 2].includes(status), `Unexpected duel status ${status}`);
 
-  announce("reading startup packet");
+  announce("reading first engine packet");
   const lengthPointer = module._malloc(4);
   try {
     module.HEAPU32[lengthPointer >>> 2] = 0;
@@ -96,7 +96,7 @@ try {
     const messageLength = module.HEAPU32[lengthPointer >>> 2];
 
     assert.ok(messagePointer > 0, "OCG_DuelGetMessage returned a null pointer");
-    assert.ok(messageLength >= 5, `ocgcore startup buffer is too short: ${messageLength}`);
+    assert.ok(messageLength >= 5, `ocgcore message buffer is too short: ${messageLength}`);
 
     const packetLength = new DataView(
       module.HEAPU8.buffer,
@@ -107,7 +107,7 @@ try {
     assert.ok(packetLength + 4 <= messageLength, `Packet length ${packetLength} exceeds buffer length ${messageLength}`);
 
     const messageType = module.HEAPU8[messagePointer + 4];
-    assert.equal(messageType, 4, `Expected MSG_START (4), received message type ${messageType}`);
+    assert.equal(messageType, 40, `Expected first engine packet MSG_NEW_TURN (40), received message type ${messageType}`);
 
     console.log(JSON.stringify({
       apiVersion: `${versionMajor()}.${versionMinor()}`,
@@ -115,7 +115,7 @@ try {
       bufferLength: messageLength,
       packetLength,
       messageType,
-      messageName: "MSG_START",
+      messageName: "MSG_NEW_TURN",
     }, null, 2));
   } finally {
     module._free(lengthPointer);
