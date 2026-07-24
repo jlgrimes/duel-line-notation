@@ -1,9 +1,9 @@
 import { execFileSync } from "node:child_process";
+import { findEmscriptenToolchain } from "./emscripten-toolchain.mjs";
 
 const requirements = [
   ["git", ["--version"]],
   ["cmake", ["--version"]],
-  ["emcmake", ["--version"]],
   ["em++", ["--version"]],
 ];
 
@@ -16,6 +16,14 @@ for (const [command, args] of requirements) {
     failed = true;
     console.error(`✗ ${command} is unavailable`);
   }
+}
+
+const toolchain = findEmscriptenToolchain();
+if (toolchain) {
+  console.log(`✓ Emscripten CMake toolchain: ${toolchain}`);
+} else {
+  failed = true;
+  console.error("✗ Emscripten CMake toolchain is unavailable");
 }
 
 if (failed) {
