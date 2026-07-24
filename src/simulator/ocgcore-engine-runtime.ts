@@ -67,6 +67,8 @@ const MESSAGE_NAMES: Readonly<Record<number, string>> = {
   13: "MSG_SELECT_YESNO",
   14: "MSG_SELECT_OPTION",
   15: "MSG_SELECT_CARD",
+  40: "MSG_NEW_TURN",
+  41: "MSG_NEW_PHASE",
 };
 
 function copySnapshot(snapshot: EngineSnapshot): EngineSnapshot {
@@ -84,7 +86,7 @@ export function summarizeFirstOcgcorePacket(bytes: Uint8Array): OcgcorePacketSum
     throw new Error(`Malformed ocgcore packet length ${packetBytes} in ${bytes.byteLength}-byte buffer.`);
   }
 
-  const messageType = bytes[4];
+  const messageType = bytes[4]!;
   return {
     totalBytes: bytes.byteLength,
     packetBytes,
@@ -162,7 +164,7 @@ export class OcgcoreEngineRuntime {
     }
 
     let abortReason: unknown = null;
-    this.module = await imported.default({
+    const loadedModule = await imported.default({
       locateFile(file) {
         return file.endsWith(".wasm") ? wasmUrl : new URL(`/ocgcore/${file}`, globalThis.location.origin).href;
       },
@@ -174,15 +176,17 @@ export class OcgcoreEngineRuntime {
       throw new Error(`ocgcore aborted while loading: ${String(abortReason)}`);
     }
 
-    this.bindings = bindModule(this.module);
-    const major = this.bindings.versionMajor();
-    const minor = this.bindings.versionMinor();
+    this.module = loadedModule;
+    const bindings = bindModule(loadedModule);
+    this.bindings = bindings;
+    const major = bindings.versionMajor();
+    const minor = bindings.versionMinor();
     if (major !== 11 || minor !== 0) {
       throw new Error(`Unsupported ocgcore API ${major}.${minor}; expected 11.0.`);
     }
     events.push({ type: "log", level: "success", message: "Real ocgcore WASM loaded", detail: `Project Ignis API ${major}.${minor}.` });
 
-    this.duelHandle = this.bindings.create(
+    this.duelHandle = bindings.create(
       0x12345678,
       0x9abcdef0,
       0,
@@ -196,27 +200,28 @@ export class OcgcoreEngineRuntime {
     }
     events.push({ type: "log", level: "success", message: "Duel allocated", detail: `Engine handle ${this.duelHandle}.` });
 
-    if (this.bindings.start(this.duelHandle) !== 1) {
+    if (bindings.start(this.duelHandle) !== 1) {
       throw new Error("ocgcore rejected the duel start request.");
     }
 
-    const processStatus = this.bindings.process(this.duelHandle);
+    const processStatus = bindings.process(this.duelHandle);
     const packet = this.readMessage();
     const summary = summarizeFirstOcgcorePacket(packet);
-    if (summary.messageType !== 4) {
-      throw new Error(`Expected MSG_START (4), received ${summary.messageName} (${summary.messageType}).`);
+    if (summary.messageType !== 40) {
+      throw new Error(`Expected first engine packet MSG_NEW_TURN (40), received ${summary.messageName} (${summary.messageType}).`);
     }
 
+    const engineVersion = major + minor / 100;
     this.currentSnapshot = {
       phase: "ready",
-      statusMessage: "Real ocgcore startup packet received",
-      engineVersion: major + minor / 100,
+      statusMessage: "Real ocgcore first packet received",
+      engineVersion,
       stepValue: processStatus,
       board: null,
     };
     events.push(
-      { type: "log", level: "success", message: "MSG_START received", detail: `${summary.packetBytes}-byte packet inside a ${summary.totalBytes}-byte framed buffer.` },
-      { type: "initialized", engineVersion: this.currentSnapshot.engineVersion },
+      { type: "log", level: "success", message: "MSG_NEW_TURN received", detail: `${summary.packetBytes}-byte packet inside a ${summary.totalBytes}-byte framed buffer.` },
+      { type: "initialized", engineVersion },
       { type: "status", phase: "ready", message: this.currentSnapshot.statusMessage },
     );
   }
@@ -244,7 +249,7 @@ export class OcgcoreEngineRuntime {
     try {
       this.module.HEAPU32[lengthPointer >>> 2] = 0;
       const messagePointer = this.bindings.getMessage(this.duelHandle, lengthPointer);
-      const messageLength = this.module.HEAPU32[lengthPointer >>> 2];
+      const messageLength = this.module.HEAPU32[lengthPointer >>> 2] ?? 0;
       if (messagePointer <= 0 || messageLength <= 0) {
         throw new Error("ocgcore produced no startup message.");
       }
