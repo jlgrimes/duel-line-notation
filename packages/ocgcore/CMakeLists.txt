@@ -84,5 +84,5 @@ target_link_options(ocgcore PRIVATE
   "-sINVOKE_RUN=0"
   "-sERROR_ON_UNDEFINED_SYMBOLS=1"
   "-sEXPORTED_FUNCTIONS=['_dln_ocg_version_major','_dln_ocg_version_minor','_dln_ocg_create','_dln_ocg_destroy','_dln_ocg_start','_dln_ocg_process','_dln_ocg_get_message','_dln_ocg_set_response','_malloc','_free']"
-  "-sEXPORTED_RUNTIME_METHODS=['cwrap']"
+  "-sEXPORTED_RUNTIME_METHODS=['cwrap','HEAPU8','HEAPU32']"
 )
