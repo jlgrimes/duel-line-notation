@@ -22,6 +22,8 @@ if (!existsSync(resolve(sourceRoot, ".git"))) {
 git(["fetch", "--depth=1", "origin", lock.commit], sourceRoot);
 git(["checkout", "--detach", lock.commit], sourceRoot);
 git(["reset", "--hard", lock.commit], sourceRoot);
+git(["submodule", "sync", "--recursive"], sourceRoot);
+git(["submodule", "update", "--init", "--recursive", "--depth=1"], sourceRoot);
 
 const actual = execFileSync("git", ["rev-parse", "HEAD"], {
   cwd: sourceRoot,
@@ -32,4 +34,8 @@ if (actual !== lock.commit) {
   throw new Error(`Expected ocgcore ${lock.commit}, checked out ${actual}.`);
 }
 
-console.log(`ocgcore source ready at ${actual}`);
+if (!existsSync(resolve(sourceRoot, "lua/src/lua.h"))) {
+  throw new Error("ocgcore's pinned Lua submodule was not initialized.");
+}
+
+console.log(`ocgcore source and submodules ready at ${actual}`);
