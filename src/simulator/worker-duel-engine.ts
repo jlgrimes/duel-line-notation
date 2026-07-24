@@ -32,7 +32,7 @@ type PendingRequest = {
 };
 
 function copySnapshot(snapshot: EngineSnapshot): EngineSnapshot {
-  return { ...snapshot };
+  return structuredClone(snapshot);
 }
 
 export class WorkerDuelEngine implements DuelEngine {
@@ -66,6 +66,7 @@ export class WorkerDuelEngine implements DuelEngine {
       statusMessage: "Starting engine worker…",
       engineVersion: null,
       stepValue: 0,
+      board: null,
     };
     this.emit({ type: "status", phase: "starting", message: this.currentSnapshot.statusMessage });
     return this.dispatch({ type: "initialize" });
@@ -96,9 +97,7 @@ export class WorkerDuelEngine implements DuelEngine {
 
   private dispatch(command: EngineCommand): Promise<EngineSnapshot> {
     this.assertActive();
-    const requestId = this.nextRequestId;
-    this.nextRequestId += 1;
-
+    const requestId = this.nextRequestId++;
     return new Promise<EngineSnapshot>((resolve, reject) => {
       this.pending.set(requestId, { resolve, reject });
       this.worker.postMessage({ requestId, command });
@@ -107,29 +106,18 @@ export class WorkerDuelEngine implements DuelEngine {
 
   private handleResponse(response: EngineWorkerResponse): void {
     if (this.destroyed) return;
-
     this.currentSnapshot = copySnapshot(response.snapshot);
     for (const event of response.events) this.emit(event);
-
     const pending = this.pending.get(response.requestId);
     if (!pending) return;
     this.pending.delete(response.requestId);
-
-    if (response.ok) {
-      pending.resolve(this.snapshot());
-      return;
-    }
-
-    pending.reject(new Error(response.error));
+    if (response.ok) pending.resolve(this.snapshot());
+    else pending.reject(new Error(response.error));
   }
 
   private handleWorkerFailure(message: string): void {
     if (this.destroyed) return;
-    this.currentSnapshot = {
-      ...this.currentSnapshot,
-      phase: "error",
-      statusMessage: message,
-    };
+    this.currentSnapshot = { ...this.currentSnapshot, phase: "error", statusMessage: message };
     this.emit({ type: "log", level: "error", message: "Worker runtime error", detail: message });
     this.emit({ type: "status", phase: "error", message });
     this.rejectPending(new Error(message));
