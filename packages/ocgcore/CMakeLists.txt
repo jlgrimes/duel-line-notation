@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 project(dln_ocgcore_wasm LANGUAGES C CXX)
 
 if(NOT EMSCRIPTEN)
-  message(FATAL_ERROR "@dln/ocgcore must be configured through emcmake.")
+  message(FATAL_ERROR "@dln/ocgcore must be configured with the Emscripten CMake toolchain.")
 endif()
 
 set(OCGCORE_SOURCE_DIR "" CACHE PATH "Path to the pinned ygopro-core checkout")
@@ -62,12 +62,18 @@ target_include_directories(ocgcore PRIVATE
   "${OCGCORE_SOURCE_DIR}/lua/src"
 )
 
+# ocgcore explicitly verifies that Lua errors unwind C++ stack frames. Emscripten
+# disables exception support by default, so both the core and Lua must opt in.
 target_compile_options(ocgcore PRIVATE
   -Wno-unused-parameter
+  -fexceptions
 )
 
 target_link_options(ocgcore PRIVATE
   "--no-entry"
+  "-fexceptions"
+  "-sDISABLE_EXCEPTION_CATCHING=0"
+  "-sASSERTIONS=1"
   "-sMODULARIZE=1"
   "-sEXPORT_ES6=1"
   "-sEXPORT_NAME=createOcgcore"
