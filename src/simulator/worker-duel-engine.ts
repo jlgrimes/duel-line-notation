@@ -21,6 +21,7 @@ export interface DuelEngine {
   subscribe(listener: EngineEventListener): () => void;
   initialize(): Promise<EngineSnapshot>;
   processStep(state?: number): Promise<EngineSnapshot>;
+  performAction(actionId: string): Promise<EngineSnapshot>;
   reset(): Promise<EngineSnapshot>;
   restart(): Promise<EngineSnapshot>;
   destroy(): void;
@@ -67,6 +68,7 @@ export class WorkerDuelEngine implements DuelEngine {
       engineVersion: null,
       stepValue: 0,
       board: null,
+      prompt: null,
     };
     this.emit({ type: "status", phase: "starting", message: this.currentSnapshot.statusMessage });
     return this.dispatch({ type: "initialize" });
@@ -74,6 +76,10 @@ export class WorkerDuelEngine implements DuelEngine {
 
   processStep(state = this.currentSnapshot.stepValue): Promise<EngineSnapshot> {
     return this.dispatch({ type: "process-step", state });
+  }
+
+  performAction(actionId: string): Promise<EngineSnapshot> {
+    return this.dispatch({ type: "perform-action", actionId });
   }
 
   reset(): Promise<EngineSnapshot> {
@@ -117,7 +123,7 @@ export class WorkerDuelEngine implements DuelEngine {
 
   private handleWorkerFailure(message: string): void {
     if (this.destroyed) return;
-    this.currentSnapshot = { ...this.currentSnapshot, phase: "error", statusMessage: message };
+    this.currentSnapshot = { ...this.currentSnapshot, phase: "error", statusMessage: message, prompt: null };
     this.emit({ type: "log", level: "error", message: "Worker runtime error", detail: message });
     this.emit({ type: "status", phase: "error", message });
     this.rejectPending(new Error(message));
