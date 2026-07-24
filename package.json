@@ -16,6 +16,10 @@
     "ci": "npm run check && npm test && npm run build:web",
     "db:setup": "npm run build:cli && node scripts/db.mjs",
     "db:setup:optional": "npm run build:cli && node scripts/db.mjs --optional",
+    "ocgcore:doctor": "npm --prefix packages/ocgcore run doctor",
+    "ocgcore:fetch": "npm --prefix packages/ocgcore run fetch",
+    "ocgcore:build": "npm --prefix packages/ocgcore run build",
+    "ocgcore:smoke": "npm --prefix packages/ocgcore run smoke",
     "preview": "vite preview",
     "prepack": "npm run build:cli"
   },
