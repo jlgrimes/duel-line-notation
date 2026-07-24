@@ -3,11 +3,12 @@ import {
   type EngineActionPrompt,
   type EngineCommand,
   type EngineEvent,
+  type EnginePromptOption,
   type EngineSnapshot,
   type EngineWorkerRequest,
   type EngineWorkerResponse,
 } from "./engine-protocol.js";
-import type { PlaybackFrame } from "../visualizer.js";
+import type { PlaybackFrame, VisualFieldSlot } from "../visualizer.js";
 
 interface OcgcoreModule {
   HEAPU8: Uint8Array;
@@ -88,14 +89,20 @@ interface OcgcorePacket {
   packetBytes: number;
 }
 
-interface SupportedAction {
+interface SupportedChoice {
+  optionId: string;
+  response: Uint8Array;
+}
+
+interface SupportedPrompt {
   prompt: EngineActionPrompt;
-  responseValue: number;
+  choices: SupportedChoice[];
 }
 
 interface QueriedCard {
   code: number;
   position: number;
+  sequence: number;
 }
 
 export interface OcgcorePacketSummary {
@@ -116,7 +123,10 @@ const POS_FACEUP = 0x05;
 const POS_FACEDOWN_DEFENSE = 0x08;
 const QUERY_CODE = 0x01;
 const QUERY_POSITION = 0x02;
+
 const MSG_SELECT_IDLECMD = 11;
+const MSG_SELECT_PLACE = 18;
+const MSG_SELECT_POSITION = 19;
 const MSG_NEW_TURN = 40;
 
 const MESSAGE_NAMES: Readonly<Record<number, string>> = {
@@ -134,6 +144,8 @@ const MESSAGE_NAMES: Readonly<Record<number, string>> = {
   13: "MSG_SELECT_YESNO",
   14: "MSG_SELECT_OPTION",
   15: "MSG_SELECT_CARD",
+  18: "MSG_SELECT_PLACE",
+  19: "MSG_SELECT_POSITION",
   40: "MSG_NEW_TURN",
   41: "MSG_NEW_PHASE",
   50: "MSG_MOVE",
@@ -142,12 +154,25 @@ const MESSAGE_NAMES: Readonly<Record<number, string>> = {
   90: "MSG_DRAW",
 };
 
+const POSITION_OPTIONS = [
+  { value: 0x01, label: "Face-up Attack", detail: "Summon the monster in Attack Position." },
+  { value: 0x02, label: "Face-down Attack", detail: "Use face-down Attack Position when the rules allow it." },
+  { value: 0x04, label: "Face-up Defense", detail: "Summon the monster in Defense Position." },
+  { value: 0x08, label: "Face-down Defense", detail: "Set the monster in Defense Position." },
+] as const;
+
 function copySnapshot(snapshot: EngineSnapshot): EngineSnapshot {
   return structuredClone(snapshot);
 }
 
 function numberArguments(count: number): Array<"number"> {
   return Array.from({ length: count }, () => "number" as const);
+}
+
+function uint32Response(value: number): Uint8Array {
+  const response = new Uint8Array(4);
+  new DataView(response.buffer).setUint32(0, value >>> 0, true);
+  return response;
 }
 
 function parsePackets(bytes: Uint8Array): OcgcorePacket[] {
@@ -170,9 +195,7 @@ function parsePackets(bytes: Uint8Array): OcgcorePacket[] {
 
 export function summarizeFirstOcgcorePacket(bytes: Uint8Array): OcgcorePacketSummary {
   const first = parsePackets(bytes)[0];
-  if (!first) {
-    throw new Error("ocgcore produced an empty message buffer.");
-  }
+  if (!first) throw new Error("ocgcore produced an empty message buffer.");
   return {
     totalBytes: bytes.byteLength,
     packetBytes: first.packetBytes,
@@ -224,7 +247,7 @@ export class OcgcoreEngineRuntime {
   private module: OcgcoreModule | null = null;
   private bindings: OcgcoreBindings | null = null;
   private duelHandle = 0;
-  private pendingAction: SupportedAction | null = null;
+  private pendingPrompt: SupportedPrompt | null = null;
 
   snapshot(): EngineSnapshot {
     return copySnapshot(this.currentSnapshot);
@@ -248,10 +271,13 @@ export class OcgcoreEngineRuntime {
 
   private async execute(command: EngineCommand, events: EngineEvent[]): Promise<void> {
     if (command.type === "initialize") return this.initialize(events);
-    if (command.type === "perform-action") return this.performAction(command.actionId, events);
+    if (command.type === "perform-action") return this.performAction(command.promptId, command.optionId, events);
     if (command.type === "process-step") {
-      if (!this.pendingAction) throw new Error("ocgcore is waiting, but no supported action is available.");
-      return this.performAction(this.pendingAction.prompt.id, events);
+      const firstOption = this.pendingPrompt?.prompt.options[0];
+      if (!this.pendingPrompt || !firstOption) {
+        throw new Error("ocgcore is waiting, but no supported choice is available.");
+      }
+      return this.performAction(this.pendingPrompt.prompt.id, firstOption.id, events);
     }
     this.reset(events);
   }
@@ -260,7 +286,7 @@ export class OcgcoreEngineRuntime {
     this.destroyDuel();
     this.module = null;
     this.bindings = null;
-    this.pendingAction = null;
+    this.pendingPrompt = null;
     this.currentSnapshot = {
       phase: "starting",
       statusMessage: "Loading real ocgcore…",
@@ -290,9 +316,7 @@ export class OcgcoreEngineRuntime {
         abortReason = reason;
       },
     });
-    if (abortReason !== null) {
-      throw new Error(`ocgcore aborted while loading: ${String(abortReason)}`);
-    }
+    if (abortReason !== null) throw new Error(`ocgcore aborted while loading: ${String(abortReason)}`);
 
     this.module = loadedModule;
     const bindings = bindModule(loadedModule);
@@ -310,67 +334,69 @@ export class OcgcoreEngineRuntime {
     }
 
     this.duelHandle = bindings.create(0x12345678, 0x9abcdef0, 0, 0, 8000, 1, 1);
-    if (this.duelHandle <= 0) {
-      throw new Error("ocgcore could not allocate a duel.");
-    }
+    if (this.duelHandle <= 0) throw new Error("ocgcore could not allocate a duel.");
     events.push({ type: "log", level: "success", message: "Duel allocated", detail: `Engine handle ${this.duelHandle}.` });
 
     if (bindings.newCard(this.duelHandle, 0, 0, CARD_CODE, 0, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE) !== 1
       || bindings.newCard(this.duelHandle, 1, 0, CARD_CODE, 1, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE) !== 1) {
       throw new Error("ocgcore could not load the deterministic bootstrap decks.");
     }
-    if (bindings.start(this.duelHandle) !== 1) {
-      throw new Error("ocgcore rejected the duel start request.");
-    }
+    if (bindings.start(this.duelHandle) !== 1) throw new Error("ocgcore rejected the duel start request.");
 
     const processed = this.processUntilPause();
     if (!processed.packets.some((packet) => packet.type === MSG_NEW_TURN)) {
       throw new Error("ocgcore did not emit MSG_NEW_TURN during startup.");
     }
-    this.pendingAction = this.findSupportedAction(processed.packets);
-    if (!this.pendingAction) {
-      throw new Error("ocgcore reached a prompt, but no normal-summon action was decoded.");
+    this.pendingPrompt = this.findSupportedPrompt(processed.packets);
+    if (!this.pendingPrompt) {
+      throw new Error("ocgcore reached a prompt, but no supported choice was decoded.");
     }
 
     const board = this.buildBoard(false);
     const engineVersion = major + minor / 100;
     this.currentSnapshot = {
       phase: "ready",
-      statusMessage: `Legal action ready: ${this.pendingAction.prompt.label}`,
+      statusMessage: this.pendingPrompt.prompt.title,
       engineVersion,
       stepValue: processed.status,
       board,
-      prompt: this.pendingAction.prompt,
+      prompt: this.pendingPrompt.prompt,
     };
     events.push(
       { type: "log", level: "success", message: "Real opening hand queried", detail: `${CARD_NAME} is in player 0's hand according to ocgcore.` },
-      { type: "log", level: "success", message: "Legal action decoded", detail: this.pendingAction.prompt.label },
+      { type: "log", level: "success", message: "Engine choice decoded", detail: this.pendingPrompt.prompt.title },
       { type: "initialized", engineVersion },
       { type: "board-updated", frameKey: board.key },
       { type: "status", phase: "ready", message: this.currentSnapshot.statusMessage },
     );
   }
 
-  private performAction(actionId: string, events: EngineEvent[]): void {
-    if (!this.bindings || this.duelHandle <= 0 || !this.pendingAction) {
-      throw new Error("There is no supported ocgcore action to perform.");
+  private performAction(promptId: string, optionId: string, events: EngineEvent[]): void {
+    if (!this.bindings || this.duelHandle <= 0 || !this.pendingPrompt) {
+      throw new Error("There is no supported ocgcore choice to resolve.");
     }
-    if (this.pendingAction.prompt.id !== actionId) {
-      throw new Error(`The action ${actionId} is no longer legal.`);
+    if (this.pendingPrompt.prompt.id !== promptId) {
+      throw new Error(`The prompt ${promptId} is no longer active.`);
+    }
+    const selected = this.pendingPrompt.choices.find((choice) => choice.optionId === optionId);
+    const selectedOption = this.pendingPrompt.prompt.options.find((option) => option.id === optionId);
+    if (!selected || !selectedOption) {
+      throw new Error(`The choice ${optionId} is no longer legal.`);
     }
 
     const previous = this.currentSnapshot.stepValue;
-    const performed = this.pendingAction;
-    this.writeResponse(performed.responseValue);
-    this.pendingAction = null;
+    const hadFieldCard = this.hasFieldCard();
+    const promptTitle = this.pendingPrompt.prompt.title;
+    this.writeResponse(selected.response);
+    this.pendingPrompt = null;
 
     const processed = this.processUntilPause();
-    const nextAction = this.findSupportedAction(processed.packets);
-    this.pendingAction = nextAction;
-    const board = this.buildBoard(true);
-    const statusMessage = nextAction
-      ? `Legal action ready: ${nextAction.prompt.label}`
-      : `${CARD_NAME} was Normal Summoned by ocgcore`;
+    const nextPrompt = this.findSupportedPrompt(processed.packets);
+    this.pendingPrompt = nextPrompt;
+    const hasFieldCard = this.hasFieldCard();
+    const board = this.buildBoard(!hadFieldCard && hasFieldCard);
+    const statusMessage = nextPrompt?.prompt.title
+      ?? (hasFieldCard ? `${CARD_NAME} was Normal Summoned by ocgcore` : "Engine choice resolved");
 
     this.currentSnapshot = {
       ...this.currentSnapshot,
@@ -378,12 +404,12 @@ export class OcgcoreEngineRuntime {
       statusMessage,
       stepValue: processed.status,
       board,
-      prompt: nextAction?.prompt ?? null,
+      prompt: nextPrompt?.prompt ?? null,
     };
     const packetNames = processed.packets.map((packet) => MESSAGE_NAMES[packet.type] ?? `MSG_${packet.type}`);
     events.push(
       { type: "step-result", previous, next: processed.status },
-      { type: "log", level: "success", message: performed.prompt.label, detail: "The typed action was encoded as an ocgcore response and processed by the real engine." },
+      { type: "log", level: "success", message: selectedOption.label, detail: `Resolved “${promptTitle}” through the real ocgcore response buffer.` },
       { type: "log", level: "success", message: "Core packets processed", detail: packetNames.join(" → ") || "No packets" },
       { type: "board-updated", frameKey: board.key },
       { type: "status", phase: "ready", message: statusMessage },
@@ -394,58 +420,132 @@ export class OcgcoreEngineRuntime {
     if (!this.bindings || this.duelHandle <= 0) {
       throw new Error("Initialize ocgcore before processing the duel.");
     }
-
     const packets: OcgcorePacket[] = [];
     let status = 2;
     for (let iteration = 0; iteration < 64; iteration += 1) {
       status = this.bindings.process(this.duelHandle);
-      if (![0, 1, 2].includes(status)) {
-        throw new Error(`ocgcore returned unknown process status ${status}.`);
-      }
+      if (![0, 1, 2].includes(status)) throw new Error(`ocgcore returned unknown process status ${status}.`);
       packets.push(...parsePackets(this.readBuffer(this.bindings.getMessage, [this.duelHandle])));
       if (status !== 2) return { status, packets };
     }
     throw new Error("ocgcore did not reach a stable prompt within 64 process calls.");
   }
 
-  private findSupportedAction(packets: OcgcorePacket[]): SupportedAction | null {
+  private findSupportedPrompt(packets: OcgcorePacket[]): SupportedPrompt | null {
     for (let index = packets.length - 1; index >= 0; index -= 1) {
       const packet = packets[index];
-      if (packet?.type !== MSG_SELECT_IDLECMD) continue;
-      const payload = packet.payload;
-      if (payload.byteLength < 16 || payload[1] !== 0) continue;
-      const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
-      const summonCount = view.getUint32(2, true);
-      if (summonCount < 1) continue;
-      const code = view.getUint32(6, true);
-      const controller = payload[10]!;
-      const location = payload[11]!;
-      const sequence = view.getUint32(12, true);
-      if (code !== CARD_CODE || controller !== 0 || location !== LOCATION_HAND) continue;
-      return {
-        prompt: {
-          id: `normal-summon-${code}-${sequence}`,
-          label: `Normal Summon ${CARD_NAME}`,
-          kind: "normal-summon",
-          cardCode: code,
-        },
-        responseValue: 0,
-      };
+      if (!packet) continue;
+      const prompt = packet.type === MSG_SELECT_IDLECMD
+        ? this.decodeIdleCommand(packet)
+        : packet.type === MSG_SELECT_PLACE
+          ? this.decodePlaceChoice(packet)
+          : packet.type === MSG_SELECT_POSITION
+            ? this.decodePositionChoice(packet)
+            : null;
+      if (prompt) return prompt;
     }
     return null;
+  }
+
+  private decodeIdleCommand(packet: OcgcorePacket): SupportedPrompt | null {
+    const payload = packet.payload;
+    if (payload.byteLength < 16 || payload[1] !== 0) return null;
+    const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
+    const summonCount = view.getUint32(2, true);
+    if (summonCount < 1) return null;
+    const code = view.getUint32(6, true);
+    const controller = payload[10]!;
+    const location = payload[11]!;
+    const sequence = view.getUint32(12, true);
+    if (code !== CARD_CODE || controller !== 0 || location !== LOCATION_HAND) return null;
+
+    const optionId = `normal-summon-${code}-${sequence}`;
+    return {
+      prompt: {
+        id: "idle-command-player-0",
+        title: "Choose an action",
+        detail: `${CARD_NAME} is in your hand. Pick one of the legal actions reported by ocgcore.`,
+        kind: "action",
+        cardCode: code,
+        options: [{ id: optionId, label: `Normal Summon ${CARD_NAME}`, detail: "Begin a real Normal Summon through the engine." }],
+      },
+      choices: [{ optionId, response: uint32Response(0) }],
+    };
+  }
+
+  private decodePlaceChoice(packet: OcgcorePacket): SupportedPrompt | null {
+    const payload = packet.payload;
+    if (payload.byteLength < 7) return null;
+    const player = payload[1]!;
+    const count = payload[2]!;
+    if (player !== 0 || count !== 1) return null;
+    const unavailable = new DataView(payload.buffer, payload.byteOffset, payload.byteLength).getUint32(3, true);
+    const options: EnginePromptOption[] = [];
+    const choices: SupportedChoice[] = [];
+    for (let sequence = 0; sequence < 5; sequence += 1) {
+      if ((unavailable & (1 << sequence)) !== 0) continue;
+      const optionId = `monster-zone-${sequence}`;
+      options.push({
+        id: optionId,
+        label: `M${sequence + 1}`,
+        detail: `Place ${CARD_NAME} in Main Monster Zone ${sequence + 1}.`,
+      });
+      choices.push({
+        optionId,
+        response: Uint8Array.from([player, LOCATION_MZONE, sequence]),
+      });
+    }
+    if (options.length === 0) return null;
+    return {
+      prompt: {
+        id: "select-place-player-0",
+        title: "Choose a monster zone",
+        detail: "ocgcore is waiting for the exact zone. The selected zone will be sent back as a three-byte place response.",
+        kind: "zone",
+        cardCode: CARD_CODE,
+        options,
+      },
+      choices,
+    };
+  }
+
+  private decodePositionChoice(packet: OcgcorePacket): SupportedPrompt | null {
+    const payload = packet.payload;
+    if (payload.byteLength < 7 || payload[1] !== 0) return null;
+    const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
+    const code = view.getUint32(2, true);
+    const allowedPositions = payload[6]!;
+    const options: EnginePromptOption[] = [];
+    const choices: SupportedChoice[] = [];
+    for (const position of POSITION_OPTIONS) {
+      if ((allowedPositions & position.value) === 0) continue;
+      const optionId = `position-${position.value}`;
+      options.push({ id: optionId, label: position.label, detail: position.detail });
+      choices.push({ optionId, response: uint32Response(position.value) });
+    }
+    if (options.length === 0) return null;
+    return {
+      prompt: {
+        id: `select-position-${code}`,
+        title: "Choose a battle position",
+        detail: "Only positions included in ocgcore’s legal-position mask are shown.",
+        kind: "position",
+        cardCode: code,
+        options,
+      },
+      choices,
+    };
   }
 
   private buildBoard(movedToField: boolean): PlaybackFrame {
     if (!this.bindings || this.duelHandle <= 0) {
       throw new Error("Cannot build a board before duel allocation.");
     }
-
     const handCard = this.bindings.queryCount(this.duelHandle, 0, LOCATION_HAND) > 0
-      ? this.queryCard(LOCATION_HAND, 0)
+      ? this.tryQueryCard(LOCATION_HAND, 0)
       : null;
-    const fieldCard = this.bindings.queryCount(this.duelHandle, 0, LOCATION_MZONE) > 0
-      ? this.queryCard(LOCATION_MZONE, 0)
-      : null;
+    const fieldCard = this.findFieldCard();
+    const fieldSlot = fieldCard ? this.fieldSlotForSequence(fieldCard.sequence) : null;
 
     const cards: PlaybackFrame["cards"] = [];
     if (handCard?.code === CARD_CODE) {
@@ -459,7 +559,7 @@ export class OcgcoreEngineRuntime {
         faceUp: true,
       });
     }
-    if (fieldCard?.code === CARD_CODE) {
+    if (fieldCard?.code === CARD_CODE && fieldSlot) {
       cards.push({
         id: "ocgcore-mystical-elf",
         alias: CARD_ALIAS,
@@ -467,16 +567,16 @@ export class OcgcoreEngineRuntime {
         kind: "monster",
         level: 4,
         zone: "F",
-        fieldSlot: "M1",
+        fieldSlot,
         faceUp: (fieldCard.position & POS_FACEUP) !== 0,
       });
     }
 
     return {
-      key: fieldCard ? "ocgcore-after-normal-summon" : "ocgcore-opening-hand",
+      key: fieldCard ? `ocgcore-after-normal-summon-${fieldCard.sequence}` : "ocgcore-opening-hand",
       stepNumber: fieldCard ? 1 : 0,
       label: fieldCard ? `${CARD_NAME} Normal Summoned` : "Real ocgcore opening hand",
-      expression: fieldCard ? `NS ${CARD_ALIAS}:H>F@M1` : `DRAW ${CARD_ALIAS}:D>H`,
+      expression: fieldCard && fieldSlot ? `NS ${CARD_ALIAS}:H>F@${fieldSlot}` : `DRAW ${CARD_ALIAS}:D>H`,
       lp: 8000,
       cards,
       activeAliases: fieldCard ? [CARD_ALIAS] : [],
@@ -486,10 +586,30 @@ export class OcgcoreEngineRuntime {
     };
   }
 
-  private queryCard(location: number, sequence: number): QueriedCard {
-    if (!this.bindings || this.duelHandle <= 0) {
-      throw new Error("Cannot query a card before duel allocation.");
+  private hasFieldCard(): boolean {
+    return Boolean(this.bindings && this.duelHandle > 0 && this.bindings.queryCount(this.duelHandle, 0, LOCATION_MZONE) > 0);
+  }
+
+  private findFieldCard(): QueriedCard | null {
+    if (!this.bindings || this.duelHandle <= 0 || this.bindings.queryCount(this.duelHandle, 0, LOCATION_MZONE) === 0) {
+      return null;
     }
+    for (let sequence = 0; sequence < 7; sequence += 1) {
+      const card = this.tryQueryCard(LOCATION_MZONE, sequence);
+      if (card?.code === CARD_CODE) return card;
+    }
+    return null;
+  }
+
+  private fieldSlotForSequence(sequence: number): VisualFieldSlot | null {
+    if (sequence >= 0 && sequence < 5) return `M${sequence + 1}` as VisualFieldSlot;
+    if (sequence === 5) return "EMZ1";
+    if (sequence === 6) return "EMZ2";
+    return null;
+  }
+
+  private tryQueryCard(location: number, sequence: number): QueriedCard | null {
+    if (!this.bindings || this.duelHandle <= 0) return null;
     const bytes = this.readBuffer(this.bindings.queryCard, [
       this.duelHandle,
       QUERY_CODE | QUERY_POSITION,
@@ -498,13 +618,16 @@ export class OcgcoreEngineRuntime {
       sequence,
       0,
     ]);
-    if (bytes.byteLength === 0) {
-      throw new Error(`ocgcore returned no card query for location ${location}, sequence ${sequence}.`);
+    if (bytes.byteLength === 0) return null;
+    try {
+      return {
+        code: queryUint32(bytes, QUERY_CODE),
+        position: queryUint32(bytes, QUERY_POSITION),
+        sequence,
+      };
+    } catch {
+      return null;
     }
-    return {
-      code: queryUint32(bytes, QUERY_CODE),
-      position: queryUint32(bytes, QUERY_POSITION),
-    };
   }
 
   private readBuffer(reader: (...arguments_: number[]) => number, arguments_: number[]): Uint8Array {
@@ -521,15 +644,15 @@ export class OcgcoreEngineRuntime {
     }
   }
 
-  private writeResponse(responseValue: number): void {
+  private writeResponse(response: Uint8Array): void {
     if (!this.module || !this.bindings || this.duelHandle <= 0) {
       throw new Error("Cannot respond before duel allocation.");
     }
-    const pointer = this.module._malloc(4);
+    const pointer = this.module._malloc(response.byteLength);
     try {
-      this.module.HEAPU32[pointer >>> 2] = responseValue >>> 0;
-      if (this.bindings.setResponse(this.duelHandle, pointer, 4) !== 1) {
-        throw new Error("ocgcore rejected the action response.");
+      this.module.HEAPU8.set(response, pointer);
+      if (this.bindings.setResponse(this.duelHandle, pointer, response.byteLength) !== 1) {
+        throw new Error("ocgcore rejected the choice response.");
       }
     } finally {
       this.module._free(pointer);
@@ -541,7 +664,7 @@ export class OcgcoreEngineRuntime {
     this.bindings?.clearCardData();
     this.module = null;
     this.bindings = null;
-    this.pendingAction = null;
+    this.pendingPrompt = null;
     this.currentSnapshot = {
       phase: "idle",
       statusMessage: "Engine reset",
@@ -557,9 +680,7 @@ export class OcgcoreEngineRuntime {
   }
 
   private destroyDuel(): void {
-    if (this.bindings && this.duelHandle > 0) {
-      this.bindings.destroy(this.duelHandle);
-    }
+    if (this.bindings && this.duelHandle > 0) this.bindings.destroy(this.duelHandle);
     this.duelHandle = 0;
   }
 }
