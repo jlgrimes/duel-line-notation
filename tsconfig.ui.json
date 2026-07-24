@@ -16,5 +16,5 @@
     "jsx": "react-jsx",
     "noEmit": true
   },
-  "include": ["ui", "api", "server", "src/model.ts", "src/catalog-model.ts", "src/parser.ts", "src/semantic.ts", "src/visualizer.ts", "src/simulator-wasm-smoke.ts", "vite.config.ts"]
+  "include": ["ui", "api", "server", "src/model.ts", "src/catalog-model.ts", "src/parser.ts", "src/semantic.ts", "src/visualizer.ts", "src/simulator-wasm-smoke.ts", "src/simulator/**/*.ts", "vite.config.ts"]
 }
