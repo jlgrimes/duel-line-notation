@@ -10,6 +10,7 @@ import {
   type DuelEngine,
   type EngineWorkerPort,
 } from "../../src/simulator/worker-duel-engine.js";
+import { SimulatorBoardPreview } from "./SimulatorBoardPreview";
 import "./simulator.css";
 
 interface DisplayLogEntry {
@@ -97,12 +98,11 @@ export function SimulatorPage() {
     <section className="simulator-page">
       <header className="simulator-hero">
         <div>
-          <p className="eyebrow">Pure Mitsurugi · typed engine adapter</p>
+          <p className="eyebrow">Pure Mitsurugi · shared duel board</p>
           <h1>Simulator</h1>
           <p>
-            The screen now talks to a reusable DuelEngine interface. Worker request IDs, WebAssembly calls,
-            snapshots, errors, and domain events stay behind that adapter so the UI will not depend on ocgcore's
-            eventual binary protocol.
+            The simulator and combo playback now share the same board renderer. The typed engine adapter remains the
+            state boundary, while the next ocgcore snapshot can flow into a proven zone and card presentation.
           </p>
         </div>
         <div className={`simulator-status simulator-status-${snapshot.phase}`}>
@@ -118,8 +118,8 @@ export function SimulatorPage() {
         <section className="simulator-panel" aria-labelledby="engine-bridge-title">
           <div className="simulator-panel-heading">
             <div>
-              <p>Milestone 02</p>
-              <h2 id="engine-bridge-title">Typed duel-engine boundary</h2>
+              <p>Milestone 03</p>
+              <h2 id="engine-bridge-title">Shared board boundary</h2>
             </div>
             <span>{ready ? "Ready" : snapshot.phase}</span>
           </div>
@@ -136,6 +136,10 @@ export function SimulatorPage() {
             <div>
               <dt>Adapter</dt>
               <dd>Typed snapshots + events</dd>
+            </div>
+            <div>
+              <dt>Board</dt>
+              <dd>Shared with combo playback</dd>
             </div>
             <div>
               <dt>Smoke ABI</dt>
@@ -167,8 +171,7 @@ export function SimulatorPage() {
 
           <div className="simulator-note">
             <strong>Honest scope:</strong> this still runs the 100-byte WebAssembly smoke module, not ocgcore. The
-            difference is architectural: the next engine can replace the runtime without rewriting React or exposing
-            raw worker messages to the screen.
+            board below is a static normalized frame proving that playback and simulator state can share one renderer.
           </div>
         </section>
 
@@ -195,12 +198,14 @@ export function SimulatorPage() {
         </section>
       </div>
 
+      <SimulatorBoardPreview />
+
       <section className="simulator-next">
         <p className="eyebrow">Next checkpoint</p>
-        <h2>Swap the smoke runtime for ocgcore and display Aramasa's first legal prompt.</h2>
+        <h2>Swap the static opening frame for the first normalized ocgcore duel snapshot.</h2>
         <p>
-          The UI is now insulated from the transport. Phase 3 can focus on the actual core build, Lua scripts,
-          cards.cdb data, and decoding the first ocgcore messages into these shared engine events and snapshots.
+          The UI and board are now reusable. The next engine milestone can focus on the core build, Lua scripts,
+          cards.cdb data, and decoding Aramasa's first legal prompt into the shared snapshot model.
         </p>
       </section>
     </section>
