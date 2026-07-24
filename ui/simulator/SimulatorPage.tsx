@@ -1,120 +1,115 @@
 import { useEffect, useRef, useState } from "react";
-import type {
-  EngineLogEntry,
-  EnginePhase,
-  EngineWorkerRequest,
-  EngineWorkerResponse,
-} from "./engine-types";
+import {
+  INITIAL_ENGINE_SNAPSHOT,
+  type EngineEvent,
+  type EngineLogLevel,
+  type EngineSnapshot,
+} from "../../src/simulator/engine-protocol.js";
+import {
+  WorkerDuelEngine,
+  type DuelEngine,
+  type EngineWorkerPort,
+} from "../../src/simulator/worker-duel-engine.js";
 import "./simulator.css";
 
-const INITIAL_LOG: EngineLogEntry = {
+interface DisplayLogEntry {
+  id: number;
+  level: EngineLogLevel;
+  message: string;
+  detail?: string;
+}
+
+const INITIAL_LOG: DisplayLogEntry = {
   id: 1,
   level: "info",
   message: "Simulator route mounted",
-  detail: "Preparing a browser worker and WebAssembly engine boundary.",
+  detail: "Preparing a typed duel-engine adapter backed by a browser worker and WebAssembly.",
 };
 
 export function SimulatorPage() {
-  const workerRef = useRef<Worker | null>(null);
+  const engineRef = useRef<DuelEngine | null>(null);
   const nextLogId = useRef(2);
-  const [phase, setPhase] = useState<EnginePhase>("idle");
-  const [statusMessage, setStatusMessage] = useState("Waiting to initialize");
-  const [entries, setEntries] = useState<EngineLogEntry[]>([INITIAL_LOG]);
-  const [engineVersion, setEngineVersion] = useState<number>();
-  const [stepValue, setStepValue] = useState(0);
+  const [snapshot, setSnapshot] = useState<EngineSnapshot>({ ...INITIAL_ENGINE_SNAPSHOT });
+  const [entries, setEntries] = useState<DisplayLogEntry[]>([INITIAL_LOG]);
+  const [requestPending, setRequestPending] = useState(false);
 
-  function appendLog(entry: Omit<EngineLogEntry, "id">): void {
+  function appendLog(entry: Omit<DisplayLogEntry, "id">): void {
     const id = nextLogId.current;
     nextLogId.current += 1;
     setEntries((current) => [...current, { ...entry, id }]);
   }
 
-  function send(request: EngineWorkerRequest): void {
-    workerRef.current?.postMessage(request);
+  function applyEvent(event: EngineEvent, engine: DuelEngine): void {
+    setSnapshot(engine.snapshot());
+    if (event.type !== "log") return;
+
+    appendLog(event.detail === null
+      ? { level: event.level, message: event.message }
+      : { level: event.level, message: event.message, detail: event.detail });
   }
 
-  function initialize(): void {
-    setEngineVersion(undefined);
-    setStepValue(0);
-    send({ type: "reset" });
-    send({ type: "initialize" });
+  async function runRequest(request: (engine: DuelEngine) => Promise<EngineSnapshot>): Promise<void> {
+    const engine = engineRef.current;
+    if (!engine || requestPending) return;
+
+    setRequestPending(true);
+    try {
+      setSnapshot(await request(engine));
+    } catch (error: unknown) {
+      setSnapshot(engine.snapshot());
+      appendLog({
+        level: "error",
+        message: "Engine request failed",
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setRequestPending(false);
+    }
   }
 
   useEffect(() => {
     const worker = new Worker(new URL("./engine-worker.ts", import.meta.url), { type: "module" });
-    workerRef.current = worker;
+    const engine = new WorkerDuelEngine(worker as unknown as EngineWorkerPort);
+    engineRef.current = engine;
 
-    worker.onmessage = (event: MessageEvent<EngineWorkerResponse>) => {
-      const message = event.data;
-
-      if (message.type === "status") {
-        setPhase(message.phase);
-        setStatusMessage(message.message);
-        return;
-      }
-
-      if (message.type === "log") {
-        appendLog(message.detail === undefined
-          ? { level: message.level, message: message.message }
-          : { level: message.level, message: message.message, detail: message.detail });
-        return;
-      }
-
-      if (message.type === "initialized") {
-        setEngineVersion(message.engineVersion);
-        return;
-      }
-
-      if (message.type === "step-result") {
-        setStepValue(message.next);
+    const unsubscribe = engine.subscribe((event) => applyEvent(event, engine));
+    void engine.initialize()
+      .then((nextSnapshot) => setSnapshot(nextSnapshot))
+      .catch((error: unknown) => {
+        setSnapshot(engine.snapshot());
         appendLog({
-          level: "success",
-          message: "WASM process step completed",
-          detail: `State ${message.previous} → ${message.next}`,
+          level: "error",
+          message: "Engine initialization failed",
+          detail: error instanceof Error ? error.message : String(error),
         });
-        return;
-      }
-
-      setPhase("error");
-      setStatusMessage(message.message);
-    };
-
-    worker.onerror = () => {
-      setPhase("error");
-      setStatusMessage("The engine worker crashed");
-      appendLog({
-        level: "error",
-        message: "Worker runtime error",
-        detail: "The browser could not complete the simulator worker request.",
       });
-    };
-
-    worker.postMessage({ type: "initialize" } satisfies EngineWorkerRequest);
 
     return () => {
-      worker.terminate();
-      workerRef.current = null;
+      unsubscribe();
+      engine.destroy();
+      engineRef.current = null;
     };
   }, []);
 
-  const ready = phase === "ready";
+  const ready = snapshot.phase === "ready";
 
   return (
     <section className="simulator-page">
       <header className="simulator-hero">
         <div>
-          <p className="eyebrow">Pure Mitsurugi · engine spike</p>
+          <p className="eyebrow">Pure Mitsurugi · typed engine adapter</p>
           <h1>Simulator</h1>
           <p>
-            A browser-first rules sandbox. This first milestone proves the visible React → Web Worker →
-            WebAssembly loop before the smoke module is replaced with ocgcore and the real Mitsurugi scripts.
+            The screen now talks to a reusable DuelEngine interface. Worker request IDs, WebAssembly calls,
+            snapshots, errors, and domain events stay behind that adapter so the UI will not depend on ocgcore's
+            eventual binary protocol.
           </p>
         </div>
-        <div className={`simulator-status simulator-status-${phase}`}>
+        <div className={`simulator-status simulator-status-${snapshot.phase}`}>
           <span aria-hidden="true" />
           <div>
             <small>Engine status</small>
-            <strong>{statusMessage}</strong>
+            <strong>{snapshot.statusMessage}</strong>
           </div>
         </div>
       </header>
@@ -123,10 +118,10 @@ export function SimulatorPage() {
         <section className="simulator-panel" aria-labelledby="engine-bridge-title">
           <div className="simulator-panel-heading">
             <div>
-              <p>Milestone 01</p>
-              <h2 id="engine-bridge-title">Browser engine bridge</h2>
+              <p>Milestone 02</p>
+              <h2 id="engine-bridge-title">Typed duel-engine boundary</h2>
             </div>
-            <span>{ready ? "Ready" : phase}</span>
+            <span>{ready ? "Ready" : snapshot.phase}</span>
           </div>
 
           <dl className="engine-facts">
@@ -139,33 +134,41 @@ export function SimulatorPage() {
               <dd>Web Worker + WASM</dd>
             </div>
             <div>
+              <dt>Adapter</dt>
+              <dd>Typed snapshots + events</dd>
+            </div>
+            <div>
               <dt>Smoke ABI</dt>
-              <dd>{engineVersion === undefined ? "Not loaded" : `Version ${engineVersion}`}</dd>
+              <dd>{snapshot.engineVersion === null ? "Not loaded" : `Version ${snapshot.engineVersion}`}</dd>
             </div>
             <div>
               <dt>Current test state</dt>
-              <dd>{stepValue}</dd>
+              <dd>{snapshot.stepValue}</dd>
             </div>
           </dl>
 
           <div className="simulator-actions">
-            <button type="button" onClick={initialize} disabled={phase === "starting"}>
-              {phase === "starting" ? "Initializing…" : "Restart engine"}
+            <button
+              type="button"
+              onClick={() => void runRequest((engine) => engine.restart())}
+              disabled={requestPending || snapshot.phase === "starting"}
+            >
+              {snapshot.phase === "starting" ? "Initializing…" : "Restart engine"}
             </button>
             <button
               type="button"
               className="secondary"
-              disabled={!ready}
-              onClick={() => send({ type: "process-step", state: stepValue })}
+              disabled={!ready || requestPending}
+              onClick={() => void runRequest((engine) => engine.processStep())}
             >
-              Process one WASM step
+              {requestPending ? "Processing…" : "Process one WASM step"}
             </button>
           </div>
 
           <div className="simulator-note">
-            <strong>Honest scope:</strong> this page is currently running a 100-byte WebAssembly bridge smoke
-            module, not ocgcore. The next implementation step is replacing that module with a pinned ocgcore build
-            while preserving this worker protocol and on-screen status surface.
+            <strong>Honest scope:</strong> this still runs the 100-byte WebAssembly smoke module, not ocgcore. The
+            difference is architectural: the next engine can replace the runtime without rewriting React or exposing
+            raw worker messages to the screen.
           </div>
         </section>
 
@@ -194,10 +197,10 @@ export function SimulatorPage() {
 
       <section className="simulator-next">
         <p className="eyebrow">Next checkpoint</p>
-        <h2>Normal Summon Aramasa and show the legal search prompt on this screen.</h2>
+        <h2>Swap the smoke runtime for ocgcore and display Aramasa's first legal prompt.</h2>
         <p>
-          That checkpoint will require the real core, the Pure Mitsurugi card manifest, Lua procedure scripts,
-          cards.cdb data, and the first decoded ocgcore prompt messages.
+          The UI is now insulated from the transport. Phase 3 can focus on the actual core build, Lua scripts,
+          cards.cdb data, and decoding the first ocgcore messages into these shared engine events and snapshots.
         </p>
       </section>
     </section>
