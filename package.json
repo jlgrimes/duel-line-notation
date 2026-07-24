@@ -23,6 +23,8 @@
     "ocgcore:smoke": "npm --prefix packages/ocgcore run smoke",
     "ocgcore:native-check": "npm --prefix packages/ocgcore run native-check",
     "ocgcore:fixtures": "node packages/ocgcore/scripts/capture-fixtures.mjs",
+    "carddata:fetch": "npm --prefix packages/carddata run fetch",
+    "carddata:build": "npm --prefix packages/carddata run build",
     "preview": "vite preview",
     "prepack": "npm run build:cli"
   },

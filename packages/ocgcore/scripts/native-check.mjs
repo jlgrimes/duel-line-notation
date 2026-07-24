@@ -48,6 +48,20 @@ function sourcesIn(directory, extension) {
     .map((name) => resolve(directory, name));
 }
 
+// An optional card-bundle fixture (packages/carddata/dist/<slug>.native) adds a second
+// stage that drives real records and real scripts through the core. Without it the check
+// still covers the bridge itself, so a checkout with no third-party card data stays green.
+//
+// Resolved against the directory npm was invoked from, not this package, so a path relative
+// to the repository root works. Validated before compiling rather than after.
+const requestedBundle = process.argv.slice(2).find((argument) => !argument.startsWith("-"));
+const bundle = requestedBundle
+  ? resolve(process.env.INIT_CWD ?? process.cwd(), requestedBundle)
+  : null;
+if (bundle && !existsSync(resolve(bundle, "cards.tsv"))) {
+  throw new Error(`${bundle} is not a card bundle fixture. Run npm run carddata:build first.`);
+}
+
 const compiler = findCompiler();
 const luaSources = sourcesIn(resolve(sourceRoot, "lua", "src"), ".c")
   .filter((path) => !EXCLUDED_LUA.test(path));
@@ -77,5 +91,6 @@ console.log(`[native-check] compiling ${luaSources.length + coreSources.length +
 const started = Date.now();
 execFileSync(compiler, args, { stdio: "inherit" });
 console.log(`[native-check] built in ${((Date.now() - started) / 1000).toFixed(1)}s`);
+if (bundle) console.log(`[native-check] including card bundle ${bundle}`);
 
-execFileSync(binary, [], { stdio: "inherit" });
+execFileSync(binary, bundle ? [bundle] : [], { stdio: "inherit" });

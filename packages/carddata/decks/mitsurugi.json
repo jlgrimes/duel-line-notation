@@ -1,0 +1,15 @@
+{
+  "slug": "mitsurugi",
+  "name": "Pure Mitsurugi vertical slice",
+  "note": "The minimum real card set for the first scripted Mitsurugi line. Card codes are looked up in the pinned database; names here are for review only and are checked against it during the build.",
+  "cards": [
+    { "code": 40543231, "name": "Mitsurugi no Mikoto, Aramasa" },
+    { "code": 18176525, "name": "Mitsurugi no Mikoto, Saji" },
+    { "code": 13332685, "name": "Ame no Habakiri no Mitsurugi" },
+    { "code": 19899073, "name": "Ame no Murakumo no Mitsurugi" },
+    { "code": 55397172, "name": "Futsu no Mitama no Mitsurugi" },
+    { "code": 45171524, "name": "Mitsurugi Prayers" },
+    { "code": 76725398, "name": "Mitsurugi Magatama" },
+    { "code": 12210097, "name": "Mitsurugi Sacred Boundary" }
+  ]
+}

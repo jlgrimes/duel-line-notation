@@ -344,14 +344,59 @@ Two things to know before loading real scripts:
   commit until it merges. Nothing breaks in the meantime: with no scripts registered the
   resolver behaves exactly as the previous stub did.
 
+## Card data and scripts (built, not distributed)
+
+- [x] Choose and document the authoritative card-data source and update process:
+      ProjectIgnis `BabelCDB` for records, ProjectIgnis `CardScripts` for Lua, both pinned in
+      `packages/carddata/carddata.lock.json`.
+- [x] Add a build-time card database package. `npm run carddata:fetch` checks out the pinned
+      revisions; `npm run carddata:build` emits a bundle for a declared card set.
+- [x] Package required constants and utility scripts. A bundle carries the whole shared
+      library layer, not just `constant.lua` and `utility.lua` — those two pull in counter
+      constants, archetype set codes, and every summon procedure library, and a card script
+      that reaches a missing one fails at run time.
+- [x] Package individual `c<card-code>.lua` scripts.
+- [x] Add a card-data/script version manifest. Every bundle records the repository, commit,
+      and license it was built from.
+- [x] Verify card codes, aliases, types, levels/ranks/links, races, attributes, ATK/DEF,
+      scales, and link markers. The database packs Pendulum scales into the level column and
+      Link markers into the Defence column; those rules are shared between the build and the
+      runtime and pinned by `test/card-bundle.test.ts`.
+- [x] Add tests for missing scripts, malformed scripts, and script errors.
+- [x] Prove real cards work before a WebAssembly build exists: the native check registers the
+      real Mitsurugi records and scripts, starts a duel, and confirms every card script
+      compiled and ran with no Lua errors.
+
 ## Still required
 
-- [ ] Choose and document the authoritative card-data source and update process.
-- [ ] Add a build-time or runtime card database package compatible with the pinned core.
-- [ ] Implement the card reader against real card records.
-- [ ] Package required constants and utility scripts.
-- [ ] Package individual `c<card-code>.lua` scripts.
-- [ ] Add a card-data/script version manifest.
+- [ ] Implement the card reader against real card records in the browser runtime. Blocked on
+      the published core carrying the script-resolver exports, which lands when the
+      `ocgcore-wasm` workflow next runs on `main`.
+- [ ] Decide the distribution question below before any bundle ships to a browser.
+- [ ] Serve or embed bundles for the app, once that decision is made.
+
+## Confirm legal licensing/distribution boundaries — needs a decision
+
+This is no longer an open research question; it is a choice. The findings:
+
+| Source | What it is | License |
+| --- | --- | --- |
+| ProjectIgnis/CardScripts | the Lua card scripts | **AGPL-3.0-or-later** |
+| ProjectIgnis/BabelCDB | the card database | **no license file** |
+| edo9300/ygopro-core | the duel engine | **AGPL-3.0-or-later** |
+| this repository | notation, catalog, app | MIT |
+
+- Serving the scripts to browsers is conveying AGPL code, which is permitted but carries
+  obligations, and how far they reach into an MIT application that loads them is a judgement
+  call rather than a lookup.
+- The card database has **no license file at all**, so there is no explicit redistribution
+  grant. The card facts are largely not copyrightable; the compiled database is a separate
+  question.
+- This is not new. `public/ocgcore/ocgcore.wasm` is already committed and served and is built
+  from an AGPL engine. Bundling scripts widens the exposure rather than creating it.
+
+Until it is decided, `packages/carddata` commits nothing: sources are fetched on demand into
+ignored directories and bundles are built locally.
 - [ ] Verify card codes, aliases, types, levels/ranks/links, races, attributes, ATK/DEF, scales, and link markers.
 - [ ] Confirm legal licensing/distribution boundaries for bundled data and scripts.
 

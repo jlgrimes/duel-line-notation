@@ -1,0 +1,15 @@
+{
+  "cardDatabase": {
+    "repository": "https://github.com/ProjectIgnis/BabelCDB.git",
+    "commit": "3b02155c243532e8eba8244491fbdd0a609edf5a",
+    "file": "cards.cdb",
+    "license": "none declared",
+    "fetchedAt": "2026-07-24"
+  },
+  "cardScripts": {
+    "repository": "https://github.com/ProjectIgnis/CardScripts.git",
+    "commit": "a4b845d0206b68dd181ad402e696caeff7e23ed0",
+    "license": "AGPL-3.0-or-later",
+    "fetchedAt": "2026-07-24"
+  }
+}

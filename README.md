@@ -59,6 +59,18 @@ tapping the board — on a desktop and a phone viewport. If your environment alr
 that Playwright did not install, point `CHROMIUM_PATH` at the binary to use it instead of downloading
 another copy.
 
+Real card records and Lua scripts for the simulator are built separately, and nothing they
+download is committed:
+
+```sh
+npm run carddata:fetch
+npm run carddata:build
+```
+
+Read [packages/carddata/README.md](packages/carddata/README.md) first: the card scripts are
+AGPL-3.0 and the card database has no license file, so whether a built bundle may be shipped
+to browsers is an open decision rather than a default.
+
 Progress and remaining work are tracked in [CHECKLIST.md](CHECKLIST.md).
 
 Check a particular deck or line:
