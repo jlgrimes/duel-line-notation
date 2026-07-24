@@ -15,7 +15,7 @@ const INITIAL_LOG: EngineLogEntry = {
 };
 
 export function SimulatorPage() {
-  const workerRef = useRef<Worker>();
+  const workerRef = useRef<Worker | null>(null);
   const nextLogId = useRef(2);
   const [phase, setPhase] = useState<EnginePhase>("idle");
   const [statusMessage, setStatusMessage] = useState("Waiting to initialize");
@@ -36,6 +36,7 @@ export function SimulatorPage() {
   function initialize(): void {
     setEngineVersion(undefined);
     setStepValue(0);
+    send({ type: "reset" });
     send({ type: "initialize" });
   }
 
@@ -53,7 +54,9 @@ export function SimulatorPage() {
       }
 
       if (message.type === "log") {
-        appendLog({ level: message.level, message: message.message, detail: message.detail });
+        appendLog(message.detail === undefined
+          ? { level: message.level, message: message.message }
+          : { level: message.level, message: message.message, detail: message.detail });
         return;
       }
 
@@ -90,7 +93,7 @@ export function SimulatorPage() {
 
     return () => {
       worker.terminate();
-      workerRef.current = undefined;
+      workerRef.current = null;
     };
   }, []);
 
