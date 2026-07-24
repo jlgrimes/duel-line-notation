@@ -21,7 +21,7 @@ export interface DuelEngine {
   subscribe(listener: EngineEventListener): () => void;
   initialize(): Promise<EngineSnapshot>;
   processStep(state?: number): Promise<EngineSnapshot>;
-  performAction(actionId: string): Promise<EngineSnapshot>;
+  performAction(promptId: string, optionId: string): Promise<EngineSnapshot>;
   reset(): Promise<EngineSnapshot>;
   restart(): Promise<EngineSnapshot>;
   destroy(): void;
@@ -78,8 +78,8 @@ export class WorkerDuelEngine implements DuelEngine {
     return this.dispatch({ type: "process-step", state });
   }
 
-  performAction(actionId: string): Promise<EngineSnapshot> {
-    return this.dispatch({ type: "perform-action", actionId });
+  performAction(promptId: string, optionId: string): Promise<EngineSnapshot> {
+    return this.dispatch({ type: "perform-action", promptId, optionId });
   }
 
   reset(): Promise<EngineSnapshot> {
