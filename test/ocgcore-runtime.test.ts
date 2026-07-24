@@ -81,6 +81,19 @@ test(
     // hard-coded zone would be caught.
     const action = opening.prompt;
     assert.ok(action, "the engine must offer an action");
+
+    // The action is anchored to the card in hand, so the board can offer it by tapping.
+    assert.deepEqual(
+      action.options[0]!.target,
+      { kind: "card", cardId: drawn.instanceId },
+      "the action must point at the real board card",
+    );
+    assert.equal(
+      opening.board?.cards.find((card) => card.id === drawn.instanceId)?.zone,
+      "H",
+      "and that card must be on the rendered board",
+    );
+
     const afterAction = expectOk(await send(runtime, {
       type: "perform-action",
       promptId: action.id,
@@ -90,6 +103,11 @@ test(
     const placePrompt = afterAction.prompt;
     assert.ok(placePrompt, "the engine must ask for a zone");
     assert.equal(placePrompt.kind, "zone");
+    assert.deepEqual(
+      placePrompt.options.map((option) => option.target),
+      ["M1", "M2", "M3", "M4", "M5"].map((fieldSlot) => ({ kind: "field-slot", fieldSlot })),
+      "every legal zone must be anchored to the slot the board draws",
+    );
     const m4 = placePrompt.options.find((option) => option.label === "M4");
     assert.ok(m4, "M4 must be legal on an empty board");
 

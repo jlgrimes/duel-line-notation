@@ -4,6 +4,7 @@ import {
   type EngineCommand,
   type EngineEvent,
   type EnginePromptOption,
+  type EnginePromptTarget,
   type EngineSnapshot,
   type EngineWorkerRequest,
   type EngineWorkerResponse,
@@ -38,6 +39,7 @@ import {
   buildBoardFrame,
   buildEngineFieldState,
   diffFieldStates,
+  visualFieldSlotFor,
   type EngineCardRegistry,
   type EngineFieldState,
   type QueriedCardAtAddress,
@@ -318,12 +320,15 @@ export class OcgcoreEngineRuntime {
     if (!processed.packets.some((packet) => packet.type === MSG_NEW_TURN)) {
       throw new Error("ocgcore did not emit MSG_NEW_TURN during startup.");
     }
-    this.pendingPrompt = this.findSupportedPrompt(processed.packets);
+
+    // State is captured before the prompt is decoded so options can be anchored to the
+    // board cards the player is about to look at.
+    const { board, state } = this.captureState();
+    this.pendingPrompt = this.findSupportedPrompt(processed.packets, state);
     if (!this.pendingPrompt) {
       throw new Error("ocgcore reached a prompt, but no supported choice was decoded.");
     }
 
-    const { board, state } = this.captureState();
     const engineVersion = major + minor / 100;
     this.currentSnapshot = {
       phase: "ready",
@@ -363,11 +368,10 @@ export class OcgcoreEngineRuntime {
     this.pendingPrompt = null;
 
     const processed = this.processUntilPause();
-    const nextPrompt = this.findSupportedPrompt(processed.packets);
-    this.pendingPrompt = nextPrompt;
-
     this.stepNumber += 1;
     const { board, state } = this.captureState();
+    const nextPrompt = this.findSupportedPrompt(processed.packets, state);
+    this.pendingPrompt = nextPrompt;
     const transitions = diffFieldStates(previousState, state);
     const statusMessage = nextPrompt?.prompt.title ?? board.label;
 
@@ -532,12 +536,12 @@ export class OcgcoreEngineRuntime {
     }
   }
 
-  private findSupportedPrompt(packets: OcgcorePacket[]): SupportedPrompt | null {
+  private findSupportedPrompt(packets: OcgcorePacket[], state: EngineFieldState): SupportedPrompt | null {
     for (let index = packets.length - 1; index >= 0; index -= 1) {
       const packet = packets[index];
       if (!packet) continue;
       const prompt = packet.type === MSG_SELECT_IDLECMD
-        ? this.decodeIdleCommand(packet)
+        ? this.decodeIdleCommand(packet, state)
         : packet.type === MSG_SELECT_PLACE
           ? this.decodePlaceChoice(packet)
           : packet.type === MSG_SELECT_POSITION
@@ -548,12 +552,29 @@ export class OcgcoreEngineRuntime {
     return null;
   }
 
+  /**
+   * Finds the board card an engine packet is talking about, so an option can be offered
+   * on the card itself. Returns `null` when the card is not one the viewer can point at.
+   */
+  private cardTargetAt(
+    state: EngineFieldState,
+    controller: number,
+    location: number,
+    sequence: number,
+  ): EnginePromptTarget | null {
+    const card = state.cards.find((candidate) => candidate.controller === controller
+      && candidate.location === location
+      && candidate.sequence === sequence
+      && candidate.overlaySequence === null);
+    return card ? { kind: "card", cardId: card.instanceId } : null;
+  }
+
   /** The display name for a code, using the registry when it knows one. */
   private nameFor(code: number): string {
     return BOOTSTRAP_CARD_REGISTRY[code]?.name ?? `Card #${code}`;
   }
 
-  private decodeIdleCommand(packet: OcgcorePacket): SupportedPrompt | null {
+  private decodeIdleCommand(packet: OcgcorePacket, state: EngineFieldState): SupportedPrompt | null {
     const payload = packet.payload;
     if (payload.byteLength < 16 || payload[1] !== VIEWER) return null;
     const view = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
@@ -571,10 +592,15 @@ export class OcgcoreEngineRuntime {
       prompt: {
         id: "idle-command-player-0",
         title: "Choose an action",
-        detail: `${name} is in your hand. Pick one of the legal actions reported by ocgcore.`,
+        detail: `Tap ${name} in your hand to see the actions ocgcore reports as legal.`,
         kind: "action",
         cardCode: code,
-        options: [{ id: optionId, label: `Normal Summon ${name}`, detail: "Begin a real Normal Summon through the engine." }],
+        options: [{
+          id: optionId,
+          label: `Normal Summon ${name}`,
+          detail: "Begin a real Normal Summon through the engine.",
+          target: this.cardTargetAt(state, controller, location, sequence),
+        }],
       },
       choices: [{ optionId, response: uint32Response(0) }],
     };
@@ -592,10 +618,12 @@ export class OcgcoreEngineRuntime {
     for (let sequence = 0; sequence < 5; sequence += 1) {
       if ((unavailable & (1 << sequence)) !== 0) continue;
       const optionId = `monster-zone-${sequence}`;
+      const fieldSlot = visualFieldSlotFor(LOCATION_MZONE, sequence);
       options.push({
         id: optionId,
         label: `M${sequence + 1}`,
         detail: `Place the card in Main Monster Zone ${sequence + 1}.`,
+        target: fieldSlot ? { kind: "field-slot", fieldSlot } : null,
       });
       choices.push({
         optionId,
@@ -607,7 +635,7 @@ export class OcgcoreEngineRuntime {
       prompt: {
         id: "select-place-player-0",
         title: "Choose a monster zone",
-        detail: "ocgcore is waiting for the exact zone. The selected zone will be sent back as a three-byte place response.",
+        detail: "Tap a highlighted Main Monster Zone. The zone you pick is sent back as a three-byte place response.",
         kind: "zone",
         cardCode: null,
         options,
@@ -627,7 +655,9 @@ export class OcgcoreEngineRuntime {
     for (const position of POSITION_OPTIONS) {
       if ((allowedPositions & position.value) === 0) continue;
       const optionId = `position-${position.value}`;
-      options.push({ id: optionId, label: position.label, detail: position.detail });
+      // A battle position is a property of the summon, not a place on the board, so it
+      // has no target and stays a labelled option.
+      options.push({ id: optionId, label: position.label, detail: position.detail, target: null });
       choices.push({ optionId, response: uint32Response(position.value) });
     }
     if (options.length === 0) return null;

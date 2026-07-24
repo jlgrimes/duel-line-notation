@@ -1,6 +1,8 @@
+import { boardTargetsFor } from "../../src/simulator/board-interaction.js";
+import type { EngineActionPrompt } from "../../src/simulator/engine-protocol.js";
 import type { DeckManifest } from "../../src/model.js";
 import type { PlaybackFrame } from "../../src/visualizer.js";
-import { DuelBoard } from "../DuelBoard";
+import { DuelBoard, type BoardInteraction } from "../DuelBoard";
 import { useCardScans } from "../card-service";
 import "./SimulatorBoardPreview.css";
 
@@ -13,7 +15,26 @@ const OCGCORE_BOOTSTRAP_MANIFEST: DeckManifest = {
   },
 };
 
-export function SimulatorBoardPreview({ frame }: { frame: PlaybackFrame | null }) {
+/**
+ * Binds the engine's board targets to this prompt, so a tap always resolves against the
+ * prompt it was offered for and a stale tap cannot drift onto a newer choice.
+ */
+export function boardInteractionFor(
+  prompt: EngineActionPrompt | null,
+  busy: boolean,
+  onChoose: (promptId: string, optionId: string) => void,
+): BoardInteraction | undefined {
+  const targets = boardTargetsFor(prompt);
+  if (!targets || !prompt) return undefined;
+  return { ...targets, busy, onChoose: (optionId) => onChoose(prompt.id, optionId) };
+}
+
+interface SimulatorBoardPreviewProps {
+  frame: PlaybackFrame | null;
+  interaction?: BoardInteraction | undefined;
+}
+
+export function SimulatorBoardPreview({ frame, interaction }: SimulatorBoardPreviewProps) {
   const { scans, loading } = useCardScans(OCGCORE_BOOTSTRAP_MANIFEST);
 
   return (
@@ -32,7 +53,12 @@ export function SimulatorBoardPreview({ frame }: { frame: PlaybackFrame | null }
       {frame ? (
         <>
           <div className="duel-visualizer simulator-board-surface">
-            <DuelBoard frame={frame} scans={scans} ariaLabel="Decoded ocgcore duel board" />
+            <DuelBoard
+              frame={frame}
+              scans={scans}
+              ariaLabel="Decoded ocgcore duel board"
+              {...(interaction ? { interaction } : {})}
+            />
           </div>
           <p className={`scan-credit ${loading ? "loading" : ""}`}>
             <i /> {loading ? "Resolving card scan…" : `${Object.keys(scans).length} real card scan loaded`} · Data and

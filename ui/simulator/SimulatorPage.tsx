@@ -11,7 +11,8 @@ import {
   type DuelEngine,
   type EngineWorkerPort,
 } from "../../src/simulator/worker-duel-engine.js";
-import { SimulatorBoardPreview } from "./SimulatorBoardPreview";
+import { isFullyAnchored } from "../../src/simulator/board-interaction.js";
+import { SimulatorBoardPreview, boardInteractionFor } from "./SimulatorBoardPreview";
 import "./simulator.css";
 
 interface DisplayLogEntry {
@@ -24,6 +25,8 @@ interface DisplayLogEntry {
 interface ChoiceResolverProps {
   prompt: EngineActionPrompt | null;
   pending: boolean;
+  /** True when every legal option is already tappable on the board itself. */
+  handledOnBoard: boolean;
   onChoose(promptId: string, optionId: string): void;
 }
 
@@ -36,7 +39,7 @@ const INITIAL_LOG: DisplayLogEntry = {
 
 const PROCESS_STATUS_NAMES = ["End", "Awaiting response", "Continue"] as const;
 
-function ChoiceResolver({ prompt, pending, onChoose }: ChoiceResolverProps) {
+function ChoiceResolver({ prompt, pending, handledOnBoard, onChoose }: ChoiceResolverProps) {
   return (
     <section className={`simulator-choice-resolver choice-${prompt?.kind ?? "waiting"}`} aria-live="polite">
       <header>
@@ -49,7 +52,12 @@ function ChoiceResolver({ prompt, pending, onChoose }: ChoiceResolverProps) {
       <p className="choice-detail">
         {prompt?.detail ?? "The next legal action or mandatory choice will appear here without the UI guessing for you."}
       </p>
-      {prompt && (
+      {prompt && handledOnBoard && (
+        <p className="choice-on-board">
+          Highlighted on the board above — tap the {prompt.kind === "zone" ? "zone" : "card"} you want.
+        </p>
+      )}
+      {prompt && !handledOnBoard && (
         <div className="choice-options">
           {prompt.options.map((option) => (
             <button
@@ -136,6 +144,10 @@ export function SimulatorPage() {
   const ready = snapshot.phase === "ready";
   const processStatus = PROCESS_STATUS_NAMES[snapshot.stepValue] ?? `Unknown (${snapshot.stepValue})`;
   const field = snapshot.field;
+  const interaction = boardInteractionFor(snapshot.prompt, requestPending, chooseOption);
+  // Only drop the button list when the board can offer every option, so a prompt with an
+  // unanchored option (a battle position, say) is never left unreachable.
+  const everyOptionOnBoard = Boolean(interaction) && isFullyAnchored(snapshot.prompt);
 
   return (
     <section className="simulator-page">
@@ -154,18 +166,19 @@ export function SimulatorPage() {
         </div>
       </header>
 
-      <SimulatorBoardPreview frame={snapshot.board} />
+      <SimulatorBoardPreview frame={snapshot.board} interaction={interaction} />
 
       <ChoiceResolver
         prompt={snapshot.prompt}
         pending={requestPending}
+        handledOnBoard={everyOptionOnBoard}
         onChoose={chooseOption}
       />
 
       <div className="simulator-grid">
         <section className="simulator-panel" aria-labelledby="engine-bridge-title">
           <div className="simulator-panel-heading">
-            <div><p>Milestone 07</p><h2 id="engine-bridge-title">Interactive choice resolution</h2></div>
+            <div><p>Milestone 08</p><h2 id="engine-bridge-title">Direct board interaction</h2></div>
             <span>{ready ? "Ready" : snapshot.phase}</span>
           </div>
           <dl className="engine-facts">
@@ -194,8 +207,8 @@ export function SimulatorPage() {
             </button>
           </div>
           <div className="simulator-note">
-            <strong>Choice contract:</strong> ocgcore owns the legal options. The UI only renders those options and sends the
-            selected response bytes back to the active prompt.
+            <strong>Choice contract:</strong> ocgcore owns the legal options and says which card or zone each one belongs to.
+            The interface only highlights those targets and sends the selected response bytes back to the active prompt.
           </div>
         </section>
 
@@ -217,10 +230,11 @@ export function SimulatorPage() {
 
       <section className="simulator-next">
         <p className="eyebrow">Next checkpoint</p>
-        <h2>Use this same choice resolver for real Mitsurugi effects, targets, chains, and card selections.</h2>
+        <h2>Use these same board targets for real Mitsurugi effects, targets, chains, and card selections.</h2>
         <p>
-          Action, zone, and position prompts now share one typed surface. The next layer expands the same model to card lists,
-          yes-or-no effects, chain windows, and multi-select prompts from the actual Mitsurugi scripts.
+          Every option the engine anchors to a card or a zone is now made on the board itself. The next layer carries the same
+          targeting model into card lists, yes-or-no effects, chain windows, and multi-select prompts from the actual
+          Mitsurugi scripts.
         </p>
       </section>
     </section>

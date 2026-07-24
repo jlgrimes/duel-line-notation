@@ -183,6 +183,26 @@
   font: .625rem "DM Mono", monospace;
 }
 
+/* Shown instead of the button list when every legal option is tappable on the board. */
+.choice-on-board {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font: .625rem "DM Mono", monospace;
+  line-height: 1.5;
+}
+
+.choice-on-board::before {
+  content: "↑";
+  font-size: .75rem;
+}
+
 .simulator-grid {
   display: grid;
   grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);

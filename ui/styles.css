@@ -169,6 +169,20 @@ textarea::selection { background: color-mix(in srgb, var(--accent) 32%, transpar
 .field-slot-label { position: absolute; z-index: 0; right: 4px; bottom: 3px; color: rgba(167,172,180,.28); font: 6px "DM Mono", monospace; letter-spacing: .05em; }
 .field-slot-label small { margin-left: 3px; color: color-mix(in srgb, var(--accent) 48%, transparent); font: inherit; }
 .field-slot > .duel-card { z-index: 2; }
+
+/* Direct board interaction: legal engine choices are offered on the board itself.
+   The hotspot is a real button so the target stays keyboard-reachable and labelled. */
+.field-slot.legal-target { border-color: color-mix(in srgb, var(--accent) 65%, transparent); background: color-mix(in srgb, var(--accent) 12%, rgba(7,9,10,.19)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent), 0 0 18px color-mix(in srgb, var(--accent) 20%, transparent); animation: legal-target-pulse 1.9s ease-in-out infinite; }
+.field-slot.legal-target .field-slot-label { color: color-mix(in srgb, var(--accent) 80%, transparent); }
+.duel-card.legal-target { box-shadow: 0 0 0 2px var(--accent), 0 0 22px color-mix(in srgb, var(--accent) 45%, transparent), 0 8px 18px rgba(0,0,0,.52); animation: legal-target-pulse 1.9s ease-in-out infinite; }
+.choice-hotspot { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 0; border: 0; border-radius: inherit; background: transparent; color: var(--accent); font: 600 .55rem "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.choice-hotspot > span { padding: 2px 5px; border-radius: 3px; background: rgba(6,8,10,.84); opacity: 0; transition: opacity .18s ease; }
+.choice-hotspot:hover > span, .choice-hotspot:focus-visible > span { opacity: 1; }
+.choice-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.choice-hotspot:disabled { cursor: progress; }
+/* A card already shows what it is; the ring and the prompt copy carry the meaning. */
+.choice-hotspot-card > span { display: none; }
+@keyframes legal-target-pulse { 0%, 100% { filter: none; } 50% { filter: brightness(1.2); } }
 .extra-monster-slots { display: grid; grid-template-columns: repeat(5, minmax(46px, 1fr)); gap: 7px; }
 .emz-slot { border-style: dashed; border-color: color-mix(in srgb, var(--accent) 25%, rgba(117,124,132,.22)); }
 .emz-1 { grid-column: 2; }

@@ -1,4 +1,4 @@
-import type { PlaybackFrame } from "../visualizer.js";
+import type { PlaybackFrame, VisualFieldSlot } from "../visualizer.js";
 import type { EngineFieldState } from "./engine-state.js";
 
 export type EnginePhase = "idle" | "starting" | "ready" | "error";
@@ -7,10 +7,22 @@ export type EngineLogLevel = "info" | "success" | "error";
 
 export type EnginePromptKind = "action" | "zone" | "position";
 
+/**
+ * Where an option lives on the board, so the interface can offer it by tapping the real
+ * card or zone instead of only as a button in a list.
+ *
+ * `null` means the choice has no board anchor — a battle position is a property of a
+ * summon, not a place you can point at — and must still be offered as a labelled option.
+ */
+export type EnginePromptTarget =
+  | { kind: "card"; cardId: string }
+  | { kind: "field-slot"; fieldSlot: VisualFieldSlot };
+
 export interface EnginePromptOption {
   id: string;
   label: string;
   detail: string | null;
+  target: EnginePromptTarget | null;
 }
 
 export interface EngineActionPrompt {

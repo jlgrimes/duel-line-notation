@@ -39,7 +39,12 @@ Adding real cards is now a card-data problem, not a snapshot-plumbing problem.
 additionally drives the shipping runtime against the published core in Node, and the packet, card, and
 field decoders are covered by golden buffers captured from the pinned core.
 
-**Manual status:** the latest board-first choice resolver still needs a fresh browser/mobile tap-through after the July 24 choice-UI update.
+Choices are now made **on the board**. The engine names the card or zone each legal option belongs to,
+the interface highlights exactly those targets, and the button list below the field appears only for
+options that have no place to point at.
+
+**Manual status:** desktop is confirmed. iPhone/mobile Safari still needs a real tap-through; a Chromium
+phone viewport passes but is not the same browser.
 
 ---
 
@@ -255,12 +260,22 @@ Notes on the three items above that are easy to over-read:
 - [x] Add responsive action, zone, and position option layouts.
 - [x] Keep the event log and lower-level engine diagnostics below the game and choice UI.
 - [x] Add a CI smoke test that resolves Normal Summon → choose M1 → verify hand count 0 → verify monster count 1 → verify Mystical Elf in M1.
+- [x] Give every prompt option an explicit board target, so the interface never infers one from a label.
+- [x] Direct board interaction: tap the card in hand for its actions, tap the zone itself to place.
+- [x] Highlight legal cards and legal destination zones instead of listing them only as buttons.
+- [x] Bind a tap to the prompt it was offered for, so a stale tap cannot resolve against a newer prompt.
+
+A battle position is deliberately **not** a board target: it is a property of a summon rather than a
+place you can point at, so it stays a labelled option. The button list is hidden only when every
+option in a prompt is anchored, which keeps unanchored options reachable.
 
 ## Manual verification pending
 
-- [ ] Confirm the latest deployed flow on desktop.
-- [ ] Confirm the latest deployed flow on iPhone/mobile Safari.
-- [ ] Confirm selecting each of M1–M5 renders the card in the chosen zone.
+- [x] Confirm the latest deployed flow on desktop.
+- [ ] Confirm the latest deployed flow on iPhone/mobile Safari. Chromium at a phone viewport passes,
+      but that is not Safari and does not count.
+- [ ] Confirm selecting each of M1–M5 renders the card in the chosen zone. M4 is covered
+      automatically; the other four are offered but only spot-checked.
 - [ ] Confirm a future scenario with multiple legal positions displays and resolves the position chooser correctly.
 
 ## Still required prompt types
@@ -281,8 +296,9 @@ Notes on the three items above that are easy to over-read:
 - [ ] Field disabling and other place-selection variants.
 - [ ] Cancel, finish, retry, and invalid-response behavior.
 - [ ] Multi-step prompt history and breadcrumbs.
-- [ ] Direct board interaction so cards and zones can be tapped instead of always using separate buttons.
 - [ ] Clear presentation of required versus optional choices.
+- [ ] Extend board targets to the remaining prompt types as they are implemented; card selection and
+      tribute selection are the next two that clearly belong on the board.
 
 ---
 
@@ -483,14 +499,17 @@ The authored notation, visual playback, and real rules engine should converge on
 - [x] Board-first Simulator layout.
 - [x] Dedicated choice resolver under the game.
 - [x] Mobile-responsive action and zone buttons.
+- [x] Make legal cards and zones tappable directly on the board.
+- [x] Highlight legal targets and legal destination zones.
 
 ## Still required
 
 - [ ] Replace milestone/developer copy with a normal player-facing simulator experience when the engine is ready.
 - [ ] Add a deck picker and scenario picker.
 - [ ] Add opening-hand and seed controls for testing.
-- [ ] Make legal cards and zones tappable directly on the board.
-- [ ] Highlight legal targets and legal destination zones.
+- [ ] Enlarge zone tap targets on phones. At a 390px viewport a Main Monster Zone hotspot measures
+      about 38×55px, under the 44px minimum; five zones across a phone screen needs a layout answer,
+      not a bigger button.
 - [ ] Add cancel/back behavior only where the engine allows it.
 - [ ] Add prompt history and an undo/restart-from-checkpoint workflow for practice scenarios.
 - [ ] Add a compact rules explanation for each engine choice without overwhelming experienced players.

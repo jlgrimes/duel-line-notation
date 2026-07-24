@@ -5,28 +5,63 @@ import type {
   VisualFieldSlot,
   VisualZone,
 } from "../src/visualizer.js";
+import type { BoardChoice, BoardTargets } from "../src/simulator/board-interaction.js";
 import type { CardScan } from "./card-service";
+
+/**
+ * Makes the board itself the input surface. Opt-in: notation playback passes nothing and
+ * renders exactly as before, while the simulator passes the choices the engine reported.
+ */
+export interface BoardInteraction extends BoardTargets {
+  busy: boolean;
+  onChoose(optionId: string): void;
+}
 
 interface DuelBoardProps {
   frame: PlaybackFrame;
   scans?: Record<string, CardScan>;
   ariaLabel?: string;
   showActionCallout?: boolean;
+  interaction?: BoardInteraction;
 }
 
 const CardScanContext = createContext<Record<string, CardScan>>({});
+const InteractionContext = createContext<BoardInteraction | null>(null);
+
+/**
+ * A transparent button laid over a card or zone. Using a real button keeps the target
+ * keyboard-reachable and screen-reader labelled, without restyling the card itself.
+ */
+function ChoiceHotspot({ choice, kind }: { choice: BoardChoice; kind: "zone" | "card" }) {
+  const interaction = useContext(InteractionContext);
+  if (!interaction) return null;
+  return (
+    <button
+      type="button"
+      className={`choice-hotspot choice-hotspot-${kind}`}
+      disabled={interaction.busy}
+      onClick={() => interaction.onChoose(choice.optionId)}
+      title={choice.detail ?? choice.label}
+      aria-label={choice.detail ? `${choice.label}. ${choice.detail}` : choice.label}
+    >
+      <span>{choice.label}</span>
+    </button>
+  );
+}
 
 export function DuelBoard({
   frame,
   scans = {},
   ariaLabel = "Duel board",
   showActionCallout = true,
+  interaction,
 }: DuelBoardProps) {
   const chainLink = frame.chainLink;
 
   return (
     <CardScanContext.Provider value={scans}>
-      <div className="duel-canvas" aria-label={ariaLabel}>
+      <InteractionContext.Provider value={interaction ?? null}>
+      <div className={`duel-canvas ${interaction ? "interactive" : ""}`} aria-label={ariaLabel}>
         <div className="opponent-field" aria-hidden="true">
           <span>Opponent</span>
           <div>{Array.from({ length: 5 }, (_, index) => <i key={index} />)}</div>
@@ -97,6 +132,7 @@ export function DuelBoard({
           </div>
         )}
       </div>
+      </InteractionContext.Provider>
     </CardScanContext.Provider>
   );
 }
@@ -116,6 +152,7 @@ function FieldRow({
   slotPrefix: "M" | "S";
   pendulumEdges?: boolean;
 }) {
+  const interaction = useContext(InteractionContext);
   const unplacedCards = cards.filter((card) => !card.fieldSlot);
   let nextUnplaced = 0;
 
@@ -127,12 +164,14 @@ function FieldRow({
           const fieldSlot = `${slotPrefix}${index + 1}` as VisualFieldSlot;
           const exact = cards.find((candidate) => candidate.fieldSlot === fieldSlot);
           const card = exact ?? unplacedCards[nextUnplaced++];
+          const choice = interaction?.slotChoices[fieldSlot];
           return (
-            <div className="field-slot" key={fieldSlot}>
+            <div className={`field-slot ${choice ? "legal-target" : ""}`} key={fieldSlot}>
               <span className="field-slot-label">
                 {fieldSlot}{pendulumEdges && (index === 0 || index === 4) ? <small>P</small> : null}
               </span>
               {card && <DuelCard card={card} frame={frame} />}
+              {choice && <ChoiceHotspot choice={choice} kind="zone" />}
             </div>
           );
         })}
@@ -142,16 +181,19 @@ function FieldRow({
 }
 
 function ExtraMonsterRow({ frame }: { frame: PlaybackFrame }) {
+  const interaction = useContext(InteractionContext);
   return (
     <div className="extra-monster-row">
       <span className="zone-caption">Shared Extra Monster Zones</span>
       <div className="extra-monster-slots">
         {(["EMZ1", "EMZ2"] as VisualFieldSlot[]).map((slot, index) => {
           const card = frame.cards.find((candidate) => candidate.zone === "F" && candidate.fieldSlot === slot);
+          const choice = interaction?.slotChoices[slot];
           return (
-            <div className={`field-slot emz-slot emz-${index + 1}`} key={slot}>
+            <div className={`field-slot emz-slot emz-${index + 1} ${choice ? "legal-target" : ""}`} key={slot}>
               <span className="field-slot-label">EMZ {index + 1}</span>
               {card && <DuelCard card={card} frame={frame} />}
+              {choice && <ChoiceHotspot choice={choice} kind="zone" />}
             </div>
           );
         })}
@@ -206,18 +248,20 @@ function DuelCard({
   faceDown?: boolean;
 }) {
   const scans = useContext(CardScanContext);
+  const interaction = useContext(InteractionContext);
   const scan = scans[card.name];
   const [scanFailed, setScanFailed] = useState(false);
   const active = frame.activeAliases.includes(card.alias);
   const moving = frame.movements.some((movement) => movement.cardId === card.id);
   const hidden = faceDown || !card.faceUp;
   const showScan = !hidden && scan && !scanFailed;
+  const choice = interaction?.cardChoices[card.id];
 
   useEffect(() => setScanFailed(false), [scan?.imageUrl]);
 
   return (
     <article
-      className={`duel-card card-${card.kind} ${active ? "active" : ""} ${moving ? "moving" : ""} ${hidden ? "face-down" : ""} ${showScan ? "real-scan" : ""}`}
+      className={`duel-card card-${card.kind} ${active ? "active" : ""} ${moving ? "moving" : ""} ${hidden ? "face-down" : ""} ${showScan ? "real-scan" : ""} ${choice ? "legal-target" : ""}`}
       style={{ viewTransitionName: `card-${card.id}` }}
       title={card.name}
     >
@@ -241,6 +285,7 @@ function DuelCard({
           <div className="card-text"><b>{card.alias}</b><span>{card.kind}</span></div>
         </>
       )}
+      {choice && <ChoiceHotspot choice={choice} kind="card" />}
     </article>
   );
 }
