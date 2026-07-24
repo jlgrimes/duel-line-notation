@@ -2,7 +2,7 @@ import type {
   EngineWorkerRequest,
   EngineWorkerResponse,
 } from "../../src/simulator/engine-protocol.js";
-import { SmokeEngineRuntime } from "../../src/simulator/smoke-engine-runtime.js";
+import { OcgcoreEngineRuntime } from "../../src/simulator/ocgcore-engine-runtime.js";
 
 type WorkerScope = {
   onmessage: ((event: MessageEvent<EngineWorkerRequest>) => void) | null;
@@ -10,7 +10,7 @@ type WorkerScope = {
 };
 
 const workerScope = globalThis as unknown as WorkerScope;
-const runtime = new SmokeEngineRuntime();
+const runtime = new OcgcoreEngineRuntime();
 
 workerScope.onmessage = (event) => {
   void runtime.handle(event.data).then((response) => workerScope.postMessage(response));
