@@ -6,6 +6,7 @@
   "scripts": {
     "fetch": "node scripts/fetch-source.mjs",
     "build": "node scripts/build.mjs",
+    "smoke": "node scripts/smoke.mjs",
     "clean": "node scripts/clean.mjs",
     "doctor": "node scripts/doctor.mjs"
   }
