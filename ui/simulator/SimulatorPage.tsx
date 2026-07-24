@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   INITIAL_ENGINE_SNAPSHOT,
+  type EngineActionPrompt,
   type EngineEvent,
   type EngineLogLevel,
   type EngineSnapshot,
@@ -20,6 +21,12 @@ interface DisplayLogEntry {
   detail?: string;
 }
 
+interface ChoiceResolverProps {
+  prompt: EngineActionPrompt | null;
+  pending: boolean;
+  onChoose(promptId: string, optionId: string): void;
+}
+
 const INITIAL_LOG: DisplayLogEntry = {
   id: 1,
   level: "info",
@@ -28,6 +35,39 @@ const INITIAL_LOG: DisplayLogEntry = {
 };
 
 const PROCESS_STATUS_NAMES = ["End", "Awaiting response", "Continue"] as const;
+
+function ChoiceResolver({ prompt, pending, onChoose }: ChoiceResolverProps) {
+  return (
+    <section className={`simulator-choice-resolver choice-${prompt?.kind ?? "waiting"}`} aria-live="polite">
+      <header>
+        <div>
+          <p className="eyebrow">Resolve engine choice</p>
+          <h2>{prompt?.title ?? "Waiting for ocgcore"}</h2>
+        </div>
+        <span>{prompt?.kind ?? "waiting"}</span>
+      </header>
+      <p className="choice-detail">
+        {prompt?.detail ?? "The next legal action or mandatory choice will appear here without the UI guessing for you."}
+      </p>
+      {prompt && (
+        <div className="choice-options">
+          {prompt.options.map((option) => (
+            <button
+              type="button"
+              key={option.id}
+              disabled={pending}
+              onClick={() => onChoose(prompt.id, option.id)}
+            >
+              <strong>{option.label}</strong>
+              {option.detail && <small>{option.detail}</small>}
+            </button>
+          ))}
+        </div>
+      )}
+      {pending && <p className="choice-progress">Sending choice to ocgcore…</p>}
+    </section>
+  );
+}
 
 export function SimulatorPage() {
   const engineRef = useRef<DuelEngine | null>(null);
@@ -67,6 +107,10 @@ export function SimulatorPage() {
     }
   }
 
+  function chooseOption(promptId: string, optionId: string): void {
+    void runRequest((engine) => engine.performAction(promptId, optionId));
+  }
+
   useEffect(() => {
     const worker = new Worker(new URL("./engine-worker.ts", import.meta.url), { type: "module" });
     const engine = new WorkerDuelEngine(worker as unknown as EngineWorkerPort);
@@ -99,8 +143,8 @@ export function SimulatorPage() {
           <p className="eyebrow">Project Ignis ocgcore · live WebAssembly worker</p>
           <h1>Simulator</h1>
           <p>
-            The worker now loads a real card record, creates deterministic decks, decodes ocgcore&apos;s idle-command packet,
-            and publishes both the queried board and legal action through immutable engine snapshots.
+            The board is now the primary surface. Every engine pause becomes an explicit action, zone, or position choice
+            directly underneath it instead of being silently auto-resolved.
           </p>
         </div>
         <div className={`simulator-status simulator-status-${snapshot.phase}`}>
@@ -109,36 +153,36 @@ export function SimulatorPage() {
         </div>
       </header>
 
+      <SimulatorBoardPreview frame={snapshot.board} />
+
+      <ChoiceResolver
+        prompt={snapshot.prompt}
+        pending={requestPending}
+        onChoose={chooseOption}
+      />
+
       <div className="simulator-grid">
         <section className="simulator-panel" aria-labelledby="engine-bridge-title">
           <div className="simulator-panel-heading">
-            <div><p>Milestone 06</p><h2 id="engine-bridge-title">First legal ocgcore action</h2></div>
+            <div><p>Milestone 07</p><h2 id="engine-bridge-title">Interactive choice resolution</h2></div>
             <span>{ready ? "Ready" : snapshot.phase}</span>
           </div>
           <dl className="engine-facts">
             <div><dt>Duel scope</dt><dd>Deterministic one-card decks</dd></div>
             <div><dt>Execution</dt><dd>Web Worker + real WASM</dd></div>
             <div><dt>Board source</dt><dd>{snapshot.board ? "OCG field queries" : "Waiting"}</dd></div>
-            <div><dt>Legal action</dt><dd>{snapshot.prompt?.label ?? "No supported action"}</dd></div>
+            <div><dt>Current choice</dt><dd>{snapshot.prompt?.title ?? "No choice pending"}</dd></div>
             <div><dt>Core API</dt><dd>{snapshot.engineVersion === null ? "Not loaded" : snapshot.engineVersion.toFixed(1)}</dd></div>
             <div><dt>Process status</dt><dd>{ready ? processStatus : "Waiting"}</dd></div>
           </dl>
-          <div className="simulator-actions">
+          <div className="simulator-actions simulator-actions-single">
             <button type="button" onClick={() => void runRequest((engine) => engine.restart())} disabled={requestPending || snapshot.phase === "starting"}>
               {snapshot.phase === "starting" ? "Initializing…" : "Restart engine"}
             </button>
-            <button
-              type="button"
-              className="secondary"
-              disabled={!ready || requestPending || !snapshot.prompt}
-              onClick={() => snapshot.prompt && void runRequest((engine) => engine.performAction(snapshot.prompt!.id))}
-            >
-              {requestPending ? "Processing…" : snapshot.prompt?.label ?? "No supported action"}
-            </button>
           </div>
           <div className="simulator-note">
-            <strong>Honest scope:</strong> the card, opening draw, hand query, legal prompt, response encoding, and summon are
-            all owned by ocgcore. Mystical Elf is a deliberately scriptless bootstrap card; Mitsurugi Lua effects come next.
+            <strong>Choice contract:</strong> ocgcore owns the legal options. The UI only renders those options and sends the
+            selected response bytes back to the active prompt.
           </div>
         </section>
 
@@ -158,14 +202,12 @@ export function SimulatorPage() {
         </section>
       </div>
 
-      <SimulatorBoardPreview frame={snapshot.board} />
-
       <section className="simulator-next">
         <p className="eyebrow">Next checkpoint</p>
-        <h2>Replace the scriptless bootstrap card with real Mitsurugi card data and Lua scripts.</h2>
+        <h2>Use this same choice resolver for real Mitsurugi effects, targets, chains, and card selections.</h2>
         <p>
-          The full browser-to-core action loop is now established. The next vertical slice adds the script resolver and a
-          minimal Pure Mitsurugi opening, then maps its effect prompts onto the same typed action interface.
+          Action, zone, and position prompts now share one typed surface. The next layer expands the same model to card lists,
+          yes-or-no effects, chain windows, and multi-select prompts from the actual Mitsurugi scripts.
         </p>
       </section>
     </section>
