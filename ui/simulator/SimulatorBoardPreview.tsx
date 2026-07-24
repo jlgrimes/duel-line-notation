@@ -9,99 +9,34 @@ const PURE_MITSURUGI_MANIFEST: DeckManifest = {
   slug: "pure-mitsurugi-simulator-preview",
   name: "Pure Mitsurugi simulator preview",
   cards: {
-    ARA: {
-      name: "Mitsurugi no Miko, Aramasa",
-      kind: "monster",
-      level: 4,
-    },
-    PRY: {
-      name: "Mitsurugi Prayers",
-      kind: "spell",
-    },
-    HAB: {
-      name: "Ame no Habakiri no Mitsurugi",
-      kind: "monster",
-      level: 4,
-    },
+    ARA: { name: "Mitsurugi no Miko, Aramasa", kind: "monster", level: 4 },
+    PRY: { name: "Mitsurugi Prayers", kind: "spell" },
+    HAB: { name: "Ame no Habakiri no Mitsurugi", kind: "monster", level: 4 },
   },
 };
 
-const PURE_MITSURUGI_OPENING: PlaybackFrame = {
-  key: "simulator-opening-preview",
-  stepNumber: 0,
-  label: "Pure Mitsurugi opening state",
-  expression: "Choose a legal action to begin",
-  lp: 8000,
-  cards: [
-    {
-      id: "preview-aramasa",
-      alias: "ARA",
-      name: PURE_MITSURUGI_MANIFEST.cards.ARA!.name,
-      kind: "monster",
-      level: 4,
-      zone: "H",
-      faceUp: true,
-    },
-    {
-      id: "preview-prayers",
-      alias: "PRY",
-      name: PURE_MITSURUGI_MANIFEST.cards.PRY!.name,
-      kind: "spell",
-      zone: "H",
-      faceUp: true,
-    },
-    {
-      id: "preview-habakiri",
-      alias: "HAB",
-      name: PURE_MITSURUGI_MANIFEST.cards.HAB!.name,
-      kind: "monster",
-      level: 4,
-      zone: "H",
-      faceUp: true,
-    },
-    {
-      id: "preview-deck",
-      alias: "DECK",
-      name: "Pure Mitsurugi Deck",
-      kind: "monster",
-      zone: "D",
-      faceUp: false,
-    },
-    {
-      id: "preview-extra",
-      alias: "EXTRA",
-      name: "Extra Deck",
-      kind: "monster",
-      zone: "X",
-      faceUp: false,
-    },
-  ],
-  activeAliases: [],
-  movements: [],
-};
-
-export function SimulatorBoardPreview() {
+export function SimulatorBoardPreview({ frame }: { frame: PlaybackFrame | null }) {
   const { scans, loading } = useCardScans(PURE_MITSURUGI_MANIFEST);
 
   return (
     <section className="simulator-board-preview" aria-labelledby="simulator-board-title">
       <header>
         <div>
-          <p className="eyebrow">Milestone 03 · shared presentation</p>
-          <h2 id="simulator-board-title">One board, two consumers</h2>
+          <p className="eyebrow">Milestone 04 · engine-owned state</p>
+          <h2 id="simulator-board-title">Engine snapshot board</h2>
         </div>
         <p>
-          Combo playback and the live simulator now render through the same zone and card component. This static
-          opening state will be replaced by the first normalized ocgcore snapshot.
+          The simulator UI no longer constructs its own opening frame. The worker runtime now supplies normalized duel
+          state through the typed engine snapshot—the same seam the real ocgcore decoder will use.
         </p>
       </header>
-      <div className="duel-visualizer simulator-board-surface">
-        <DuelBoard
-          frame={PURE_MITSURUGI_OPENING}
-          scans={scans}
-          ariaLabel="Pure Mitsurugi simulator board preview"
-        />
-      </div>
+      {frame ? (
+        <div className="duel-visualizer simulator-board-surface">
+          <DuelBoard frame={frame} scans={scans} ariaLabel="Pure Mitsurugi engine snapshot board" />
+        </div>
+      ) : (
+        <div className="simulator-note">Waiting for the engine to publish its first duel snapshot…</div>
+      )}
       <p className={`scan-credit ${loading ? "loading" : ""}`}>
         <i /> {loading ? "Resolving card scans…" : `${Object.keys(scans).length} real card scans loaded`} · Data and
         images via <a href="https://ygoprodeck.com/api-guide/" target="_blank" rel="noreferrer">YGOPRODeck</a>
